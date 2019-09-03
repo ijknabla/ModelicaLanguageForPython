@@ -5,5 +5,5 @@ setup(
     name="ModelicaLanguage",
     pack="Modelica language for Python3.x",
     packages=find_packages(),
-    install_requires=[],
+    install_requires=["Arpeggio"],
 )
