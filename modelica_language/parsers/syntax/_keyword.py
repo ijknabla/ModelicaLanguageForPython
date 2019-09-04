@@ -377,4 +377,3 @@ def WHILE():
 def WITHIN():
     r"WITHIN = r'within(?!\w)'"
     return RegExMatch(r'within(?!\w)')
-
