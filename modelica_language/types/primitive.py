@@ -2,10 +2,12 @@
 __all__ = (
     "PrimitiveReal",
     "PrimitiveInteger",
+    "PrimitiveBoolean",
     "PrimitiveString",
 )
 
 import numpy
+import enum
 from .. import util
 from .abc import AbstractModelicaScalarClass
 
@@ -46,6 +48,21 @@ class ScalarNumberMeta(
         return cls
 
 
+class ModelicaEnumClassMeta(
+    enum.EnumMeta,
+    AbstractModelicaScalarClass,
+):
+    def __getitem__(cls, indices):
+        if isinstance(indices, str):
+            return enum.EnumMeta.__getitem__(
+                cls, indices,
+            )
+        else:
+            return AbstractModelicaScalarClass.__getitem__(
+                cls, indices,
+            )
+
+
 class PrimitiveReal(
     RealType,
     metaclass=ScalarNumberMeta
@@ -58,6 +75,34 @@ class PrimitiveInteger(
     metaclass=ScalarNumberMeta,
 ):
     pass
+
+
+class PrimitiveBooleanMeta(
+    ModelicaEnumClassMeta,
+):
+    def __call__(cls, value):
+        return super().__call__(bool(value))
+
+
+class PrimitiveBoolean(
+    enum.Enum,
+    metaclass=PrimitiveBooleanMeta,
+):
+    true = True
+    false = False
+
+    def __bool__(self):
+        return self.value
+    
+    def __eq__(self, other):
+        return bool(self) == other
+    
+    def __repr__(self):
+        return self.__str__()
+    
+    def __format__(self, format_spec):
+        value = "true" if self else "false"
+        return f"{value:{format_spec}}"
 
 
 class PrimitiveString(
