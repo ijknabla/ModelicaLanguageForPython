@@ -1,5 +1,8 @@
 
 __all__ = (
+    # base type
+    "PrimitiveModelicaObject",
+    # concrete types
     "PrimitiveReal",
     "PrimitiveInteger",
     "PrimitiveBoolean",
@@ -63,6 +66,13 @@ class ModelicaEnumClassMeta(
             )
 
 
+class PrimitiveModelicaObject(
+    metaclass=AbstractModelicaScalarClass,
+):
+    pass
+
+
+@PrimitiveModelicaObject.register
 class PrimitiveReal(
     RealType,
     metaclass=ScalarNumberMeta
@@ -70,6 +80,7 @@ class PrimitiveReal(
     pass
 
 
+@PrimitiveModelicaObject.register
 class PrimitiveInteger(
     IntegerType,
     metaclass=ScalarNumberMeta,
@@ -84,6 +95,7 @@ class PrimitiveBooleanMeta(
         return super().__call__(bool(value))
 
 
+@PrimitiveModelicaObject.register
 class PrimitiveBoolean(
     enum.Enum,
     metaclass=PrimitiveBooleanMeta,
@@ -107,7 +119,7 @@ class PrimitiveBoolean(
 
 class PrimitiveString(
     str,
-    metaclass=AbstractModelicaScalarClass,
+    PrimitiveModelicaObject,
 ):
     def __format__(self, format_spec):
         replaced = util.replace_all(
