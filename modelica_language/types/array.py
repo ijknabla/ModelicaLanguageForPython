@@ -5,6 +5,7 @@ __all__ = (
     "array_sizes_from_indices",
 )
 
+import typing
 import abc
 import collections.abc
 import functools
@@ -12,6 +13,41 @@ import numpy
 
 
 # define NDArrayWrapper
+
+
+def shape_of_sequence(
+    sequence: typing.Sequence,
+    ndims: int
+) -> typing.Generator[int, None, None]:
+    elem = sequence
+    for idim in range(ndims):
+        if not isinstance(elem, collections.abc.Sequence):
+            raise TypeError(
+                f"dimension {idim} must be Sequence got {elem}"
+            )
+        yield len(elem)
+        elem = elem[0]
+
+
+def fixed_dimensional_object_array(
+    sequence: typing.Sequence,
+    ndims: int,
+) -> numpy.ndarray:
+    shape = tuple(shape_of_sequence(sequence, ndims))
+    object_array = numpy.empty(shape, dtype=object)
+    object_array[...] = sequence
+    return object_array
+
+
+def cast_object_array(
+    array: numpy.ndarray, typ: type
+):
+    vectorized_cast = numpy.vectorize(
+        lambda elem : elem if isinstance(elem, typ) else typ(elem),
+        otypes = [object],
+    )
+    return vectorized_cast(array[...])
+
 
 class InheritableNDArray(numpy.ndarray):
     def __new__(cls, buffer, dtype=None):
@@ -32,27 +68,18 @@ class StrAsObjectNDArray(InheritableNDArray):
         )
 
 
-class AutoCastNDArray(StrAsObjectNDArray):
-    def __new__(cls, buffer, dtype=None):
-        self = super(AutoCastNDArray, cls).__new__(
-            cls, buffer, dtype
+class NDArrayWrapper(
+    StrAsObjectNDArray,
+):
+    def __new__(cls, buffer, dtype: type, ndims: int):
+        ndims_array = fixed_dimensional_object_array(buffer, ndims)
+
+        return super(NDArrayWrapper, cls).__new__(
+            cls,
+            cast_object_array(ndims_array, dtype),
+            dtype=dtype,
         )
-        if dtype is not None and self.dtype == object:
-            isinstance_mask = self.isinstance(dtype)
-            if not isinstance_mask.all():
-                self[~isinstance_mask] = list(
-                    map(dtype, self[~isinstance_mask])
-                )
-        return self
-
-    def isinstance(self, class_or_tuple):
-        @functools.partial(numpy.vectorize, otypes=(bool,))
-        def vectorized_isinstance(elem):
-            return isinstance(elem, class_or_tuple)
-        return vectorized_isinstance(self)
-
-
-class NDArrayWrapper(AutoCastNDArray):
+    
     def __format__(self, format_spec):
         return "{{{}}}".format(
             ", ".join(
