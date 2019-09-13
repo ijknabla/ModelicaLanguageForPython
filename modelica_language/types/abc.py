@@ -55,13 +55,9 @@ class ModelicaArrayObject(
 ):
     def __new__(cls, buffer):
         self = super(ModelicaArrayObject, cls).__new__(
-            cls, buffer, dtype=cls.scalar_class
+            cls, buffer, dtype=cls.scalar_class, ndims=cls.ndims
         )
-        if not cls.ndims == self.ndim:
-            raise ValueError(
-                f"array dimension must be {cls.ndims} "
-                f"got {self.ndim}"
-            )
+
         if not cls.sizes == self.shape:
             raise ValueError(
                 f"shape must be {tuple(map(str,cls.sizes))} "

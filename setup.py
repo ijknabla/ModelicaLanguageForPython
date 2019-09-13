@@ -2,11 +2,9 @@
 
 from setuptools import setup, find_packages
 
-from modelica_language import __version__ as package_version
-
 setup(
     name="ModelicaLanguage",
-    version=package_version,
+    version="0.0.0a5",
     description="Modelica parser and class representation for Python3.x",
     author="ijknabla",
     author_email="ijknabla@gmail.com",
