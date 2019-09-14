@@ -71,7 +71,7 @@ def CPP_STYLE_COMMENT(): return RegExMatch(cpp_style_comment)
 
 
 def regexPEG(regex: str) -> str:
-    return "r'{}'".format(regex.replace("'", r"\'"))
+    return "r'{}'".format(regex.replace("\'", r"\'"))
 
 
 IDENT.__doc__ = (
