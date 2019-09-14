@@ -15,26 +15,50 @@ import numpy
 # define NDArrayWrapper
 
 
+def isArrayLike(obj: object):
+    if isinstance(obj, str):
+        return False
+
+    return isinstance(
+        obj,
+        (collections.abc.Sequence, numpy.ndarray),
+    )
+
+
 def shape_of_sequence(
     sequence: typing.Sequence,
     ndims: int
-) -> typing.Generator[int, None, None]:
-    elem = sequence
-    for idim in range(ndims):
-        if not isinstance(elem, collections.abc.Sequence):
-            raise TypeError(
-                f"dimension {idim} must be Sequence got {elem}"
+) -> typing.Tuple[int]:
+
+    def get_shape(
+        sequence: typing.Sequence, idim: int = 0,
+    ):
+        if not isArrayLike(
+            sequence,
+        ):
+            raise ValueError(
+                f"dimension {idim} must be array-like, got {type(sequence)}"
             )
-        yield len(elem)
-        elem = elem[0]
+
+        last_dimension = (idim == ndims-1)
+        if not last_dimension and not sequence:
+            raise ValueError(
+                f"dimension {idim} has no sub sequence"
+            )
+
+        if idim == ndims-1:
+            return (len(sequence),)
+        else:
+            return (len(sequence), *get_shape(sequence[0], idim+1))
+
+    return get_shape(sequence)
 
 
 def fixed_dimensional_object_array(
     sequence: typing.Sequence,
     ndims: int,
 ) -> numpy.ndarray:
-    shape = tuple(shape_of_sequence(sequence, ndims))
-    object_array = numpy.empty(shape, dtype=object)
+    object_array = numpy.empty(shape_of_sequence(sequence, ndims), dtype=object)
     object_array[...] = sequence
     return object_array
 
