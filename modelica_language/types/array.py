@@ -68,8 +68,19 @@ class StrAsObjectNDArray(InheritableNDArray):
         )
 
 
+class CurlyBracesNDArray(InheritableNDArray):
+    def __str__(self):
+        return "{%s}" % (
+            ", ".join(
+                f"{elem}" if isinstance(elem, str) else str(elem)
+                for elem in self
+            )
+        )
+
+
 class NDArrayWrapper(
     StrAsObjectNDArray,
+    CurlyBracesNDArray,
 ):
     def __new__(cls, buffer, dtype: type, ndims: int):
         ndims_array = fixed_dimensional_object_array(buffer, ndims)
@@ -78,14 +89,6 @@ class NDArrayWrapper(
             cls,
             cast_object_array(ndims_array, dtype),
             dtype=dtype,
-        )
-    
-    def __format__(self, format_spec):
-        return "{{{}}}".format(
-            ", ".join(
-                f"{{:{format_spec}}}".format(subarray)
-                for subarray in self
-            )
         )
 
 

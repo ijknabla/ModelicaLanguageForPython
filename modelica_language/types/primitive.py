@@ -23,7 +23,9 @@ class ScalarNumberMeta(
     AbstractModelicaScalarClass,
 ):
     def __new__(mtcls, name, bases, namespace):
+
         base_class_forward = util.Forward()
+
         def newfunc(cls, *args, **kwrds):
             with base_class_forward as base_class:
                 self = super(base_class, cls).__new__(
@@ -110,17 +112,19 @@ class PrimitiveBoolean(
         return bool(self) == other
     
     def __repr__(self):
-        return self.__str__()
-    
-    def __format__(self, format_spec):
-        value = "true" if self else "false"
-        return f"{value:{format_spec}}"
+        return super().__str__()
+
+    def __str__(self):
+        return self.name
 
 
 class PrimitiveString(
     str,
     PrimitiveModelicaObject,
 ):
+    def __repr__(self):
+        return f'{type(self).__name__}({super().__repr__()})'
+
     def __format__(self, format_spec):
         replaced = util.replace_all(
             self,
