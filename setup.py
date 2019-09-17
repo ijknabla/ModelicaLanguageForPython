@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="ModelicaLanguage",
-    version="0.0.0a5",
+    version="0.0.0a6",
     description="Modelica parser and class representation for Python3.x",
     author="ijknabla",
     author_email="ijknabla@gmail.com",
