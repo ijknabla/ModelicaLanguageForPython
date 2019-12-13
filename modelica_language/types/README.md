@@ -105,3 +105,89 @@ ModelicaScalarClass "1..n" --o     ModelicaArrayClass
 AbstractModelicaObject <|- AbstractModelicaScalarObject
 AbstractModelicaObject <|- AbstractModelicaArrayObject
 ```
+
+### `modelica_language.types.array`
+
+```plantuml
+package modelica_language.types {
+    package abc {
+        class ModelicaScalarClass << metaClass >>
+        class ModelicaArrayClass << metaClass >>
+    }
+    package array {
+        together {
+            class PrimitiveReal
+            'class PrimitiveInteger
+            'class PrimitiveBoolean
+            'class PrimitiveString
+        }
+
+        together {
+            class PrimitiveRealArray
+            'class PrimitiveIntegerArray
+            'class PrimitiveBooleanArray
+            'class PrimitiveStringArray
+        }
+    }
+}
+
+ModelicaScalarClass <--- PrimitiveReal         : "isinstance"
+'ModelicaScalarClass <--- PrimitiveInteger      : "isinstance"
+'ModelicaScalarClass <--- PrimitiveBoolean      : "isinstance"
+'ModelicaScalarClass <--- PrimitiveString       : "isinstance"
+
+ModelicaArrayClass  <-- PrimitiveRealArray    : "isinstance"
+'ModelicaArrayClass  <-- PrimitiveIntegerArray : "isinstance"
+'ModelicaArrayClass  <-- PrimitiveBooleanArray : "isinstance"
+'ModelicaArrayClass  <-- PrimitiveStringArray  : "isinstance"
+
+PrimitiveReal    o-- "1..n" PrimitiveRealArray
+'PrimitiveInteger o-- "1..n" PrimitiveIntegerArray
+'PrimitiveBoolean o-- "1..n" PrimitiveBooleanArray
+'PrimitiveString  o-- "1..n" PrimitiveStringArray
+```
+
+<!--
+
+```plantuml
+package modelica_language.types.array {
+    class InheritableNDArray
+    class StrAsObjectNDArray
+    class CurlyBracesNDArray
+    class NDArrayWrapper
+}
+
+numpy.ndarray <|-- InheritableNDArray
+
+InheritableNDArray <|-- StrAsObjectNDArray
+InheritableNDArray <|-- CurlyBracesNDArray
+
+StrAsObjectNDArray <|-- NDArrayWrapper
+CurlyBracesNDArray <|-- NDArrayWrapper
+```
+
+#### `NDArrayWrapper`
+
+`NDArrayWrapper` is a _thin_ wrapper of numpy.ndarray for representing Modelica arrays.
+
+- Change string representation to use curly braces `{` `}` instead of square brackets `[` `]`
+- Suppress using `np.str_`. `str` array always be `dtype=object` array
+
+#### `defaultArrayClassFactory(...)`
+
+`defaultArrayClassFactory(...)` create new Modelica array class.
+Modelica array class returned by `defaultArrayClassFactory(...)` will inherit `NDArrayWrapper` and their metaclass will be subclass of `modelica_language.types.meta.ModelicaArrayClassMeta`.
+
+```python
+from typing import Optional
+from modelica_language.types import meta
+
+def defaultArrayClassFactory(
+    scalarClass: meta.ModelicaScalarClassMeta,
+    sizes: meta.Sizes,
+    name: Optional[str] = None,
+) -> meta.ModelicaArrayClassMeta:
+    ...
+```
+
+-->
