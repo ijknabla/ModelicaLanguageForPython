@@ -6,6 +6,9 @@ __all__ = (
     "ModelicaArrayClass",
     # Abstract Base Classes (ABCs)
     "AbstractModelicaObject",
+    "AbstractModelicaScalarObject",
+    "AbstractModelicaArrayObject",
+    # Old meta classes implementations
     "AbstractModelicaClass",
     "AbstractModelicaScalarClass",
     "AbstractModelicaArrayClass",
@@ -58,8 +61,28 @@ class ModelicaArrayClass(
         return len(cls.sizes)
 
 
-class AbstractModelicaObject(abc.ABC):
-    pass
+class AbstractModelicaObject(
+    abc.ABC,
+):
+    @classmethod
+    def __subclasshook__(cls, klass):
+        return isinstance(klass, ModelicaClass)
+
+
+class AbstractModelicaScalarObject(
+    abc.ABC,
+):
+    @classmethod
+    def __subclasshook__(cls, klass):
+        return isinstance(klass, ModelicaScalarClass)
+
+
+class AbstractModelicaArrayObject(
+    abc.ABC,
+):
+    @classmethod
+    def __subclasshook__(cls, klass):
+        return isinstance(klass, ModelicaArrayClass)
 
 
 class AbstractModelicaClass(abc.ABCMeta):
