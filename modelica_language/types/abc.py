@@ -1,5 +1,10 @@
 
 __all__ = (
+    # Meta classes
+    "ModelicaClass",
+    "ModelicaScalarClass",
+    "ModelicaArrayClass",
+    # Abstract Base Classes (ABCs)
     "AbstractModelicaObject",
     "AbstractModelicaClass",
     "AbstractModelicaScalarClass",
@@ -9,11 +14,48 @@ __all__ = (
 import typing
 import abc
 import functools
+from .size import Sizes
 from .array import (
     NDArrayWrapper,
     ArraySize,
     array_sizes_from_indices
 )
+
+
+class ModelicaClass(
+    type,
+):
+    pass
+
+
+class ModelicaScalarClass(
+    ModelicaClass,
+):
+    @abc.abstractmethod
+    def arrayClassFactory(
+        cls,
+        sizes: Sizes
+    ) -> "ModelicaArrayClass":
+        return NotImplemented
+
+    def __getitem__(cls, indices) -> "ModelicaArrayClass":
+        return cls.arrayClassFactory(Sizes.fromIndices(indices))
+
+
+class ModelicaArrayClass(
+    ModelicaClass,
+):
+    @abc.abstractproperty
+    def sizes(cls) -> Sizes:
+        return NotImplemented
+
+    @abc.abstractproperty
+    def scalar(cls) -> "ModelicaArrayClass":
+        return NotImplemented
+
+    @property
+    def ndim(cls):
+        return len(cls.sizes)
 
 
 class AbstractModelicaObject(abc.ABC):
