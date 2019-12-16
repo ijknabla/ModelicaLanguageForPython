@@ -1,14 +1,45 @@
 
+from typing import Type
 from .size import Sizes
 from .abc import ModelicaScalarClass, ModelicaArrayClass
 import numpy
+from functools import singledispatch
+
+
+def get_dtype(typ: Type) -> numpy.dtype:
+    if issubclass(typ, str):
+        return numpy.dtype(object)
+    else:
+        return numpy.dtype(typ)
 
 
 class NDArrayWrapper(
     metaclass=ModelicaArrayClass,
 ):
-    def __init__(self, buffer: numpy.ndarray):
-        self.buffer = buffer
+    buffer: numpy.ndarray
+
+    def __init__(
+        self,
+        data,
+    ):
+        @singledispatch
+        def get_buffer(data) -> numpy.ndarray:
+            return numpy.array(data, dtype=get_dtype(type(self).scalar))
+
+        @get_buffer.register(numpy.ndarray)
+        def _(data) -> numpy.ndarray:
+            return data
+
+        @get_buffer.register(NDArrayWrapper)
+        def _(data) -> numpy.ndarray:
+            return data.buffer
+
+        buffer = get_buffer(data)
+
+        if Shape.fromIndices(buffer.shape) != 
+
+    def __iter__(self):
+        return iter(self.buffer)
 
     def __getitem__(self, indices) -> numpy.ndarray:
         return self.buffer[indices]
@@ -58,7 +89,6 @@ def defaultArrayClassFactory(
         dtype = scalarClass
 
     def init_func(self, buffer, *args, **kwrds):
-        arr = numpy.array(buffer, dtype=dtype, *args, **kwrds)
         super(type(self), self).__init__(arr)
         if Sizes.fromIndices(self[...].shape) != sizes:
             raise ValueError(
@@ -82,12 +112,6 @@ def defaultArrayClassFactory(
 class NumericScalarClass(
     ModelicaScalarClass,
 ):
-    def __call__(cls, *args, **kwrds):
-        self = super().__call__(*args, **kwrds)
-        if not issubclass(cls, type(self)):
-            raise ValueError(f"{self}: {type(self)} is not instance of {cls}")
-        return self
-
     arrayClassFactory = defaultArrayClassFactory
 
 
