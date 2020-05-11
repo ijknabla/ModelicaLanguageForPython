@@ -83,11 +83,11 @@ def array_class_factory(
     )
 
     array_class_meta_name = f"{array_class_name}_Meta"
-    
+
     @property
     def sizes_property(cls):
         return sizes
-    
+
     @property
     def scalar_class_property(cls):
         return scalar_class
