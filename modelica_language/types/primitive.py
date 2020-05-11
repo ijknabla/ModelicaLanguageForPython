@@ -31,7 +31,7 @@ class ScalarNumberMeta(
                 self = super(base_class, cls).__new__(
                     cls, *args, **kwrds
                 )
-            
+
             if not isinstance(self, cls):
                 raise ValueError(
                     f"{self}: {type(self)} is not instance of {cls}"
@@ -107,10 +107,10 @@ class PrimitiveBoolean(
 
     def __bool__(self):
         return self.value
-    
+
     def __eq__(self, other):
         return bool(self) == other
-    
+
     def __repr__(self):
         return super().__str__()
 
@@ -141,5 +141,5 @@ class PrimitiveString(
         )
 
         double_quoted = f'"{replaced}"'
-    
+
         return f"{double_quoted:{format_spec}}"
