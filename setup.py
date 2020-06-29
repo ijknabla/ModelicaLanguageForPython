@@ -20,6 +20,7 @@ setup(
     install_requires=[
         "Arpeggio",
         "Numpy",
+        "typing-extensions",
     ],
     python_requires='>=3.6',
 )
