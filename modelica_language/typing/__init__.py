@@ -27,3 +27,9 @@ class SupportsBoolean(Protocol):
 PrimitiveReal = numpy.double
 PrimitiveInteger = numpy.intc
 PrimitiveBoolean = numpy.bool
+
+
+class Array(
+    metaclass=typish.SubscriptableType
+):
+    ...
