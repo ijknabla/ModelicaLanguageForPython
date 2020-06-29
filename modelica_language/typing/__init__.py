@@ -19,7 +19,7 @@ from numbers import (
 )
 
 
-class Boolean(Protocol):
+class SupportsBoolean(Protocol):
     def __bool__(self) -> bool:
         ...
 
