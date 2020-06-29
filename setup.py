@@ -21,6 +21,7 @@ setup(
         "Arpeggio",
         "Numpy",
         "typing-extensions",
+        "typish",
     ],
     python_requires='>=3.6',
 )

@@ -11,6 +11,7 @@ __all__ = [
 
 from typing_extensions import Protocol
 import numpy  # type: ignore
+import typish  # type: ignore
 
 from numbers import (
     Real as SupportsReal,
