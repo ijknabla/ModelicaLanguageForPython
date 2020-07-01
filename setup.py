@@ -18,6 +18,7 @@ setup(
     url="https://github.com/ijknabla/ModelicaLanguageForPython",
     packages=find_packages(),
     install_requires=[
+        "typing-extensions",
         "Arpeggio",
         "Numpy",
     ],
