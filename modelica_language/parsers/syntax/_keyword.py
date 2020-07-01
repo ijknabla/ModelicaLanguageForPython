@@ -62,7 +62,7 @@ __all__ = (
     "WITHIN",
 )
 
-from arpeggio import RegExMatch
+from arpeggio import RegExMatch  # type: ignore
 
 any_keyword = (
     r'('

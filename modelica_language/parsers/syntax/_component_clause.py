@@ -8,7 +8,7 @@ __all__ = (
     "declaration",
 )
 
-from arpeggio import (
+from arpeggio import (  # type: ignore
     Optional, OneOrMore,
 )
 from .. import syntax

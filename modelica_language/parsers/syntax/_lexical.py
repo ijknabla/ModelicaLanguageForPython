@@ -4,7 +4,7 @@ __all__ = (
     "CPP_STYLE_COMMENT",
 )
 
-from arpeggio import RegExMatch, Not
+from arpeggio import RegExMatch, Not  # type: ignore
 from .. import syntax
 from .. import regex
 

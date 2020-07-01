@@ -3,7 +3,7 @@ __all__ = (
     "stored_definition",
 )
 
-from arpeggio import (
+from arpeggio import (  # type: ignore
     Optional, ZeroOrMore
 )
 from .. import syntax

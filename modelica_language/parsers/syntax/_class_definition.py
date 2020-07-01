@@ -18,7 +18,7 @@ __all__ = (
     "import_list",
 )
 
-from arpeggio import (
+from arpeggio import (  # type: ignore
     Optional, ZeroOrMore, OneOrMore,
 )
 from .. import syntax

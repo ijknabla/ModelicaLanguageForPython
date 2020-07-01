@@ -4,7 +4,7 @@ __all__ = (
     "constraining_clause",
 )
 
-from arpeggio import Optional
+from arpeggio import Optional  # type: ignore
 from .. import syntax
 
 

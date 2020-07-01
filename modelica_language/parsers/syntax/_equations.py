@@ -16,7 +16,7 @@ __all__ = (
     "connect_clause",
 )
 
-from arpeggio import (
+from arpeggio import (  # type: ignore
     Optional, ZeroOrMore, OneOrMore,
 )
 from .. import syntax

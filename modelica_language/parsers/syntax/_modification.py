@@ -13,7 +13,7 @@ __all__ = (
     "short_class_definition",
 )
 
-from arpeggio import (
+from arpeggio import (  # type: ignore
     Optional, OneOrMore
 )
 from .. import syntax
