@@ -7,12 +7,12 @@ import abc
 
 
 @runtime_checkable
-class SupportsModelicaLiteral(Protocol):
+class SupportsLiteral(Protocol):
     @abc.abstractmethod
     def __to_literal__(self) -> str:
         ...
 
     @classmethod
     @abc.abstractmethod
-    def __from_literal__(cls, literal: str) -> "SupportsModelicaLiteral":
+    def __from_literal__(cls, literal: str) -> "SupportsLiteral":
         ...
