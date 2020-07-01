@@ -52,13 +52,16 @@ def expression():
         syntax.simple_expression,
         (
             (
-                syntax.IF, syntax.expression, syntax.THEN, syntax.expression,
+                syntax.IF, syntax.expression, syntax.THEN,
+                syntax.expression,
             ),
             ZeroOrMore(
-                syntax.ELSEIF, syntax.expression, syntax.THEN, syntax.expression,
+                syntax.ELSEIF, syntax.expression, syntax.THEN,
+                syntax.expression,
             ),
             (
-                syntax.ELSE, syntax.expression,
+                syntax.ELSE,
+                syntax.expression,
             ),
         ),
     ]
