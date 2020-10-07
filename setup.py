@@ -19,7 +19,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         "Arpeggio",
-        "Numpy",
     ],
     python_requires='>=3.6',
 )
