@@ -4,6 +4,7 @@ version = "0.0.0a6"
 description = "Modelica parser and class representation for Python3.x"
 repository = "https://github.com/ijknabla/ModelicaLanguageForPython"
 authors = ["ijknabla <ijknabla@gmail.com>"]
+readme = "README.md"
 license = "MIT"
 classifiers = [
         "Development Status :: 3 - Alpha",
