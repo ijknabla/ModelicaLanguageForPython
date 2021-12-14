@@ -7,6 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.6"
+Arpeggio = ">=1.6"
 
 [tool.poetry.dev-dependencies]
 pyproject-flake8 = "^0.0.1-alpha.2"
