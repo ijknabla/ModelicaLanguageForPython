@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ModelicaLanguage"
 version = "0.0.0a6"
-description = ""
+description = "Modelica parser and class representation for Python3.x"
 authors = ["ijknabla <ijknabla@gmail.com>"]
 license = "MIT"
 classifiers = [
