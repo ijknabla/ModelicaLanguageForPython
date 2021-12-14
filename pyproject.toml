@@ -4,6 +4,9 @@ version = "0.0.0a6"
 description = ""
 authors = ["ijknabla <ijknabla@gmail.com>"]
 license = "MIT"
+packages = [
+    { include = "modelica_language"},
+]
 
 [tool.poetry.dependencies]
 python = "^3.6"
