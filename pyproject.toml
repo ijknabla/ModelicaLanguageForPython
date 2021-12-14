@@ -4,6 +4,10 @@ version = "0.0.0a6"
 description = ""
 authors = ["ijknabla <ijknabla@gmail.com>"]
 license = "MIT"
+classifiers = [
+        "Development Status :: 3 - Alpha",
+        "Programming Language :: Python :: 3 :: Only",
+]
 packages = [
     { include = "modelica_language"},
 ]
