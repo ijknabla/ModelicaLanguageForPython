@@ -1,0 +1,18 @@
+/**
+ * https://specification.modelica.org/maint/3.4/Ch2.html#identifiers-names-and-keywords
+ * ### 2.3.3 Modelica Keywords
+ * The following Modelica keywords are reserved words and may not be used as identifiers, except as listed in section B.1:
+ */
+@KEYWORDS@ =
+    algorithm       discrete        false       loop        pure
+    and             each            final       model       record
+    annotation      else            flow        not         redeclare
+                    elseif          for         operator    replaceable
+    block           elsewhen        function    or          return
+    break           encapsulated    if          outer       stream
+    class           end             import      output      then
+    connect         enumeration     impure      package     true
+    connector       equation        in          parameter   type
+    constant        expandable      initial     partial     when
+    constrainedby   extends         inner       protected   while
+    der             external        input       public      within
