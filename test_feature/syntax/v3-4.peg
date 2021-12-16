@@ -4,7 +4,7 @@
  */
 @COMMENTS@ =
    r'//.*'
-   r'/\*([^*]|\*[^/])*\*/'
+   | r'/\*([^*]|\*[^/])*\*/'
 
 /**
  * https://specification.modelica.org/maint/3.4/Ch2.html#identifiers-names-and-keywords
@@ -12,15 +12,51 @@
  * The following Modelica keywords are reserved words and may not be used as identifiers, except as listed in section B.1:
  */
 @KEYWORDS@ =
-   `algorithm`       `discrete`     `false`     `loop`      `pure`
-   `and`             `each`         `final`     `model`     `record`
-   `annotation`      `else`         `flow`      `not`       `redeclare`
-                     `elseif`       `for`       `operator`  `replaceable`
-   `block`           `elsewhen`     `function`  `or`        `return`
-   `break`           `encapsulated` `if`        `outer`     `stream`
-   `class`           `end`          `import`    `output`    `then`
-   `connect`         `enumeration`  `impure`    `package`   `true`
-   `connector`       `equation`     `in`        `parameter` `type`
-   `constant`        `expandable`   `initial`   `partial`   `when`
-   `constrainedby`   `extends`      `inner`     `protected` `while`
-   `der`             `external`     `input`     `public`    `within`
+   `algorithm`       | `discrete`      | `false`     | `loop`        | `pure`
+   | `and`           | `each`          | `final`     | `model`       | `record`
+   | `annotation`    | `else`          | `flow`      | `not`         | `redeclare`
+   |                 | `elseif`        | `for`       | `operator`    | `replaceable`
+   | `block`         | `elsewhen`      | `function`  | `or`          | `return`
+   | `break`         | `encapsulated`  | `if`        | `outer`       | `stream`
+   | `class`         | `end`           | `import`    | `output`      | `then`
+   | `connect`       | `enumeration`   | `impure`    | `package`     | `true`
+   | `connector`     | `equation`      | `in`        | `parameter`   | `type`
+   | `constant`      | `expandable`    | `initial`   | `partial`     | `when`
+   | `constrainedby` | `extends`       | `inner`     | `protected`   | `while`
+   | `der`           | `external`      | `input`     | `public`      | `within`
+
+/**
+ * https://specification.modelica.org/maint/3.4/A2.html#lexical-conventions
+ * ## B.1 Lexical conventions
+ * The following syntactic meta symbols are used (extended BNF):
+ *
+ * [ ] optional
+ * { } repeat zero or more times
+ * | or
+ * "text" The text is treated as a single token (no whitespace between any characters)
+ * ~ do not match at current location
+ */
+
+// IDENT = NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
+IDENT = ~@KEYWORDS@ NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
+Q-IDENT = "'" ( Q-CHAR | S-ESCAPE ) { Q-CHAR | S-ESCAPE | """ } "'"
+// NONDIGIT = "_" | letters "a" to "z" | letters "A" to "Z"
+NONDIGIT = r'_[a-z][A-Z]'
+STRING = """ { S-CHAR | S-ESCAPE } """
+// S-CHAR = see below
+S-CHAR = r'[^"\\]'
+Q-CHAR = NONDIGIT | DIGIT | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," |
+   "-" | "." | "/" | ":" | ";" | "<" | ">" | "=" | "?" | "@" | "[" | "]" | "^" |
+   "{" | "}" | "|" | "~" | " "
+S-ESCAPE = "\'" | "\"" | "\?" | "\\" |
+   "\a" | "\b" | "\f" | "\n" | "\r" | "\t" | "\v"
+DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+UNSIGNED-INTEGER = DIGIT { DIGIT }
+UNSIGNED-NUMBER = UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
+   [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]
+
+/**
+ * S-CHAR is any member of the Unicode character set
+ * (http://www.unicode.org; see section 13.2.2 for storing as UTF-8 on files)
+ * except double-quote ”””, and backslash ”\”
+ */
