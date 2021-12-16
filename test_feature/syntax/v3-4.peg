@@ -1,12 +1,4 @@
 /**
- * https://specification.modelica.org/maint/3.4/Ch2.html#comments
- * ## 2.2 Comments
- */
-@COMMENTS@ =
-   r'//.*'
-   | r'/\*([^*]|\*[^/])*\*/'
-
-/**
  * https://specification.modelica.org/maint/3.4/Ch2.html#identifiers-names-and-keywords
  * ### 2.3.3 Modelica Keywords
  * The following Modelica keywords are reserved words and may not be used as identifiers, except as listed in section B.1:
