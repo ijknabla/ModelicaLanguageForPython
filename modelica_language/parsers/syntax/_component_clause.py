@@ -14,7 +14,7 @@ from arpeggio import (
 from .. import syntax
 
 
-def component_clause():
+def component_clause():  # type: ignore
     """
     component_clause =
         type_prefix type_specifier array_subscripts? component_list
@@ -27,7 +27,7 @@ def component_clause():
     )
 
 
-def type_prefix():
+def type_prefix():  # type: ignore
     """
     type_prefix =
         (FLOW/STREAM)? (DISCRETE/PARAMETER/CONSTANT)? (INPUT/OUTPUT)?
@@ -50,7 +50,7 @@ def type_prefix():
     )
 
 
-def component_list():
+def component_list():  # type: ignore
     """
     component_list =
         component_declaration ("," component_declaration)*
@@ -58,7 +58,7 @@ def component_list():
     return OneOrMore(syntax.component_declaration, sep=",")
 
 
-def component_declaration():
+def component_declaration():  # type: ignore
     """
     component_declaration =
         declaration condition_attribute? comment
@@ -70,7 +70,7 @@ def component_declaration():
     )
 
 
-def condition_attribute():
+def condition_attribute():  # type: ignore
     """
     condition_attribute =
         IF expression
@@ -78,7 +78,7 @@ def condition_attribute():
     return syntax.IF, syntax.expression
 
 
-def declaration():
+def declaration():  # type: ignore
     """
     declaration =
         IDENT array_subscripts? modification?

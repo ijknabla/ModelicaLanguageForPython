@@ -16,7 +16,7 @@ from arpeggio import Optional, OneOrMore
 from .. import syntax
 
 
-def modification():
+def modification():  # type: ignore
     """
     modification =
         "=" expression
@@ -30,7 +30,7 @@ def modification():
     ]
 
 
-def class_modification():
+def class_modification():  # type: ignore
     """
     class_modification =
         "(" argument_list? ")"
@@ -38,7 +38,7 @@ def class_modification():
     return "(", Optional(syntax.argument_list), ")"
 
 
-def argument_list():
+def argument_list():  # type: ignore
     """
     argument_list =
         argument ("," argument)*
@@ -46,7 +46,7 @@ def argument_list():
     return OneOrMore(syntax.argument, sep=",")
 
 
-def argument():
+def argument():  # type: ignore
     """
     argument =
         element_redeclaration
@@ -58,7 +58,7 @@ def argument():
     ]
 
 
-def element_modification_or_replaceable():
+def element_modification_or_replaceable():  # type: ignore
     """
     element_modification_or_replaceable =
         EACH? FINAL? (element_modification / element_replaceable)
@@ -70,7 +70,7 @@ def element_modification_or_replaceable():
     )
 
 
-def element_modification():
+def element_modification():  # type: ignore
     """
     element_modification =
         name modification? string_comment
@@ -82,7 +82,7 @@ def element_modification():
     )
 
 
-def element_redeclaration():
+def element_redeclaration():  # type: ignore
     """
     element_redeclaration =
         REDECLARE EACH? FINAL?
@@ -102,7 +102,7 @@ def element_redeclaration():
     )
 
 
-def element_replaceable():
+def element_replaceable():  # type: ignore
     """
     element_replaceable =
         REPLACEABLE (short_class_definition / component_clause1)
@@ -115,7 +115,7 @@ def element_replaceable():
     )
 
 
-def component_clause1():
+def component_clause1():  # type: ignore
     """
     component_clause1 =
         type_prefix type_specifier component_declaration1
@@ -127,7 +127,7 @@ def component_clause1():
     )
 
 
-def component_declaration1():
+def component_declaration1():  # type: ignore
     """
     component_declaration1 =
         declaration comment
@@ -135,7 +135,7 @@ def component_declaration1():
     return syntax.declaration, syntax.comment
 
 
-def short_class_definition():
+def short_class_definition():  # type: ignore
     """
     short_class_definition =
         class_prefixes short_class_specifier

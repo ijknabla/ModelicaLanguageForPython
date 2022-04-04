@@ -7,7 +7,7 @@ from arpeggio import Optional
 from .. import syntax
 
 
-def extends_clause():
+def extends_clause():  # type: ignore
     """
     extends_clause =
         EXTENDS type_specifier class_modification? annotation?
@@ -20,7 +20,7 @@ def extends_clause():
     )
 
 
-def constraining_clause():
+def constraining_clause():  # type: ignore
     """
     constraining_clause =
         CONSTRAINEDBY type_specifier class_modification?

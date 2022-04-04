@@ -36,7 +36,7 @@ from arpeggio import Optional, ZeroOrMore, OneOrMore
 from .. import syntax
 
 
-def expression():
+def expression():  # type: ignore
     """
     expression =
         simple_expression
@@ -67,7 +67,7 @@ def expression():
     ]
 
 
-def simple_expression():
+def simple_expression():  # type: ignore
     """
     simple_expression =
         logical_expression (":" logical_expression (":" logical_expression)?)?
@@ -82,7 +82,7 @@ def simple_expression():
     )
 
 
-def logical_expression():
+def logical_expression():  # type: ignore
     """
     logical_expression =
         logical_term (OR logical_term)*
@@ -90,7 +90,7 @@ def logical_expression():
     return OneOrMore(syntax.logical_term, sep=syntax.OR)
 
 
-def logical_term():
+def logical_term():  # type: ignore
     """
     logical_term =
         logical_factor (AND logical_factor)*
@@ -98,7 +98,7 @@ def logical_term():
     return OneOrMore(syntax.logical_factor, sep=syntax.AND)
 
 
-def logical_factor():
+def logical_factor():  # type: ignore
     """
     logical_factor =
         NOT? relation
@@ -106,7 +106,7 @@ def logical_factor():
     return Optional(syntax.NOT), syntax.relation
 
 
-def relation():
+def relation():  # type: ignore
     """
     relation =
         arithmetic_expression (relational_operator arithmetic_expression)?
@@ -117,7 +117,7 @@ def relation():
     )
 
 
-def relational_operator():
+def relational_operator():  # type: ignore
     """
     relational_operator =
         "<>" / "<=" / ">=" / "<" / ">" / "=="
@@ -125,7 +125,7 @@ def relational_operator():
     return ["<>", "<=", ">=", "<", ">", "=="]
 
 
-def arithmetic_expression():
+def arithmetic_expression():  # type: ignore
     """
     arithmetic_expression =
         add_operator? term (add_operator term)*
@@ -137,7 +137,7 @@ def arithmetic_expression():
     )
 
 
-def add_operator():
+def add_operator():  # type: ignore
     """
     add_operator =
         "+" / "-" / ".+" / ".-"
@@ -145,7 +145,7 @@ def add_operator():
     return ["+", "-", ".+", ".-"]
 
 
-def term():
+def term():  # type: ignore
     """
     term =
         factor (mul_operator factor)*
@@ -153,7 +153,7 @@ def term():
     return OneOrMore(syntax.factor, sep=syntax.mul_operator)
 
 
-def mul_operator():
+def mul_operator():  # type: ignore
     """
     mul_operator =
         "*" / "/" / ".*" / "./"
@@ -161,7 +161,7 @@ def mul_operator():
     return ["*", "/", ".*", "./"]
 
 
-def factor():
+def factor():  # type: ignore
     """
     factor =
         primary (("^" / ".^") primary)?
@@ -169,7 +169,7 @@ def factor():
     return syntax.primary, Optional(["^", ".^"], syntax.primary)
 
 
-def primary():
+def primary():  # type: ignore
     """
     primary =
         FALSE
@@ -205,21 +205,21 @@ def primary():
     ]
 
 
-def type_specifier():
+def type_specifier():  # type: ignore
     """
     type_specifier = "."? name
     """
     return Optional("."), syntax.name
 
 
-def name():
+def name():  # type: ignore
     """
     name = IDENT ("." IDENT)*
     """
     return OneOrMore(syntax.IDENT, sep=".")
 
 
-def component_reference():
+def component_reference():  # type: ignore
     """
     component_reference =
         "."? IDENT array_subscripts? ("." IDENT array_subscripts?)*
@@ -232,7 +232,7 @@ def component_reference():
     )
 
 
-def function_call_args():
+def function_call_args():  # type: ignore
     """
     function_call_args =
         "(" function_arguments? ")"
@@ -240,7 +240,7 @@ def function_call_args():
     return "(", Optional(syntax.function_arguments), ")"
 
 
-def function_arguments():
+def function_arguments():  # type: ignore
     """
     function_arguments =
         FUNCTION name "(" named_arguments? ")"
@@ -270,7 +270,7 @@ def function_arguments():
     ]
 
 
-def function_arguments_non_first():
+def function_arguments_non_first():  # type: ignore
     """
     function_arguments_non_first =
         named_arguments
@@ -285,14 +285,14 @@ def function_arguments_non_first():
     ]
 
 
-def named_arguments():
+def named_arguments():  # type: ignore
     """
     named_arguments = named_argument ("," named_arguments)?
     """
     return OneOrMore(syntax.named_argument, sep=",")
 
 
-def array_arguments():
+def array_arguments():  # type: ignore
     """
     array_arguments =
         expression ("," array_arguments_non_first / FOR for_indices)?
@@ -308,7 +308,7 @@ def array_arguments():
     )
 
 
-def array_arguments_non_first():
+def array_arguments_non_first():  # type: ignore
     """
     array_arguments_non_first =
         expression ("," array_arguments_non_first)?
@@ -316,14 +316,14 @@ def array_arguments_non_first():
     return OneOrMore(syntax.expression, sep=",")
 
 
-def named_argument():
+def named_argument():  # type: ignore
     """
     named_argument = IDENT "=" function_argument
     """
     return syntax.IDENT, "=", syntax.function_argument
 
 
-def function_argument():
+def function_argument():  # type: ignore
     """
     function_argument =
         FUNCTION name "(" named_arguments? ")"
@@ -341,7 +341,7 @@ def function_argument():
     ]
 
 
-def output_expression_list():
+def output_expression_list():  # type: ignore
     """
     output_expression_list =
         expression? ("," expression?)*
@@ -352,7 +352,7 @@ def output_expression_list():
     )
 
 
-def expression_list():
+def expression_list():  # type: ignore
     """
     expression_list =
         expression ("," expression)*
@@ -360,7 +360,7 @@ def expression_list():
     return OneOrMore(syntax.expression, sep=",")
 
 
-def array_subscripts():
+def array_subscripts():  # type: ignore
     """
     array_subscripts =
         "[" subscript ("," subscript)* "]"
@@ -368,7 +368,7 @@ def array_subscripts():
     return "[", OneOrMore(syntax.subscript, sep=","), "]"
 
 
-def subscript():
+def subscript():  # type: ignore
     """
     subscript =
         ":" / expression
@@ -376,7 +376,7 @@ def subscript():
     return [":", syntax.expression]
 
 
-def comment():
+def comment():  # type: ignore
     """
     comment =
         string_comment annotation?
@@ -387,7 +387,7 @@ def comment():
     )
 
 
-def string_comment():
+def string_comment():  # type: ignore
     """
     string_comment =
         (STRING ("+" STRING)*)?
@@ -395,7 +395,7 @@ def string_comment():
     return Optional(OneOrMore(syntax.STRING, sep="+"))
 
 
-def annotation():
+def annotation():  # type: ignore
     """
     annotation =
         ANNOTATION class_modification
