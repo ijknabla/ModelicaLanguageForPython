@@ -85,6 +85,9 @@ __all__ = (
     "element",
     "import_clause",
     "import_list",
+    # extends
+    "extends_clause",
+    "constraining_clause",
 )
 
 from ._keyword import (
@@ -174,7 +177,10 @@ from ._class_definition import (
     import_clause,
     import_list,
 )
-from ._extends import *
+from ._extends import (
+    extends_clause,
+    constraining_clause,
+)
 from ._component_clause import *
 from ._modification import *
 from ._equations import *
