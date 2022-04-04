@@ -33,3 +33,9 @@ exclude = ".venv"
 
 [tool.black]
 line-length = 79
+
+[[tool.mypy.overrides]]
+module = [
+    "arpeggio",
+]
+ignore_missing_imports = true
