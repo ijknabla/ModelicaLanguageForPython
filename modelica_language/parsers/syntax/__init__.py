@@ -107,6 +107,21 @@ __all__ = (
     "component_clause1",
     "component_declaration1",
     "short_class_definition",
+    # equations
+    "equation_section",
+    "algorithm_section",
+    "equation",
+    "statement",
+    "if_equation",
+    "if_statement",
+    "for_equation",
+    "for_statement",
+    "for_indices",
+    "for_index",
+    "while_statement",
+    "when_equation",
+    "when_statement",
+    "connect_clause",
 )
 
 from ._keyword import (
@@ -221,5 +236,20 @@ from ._modification import (
     component_declaration1,
     short_class_definition,
 )
-from ._equations import *
+from ._equations import (
+    equation_section,
+    algorithm_section,
+    equation,
+    statement,
+    if_equation,
+    if_statement,
+    for_equation,
+    for_statement,
+    for_indices,
+    for_index,
+    while_statement,
+    when_equation,
+    when_statement,
+    connect_clause,
+)
 from ._expressions import *
