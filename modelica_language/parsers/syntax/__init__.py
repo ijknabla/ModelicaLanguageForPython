@@ -88,6 +88,13 @@ __all__ = (
     # extends
     "extends_clause",
     "constraining_clause",
+    # component_clause
+    "component_clause",
+    "type_prefix",
+    "component_list",
+    "component_declaration",
+    "condition_attribute",
+    "declaration",
 )
 
 from ._keyword import (
@@ -181,7 +188,14 @@ from ._extends import (
     extends_clause,
     constraining_clause,
 )
-from ._component_clause import *
+from ._component_clause import (
+    component_clause,
+    type_prefix,
+    component_list,
+    component_declaration,
+    condition_attribute,
+    declaration,
+)
 from ._modification import *
 from ._equations import *
 from ._expressions import *
