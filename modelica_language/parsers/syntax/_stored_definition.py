@@ -4,7 +4,7 @@ from arpeggio import Optional, ZeroOrMore
 from .. import syntax
 
 
-def stored_definition():
+def stored_definition():  # type: ignore
     """
     stored_definition =
         (WITHIN name? ";")?

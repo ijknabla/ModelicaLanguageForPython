@@ -23,7 +23,7 @@ from arpeggio import (
 from .. import syntax
 
 
-def equation_section():
+def equation_section():  # type: ignore
     """
     equation_section =
         INITIAL? EQUATION (equation ";")*
@@ -35,7 +35,7 @@ def equation_section():
     )
 
 
-def algorithm_section():
+def algorithm_section():  # type: ignore
     """
     algorithm_section =
         INITIAL? ALGORITHM (statement ";")*
@@ -47,7 +47,7 @@ def algorithm_section():
     )
 
 
-def equation():
+def equation():  # type: ignore
     """
     equation =
         (
@@ -73,7 +73,7 @@ def equation():
     )
 
 
-def statement():
+def statement():  # type: ignore
     """
     statement =
         (
@@ -114,7 +114,7 @@ def statement():
     )
 
 
-def if_equation():
+def if_equation():  # type: ignore
     """
     if_equation =
         IF     expression THEN (equation ";")*
@@ -153,7 +153,7 @@ def if_equation():
     )
 
 
-def if_statement():
+def if_statement():  # type: ignore
     """
     if_statement =
         IF     expression THEN (statement ";")*
@@ -192,7 +192,7 @@ def if_statement():
     )
 
 
-def for_equation():
+def for_equation():  # type: ignore
     """
     for_equation =
         FOR for_indices LOOP
@@ -212,7 +212,7 @@ def for_equation():
     )
 
 
-def for_statement():
+def for_statement():  # type: ignore
     """
     for_statement =
         FOR for_indices LOOP
@@ -232,7 +232,7 @@ def for_statement():
     )
 
 
-def for_indices():
+def for_indices():  # type: ignore
     """
     for_indices =
         for_index ("," for_index)*
@@ -240,7 +240,7 @@ def for_indices():
     return OneOrMore(syntax.for_index, sep=",")
 
 
-def for_index():
+def for_index():  # type: ignore
     """
     for_index =
         IDENT (IN expression)?
@@ -248,7 +248,7 @@ def for_index():
     return syntax.IDENT, Optional(syntax.IN, syntax.expression)
 
 
-def while_statement():
+def while_statement():  # type: ignore
     """
     while_statement =
         WHILE expression LOOP
@@ -268,7 +268,7 @@ def while_statement():
     )
 
 
-def when_equation():
+def when_equation():  # type: ignore
     """
     when_equation =
         WHEN     expression THEN (equation ";")*
@@ -299,7 +299,7 @@ def when_equation():
     )
 
 
-def when_statement():
+def when_statement():  # type: ignore
     """
     when_statement =
         WHEN     expression THEN (statement ";")*
@@ -330,7 +330,7 @@ def when_statement():
     )
 
 
-def connect_clause():
+def connect_clause():  # type: ignore
     """
     connect_clause =
         CONNECT "(" component_reference "," component_reference ")"

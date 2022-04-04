@@ -25,7 +25,7 @@ from arpeggio import (
 from .. import syntax
 
 
-def class_definition():
+def class_definition():  # type: ignore
     """
     class_definition =
         ENCAPSULATED? class_prefixes class_specifier
@@ -37,7 +37,7 @@ def class_definition():
     )
 
 
-def class_prefixes():
+def class_prefixes():  # type: ignore
     """
     class_prefixes =
         PARTIAL?
@@ -66,7 +66,7 @@ def class_prefixes():
     )
 
 
-def class_specifier():
+def class_specifier():  # type: ignore
     """
     class_specifier =
         long_class_specifier / short_class_specifier / der_class_specifier
@@ -78,7 +78,7 @@ def class_specifier():
     ]
 
 
-def long_class_specifier():
+def long_class_specifier():  # type: ignore
     """
     long_class_specifier =
         EXTENDS IDENT class_modification? string_comment composition END IDENT
@@ -104,7 +104,7 @@ def long_class_specifier():
     ]
 
 
-def short_class_specifier():
+def short_class_specifier():  # type: ignore
     """
     short_class_specifier =
         IDENT "=" ENUMERATION "(" (":" / enum_list?) ")" comment
@@ -133,7 +133,7 @@ def short_class_specifier():
     ]
 
 
-def der_class_specifier():
+def der_class_specifier():  # type: ignore
     """
     der_class_specifer =
         IDENT "=" DER "(" type_specifier "," IDENT ("," IDENT)* ")" comment
@@ -151,7 +151,7 @@ def der_class_specifier():
     )
 
 
-def base_prefix():
+def base_prefix():  # type: ignore
     """
     base_prefix =
         (INPUT / OUTPUT)?
@@ -159,21 +159,21 @@ def base_prefix():
     return Optional([syntax.INPUT, syntax.OUTPUT])
 
 
-def enum_list():
+def enum_list():  # type: ignore
     """
     enum_list = enumeration_literal ("," enumeration_literal)*
     """
     return OneOrMore(syntax.enumeration_literal, sep=",")
 
 
-def enumeration_literal():
+def enumeration_literal():  # type: ignore
     """
     enumeration_literal = IDENT comment
     """
     return syntax.IDENT, syntax.comment
 
 
-def composition():
+def composition():  # type: ignore
     """
     composition =
         element_list
@@ -210,7 +210,7 @@ def composition():
     )
 
 
-def language_specification():
+def language_specification():  # type: ignore
     """
     language_specification =
         STRING
@@ -218,7 +218,7 @@ def language_specification():
     return syntax.STRING
 
 
-def external_function_call():
+def external_function_call():  # type: ignore
     """
     external_function_call =
         (component_reference "=")? IDENT "(" expression_list? ")"
@@ -232,7 +232,7 @@ def external_function_call():
     )
 
 
-def element_list():
+def element_list():  # type: ignore
     """
     element_list =
         (element ";")*
@@ -240,7 +240,7 @@ def element_list():
     return ZeroOrMore(syntax.element, ";")
 
 
-def element():
+def element():  # type: ignore
     """
     element =
         import_clause
@@ -272,7 +272,7 @@ def element():
     ]
 
 
-def import_clause():
+def import_clause():  # type: ignore
     """
     import_clause =
         import
@@ -301,7 +301,7 @@ def import_clause():
     )
 
 
-def import_list():
+def import_list():  # type: ignore
     """
     import_list =
         IDENT ("," IDENT)*

@@ -10,19 +10,19 @@ from .. import syntax
 from .. import regex
 
 
-def IDENT():
+def IDENT():  # type: ignore
     return Not(syntax.ANY_KEYWORD), RegExMatch(regex.ident)
 
 
-def STRING():
+def STRING():  # type: ignore
     return RegExMatch(regex.string)
 
 
-def UNSIGNED_NUMBER():
+def UNSIGNED_NUMBER():  # type: ignore
     return RegExMatch(regex.unsigned_number)
 
 
-def CPP_STYLE_COMMENT():
+def CPP_STYLE_COMMENT():  # type: ignore
     return RegExMatch(regex.cpp_style_comment)
 
 
