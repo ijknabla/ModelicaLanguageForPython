@@ -1,11 +1,6 @@
+__all__ = ("stored_definition",)
 
-__all__ = (
-    "stored_definition",
-)
-
-from arpeggio import (
-    Optional, ZeroOrMore
-)
+from arpeggio import Optional, ZeroOrMore
 from .. import syntax
 
 

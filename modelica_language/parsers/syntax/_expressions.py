@@ -1,4 +1,3 @@
-
 __all__ = (
     "expression",
     "simple_expression",
@@ -33,10 +32,7 @@ __all__ = (
     "annotation",
 )
 
-from arpeggio import (
-    Optional,
-    ZeroOrMore, OneOrMore
-)
+from arpeggio import Optional, ZeroOrMore, OneOrMore
 from .. import syntax
 
 
@@ -52,7 +48,10 @@ def expression():
         syntax.simple_expression,
         (
             (
-                syntax.IF, syntax.expression, syntax.THEN, syntax.expression,
+                syntax.IF,
+                syntax.expression,
+                syntax.THEN,
+                syntax.expression,
             ),
             ZeroOrMore(
                 syntax.ELSEIF,
@@ -61,7 +60,8 @@ def expression():
                 syntax.expression,
             ),
             (
-                syntax.ELSE, syntax.expression,
+                syntax.ELSE,
+                syntax.expression,
             ),
         ),
     ]
@@ -75,10 +75,9 @@ def simple_expression():
     return (
         syntax.logical_expression,
         Optional(
-            ":", syntax.logical_expression,
-            Optional(
-                ":", syntax.logical_expression
-            )
+            ":",
+            syntax.logical_expression,
+            Optional(":", syntax.logical_expression),
         ),
     )
 
@@ -114,7 +113,7 @@ def relation():
     """
     return (
         syntax.arithmetic_expression,
-        Optional(syntax.relational_operator, syntax.arithmetic_expression)
+        Optional(syntax.relational_operator, syntax.arithmetic_expression),
     )
 
 
@@ -217,7 +216,7 @@ def name():
     """
     name = IDENT ("." IDENT)*
     """
-    return OneOrMore(syntax.IDENT, sep='.')
+    return OneOrMore(syntax.IDENT, sep=".")
 
 
 def component_reference():
@@ -226,7 +225,9 @@ def component_reference():
         "."? IDENT array_subscripts? ("." IDENT array_subscripts?)*
     """
     return (
-        Optional("."), syntax.IDENT, Optional(syntax.array_subscripts),
+        Optional("."),
+        syntax.IDENT,
+        Optional(syntax.array_subscripts),
         ZeroOrMore(".", syntax.IDENT, Optional(syntax.array_subscripts)),
     )
 
@@ -249,8 +250,11 @@ def function_arguments():
     """
     return [
         (
-            syntax.FUNCTION, syntax.name,
-            "(", Optional(syntax.named_arguments), ")",
+            syntax.FUNCTION,
+            syntax.name,
+            "(",
+            Optional(syntax.named_arguments),
+            ")",
             Optional(",", syntax.function_arguments_non_first),
         ),
         syntax.named_arguments,
@@ -276,7 +280,7 @@ def function_arguments_non_first():
         syntax.named_arguments,
         (
             syntax.function_argument,
-            Optional(",", syntax.function_arguments_non_first)
+            Optional(",", syntax.function_arguments_non_first),
         ),
     ]
 
@@ -327,8 +331,11 @@ def function_argument():
     """
     return [
         (
-            syntax.FUNCTION, syntax.name,
-            "(", Optional(syntax.named_arguments), ")",
+            syntax.FUNCTION,
+            syntax.name,
+            "(",
+            Optional(syntax.named_arguments),
+            ")",
         ),
         expression,
     ]

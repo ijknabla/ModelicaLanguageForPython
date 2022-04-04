@@ -1,6 +1,7 @@
-
 __all__ = (
-    "IDENT", "STRING", "UNSIGNED_NUMBER",
+    "IDENT",
+    "STRING",
+    "UNSIGNED_NUMBER",
     "CPP_STYLE_COMMENT",
 )
 
@@ -26,15 +27,11 @@ def CPP_STYLE_COMMENT():
 
 
 def regexPEG(regex: str) -> str:
-    return "r'{}'".format(regex.replace("\'", r"\'"))
+    return "r'{}'".format(regex.replace("'", r"\'"))
 
 
-IDENT.__doc__ = (
-    f"IDENT = !ANY_KEYWORD {regexPEG(regex.ident)}"
-)
-STRING.__doc__ = (
-    f"STRING = {regexPEG(regex.string)}"
-)
+IDENT.__doc__ = f"IDENT = !ANY_KEYWORD {regexPEG(regex.ident)}"
+STRING.__doc__ = f"STRING = {regexPEG(regex.string)}"
 UNSIGNED_NUMBER.__doc__ = (
     f"UNSIGNED_NUMBER = {regexPEG(regex.unsigned_number)}"
 )
