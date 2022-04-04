@@ -66,6 +66,8 @@ __all__ = (
     "STRING",
     "UNSIGNED_NUMBER",
     "CPP_STYLE_COMMENT",
+    # stored_definition
+    "stored_definition",
 )
 
 from ._keyword import (
@@ -136,7 +138,7 @@ from ._lexical import (
     UNSIGNED_NUMBER,
     CPP_STYLE_COMMENT,
 )
-from ._stored_definition import *
+from ._stored_definition import stored_definition
 from ._class_definition import *
 from ._extends import *
 from ._component_clause import *
