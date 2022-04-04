@@ -1,4 +1,3 @@
-
 __all__ = (
     "modification",
     "class_modification",
@@ -13,9 +12,7 @@ __all__ = (
     "short_class_definition",
 )
 
-from arpeggio import (
-    Optional, OneOrMore
-)
+from arpeggio import Optional, OneOrMore
 from .. import syntax
 
 
@@ -79,7 +76,9 @@ def element_modification():
         name modification? string_comment
     """
     return (
-        syntax.name, Optional(syntax.modification), syntax.string_comment,
+        syntax.name,
+        Optional(syntax.modification),
+        syntax.string_comment,
     )
 
 
@@ -91,7 +90,8 @@ def element_redeclaration():
     """
     return (
         syntax.REDECLARE,
-        Optional(syntax.EACH), Optional(syntax.FINAL),
+        Optional(syntax.EACH),
+        Optional(syntax.FINAL),
         [
             [
                 syntax.short_class_definition,

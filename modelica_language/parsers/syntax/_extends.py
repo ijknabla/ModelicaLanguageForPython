@@ -1,4 +1,3 @@
-
 __all__ = (
     "extends_clause",
     "constraining_clause",
@@ -29,5 +28,5 @@ def constraining_clause():
     return (
         syntax.CONSTRAINEDBY,
         syntax.type_specifier,
-        Optional(syntax.class_modification)
+        Optional(syntax.class_modification),
     )

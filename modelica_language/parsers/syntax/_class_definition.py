@@ -1,4 +1,3 @@
-
 __all__ = (
     "class_definition",
     "class_prefixes",
@@ -19,7 +18,9 @@ __all__ = (
 )
 
 from arpeggio import (
-    Optional, ZeroOrMore, OneOrMore,
+    Optional,
+    ZeroOrMore,
+    OneOrMore,
 )
 from .. import syntax
 
@@ -30,7 +31,9 @@ def class_definition():
         ENCAPSULATED? class_prefixes class_specifier
     """
     return (
-        Optional(syntax.ENCAPSULATED), class_prefixes, class_specifier,
+        Optional(syntax.ENCAPSULATED),
+        class_prefixes,
+        class_specifier,
     )
 
 
@@ -54,11 +57,9 @@ def class_prefixes():
             syntax.TYPE,
             syntax.PACKAGE,
             (
-                Optional(
-                    [syntax.PURE, syntax.IMPURE]
-                ),
+                Optional([syntax.PURE, syntax.IMPURE]),
                 Optional(syntax.OPERATOR),
-                syntax.FUNCTION
+                syntax.FUNCTION,
             ),
             syntax.OPERATOR,
         ],
@@ -85,12 +86,20 @@ def long_class_specifier():
     """
     return [
         (
-            syntax.EXTENDS, syntax.IDENT, Optional(syntax.class_modification),
-            syntax.string_comment, syntax.composition, syntax.END, syntax.IDENT
+            syntax.EXTENDS,
+            syntax.IDENT,
+            Optional(syntax.class_modification),
+            syntax.string_comment,
+            syntax.composition,
+            syntax.END,
+            syntax.IDENT,
         ),
         (
-            syntax.IDENT, syntax.string_comment, syntax.composition,
-            syntax.END, syntax.IDENT
+            syntax.IDENT,
+            syntax.string_comment,
+            syntax.composition,
+            syntax.END,
+            syntax.IDENT,
         ),
     ]
 
@@ -104,14 +113,22 @@ def short_class_specifier():
     """
     return [
         (
-            syntax.IDENT, "=", syntax.ENUMERATION,
-            "(", [":", Optional(syntax.enum_list)], ")",
+            syntax.IDENT,
+            "=",
+            syntax.ENUMERATION,
+            "(",
+            [":", Optional(syntax.enum_list)],
+            ")",
             syntax.comment,
         ),
         (
-            syntax.IDENT, "=", syntax.base_prefix, syntax.type_specifier,
+            syntax.IDENT,
+            "=",
+            syntax.base_prefix,
+            syntax.type_specifier,
             Optional(syntax.array_subscripts),
-            Optional(syntax.class_modification), syntax.comment,
+            Optional(syntax.class_modification),
+            syntax.comment,
         ),
     ]
 
@@ -122,8 +139,15 @@ def der_class_specifier():
         IDENT "=" DER "(" type_specifier "," IDENT ("," IDENT)* ")" comment
     """
     return (
-        syntax.IDENT, "=", syntax.DER, "(", syntax.type_specifier, ",",
-        OneOrMore(syntax.IDENT, sep=","), ")", syntax.comment
+        syntax.IDENT,
+        "=",
+        syntax.DER,
+        "(",
+        syntax.type_specifier,
+        ",",
+        OneOrMore(syntax.IDENT, sep=","),
+        ")",
+        syntax.comment,
     )
 
 
@@ -176,9 +200,11 @@ def composition():
             ]
         ),
         Optional(
-            syntax.EXTERNAL, Optional(syntax.language_specification),
+            syntax.EXTERNAL,
+            Optional(syntax.language_specification),
             Optional(syntax.external_function_call),
-            Optional(syntax.annotation), ";",
+            Optional(syntax.annotation),
+            ";",
         ),
         Optional(syntax.annotation, ";"),
     )
@@ -199,7 +225,10 @@ def external_function_call():
     """
     return (
         Optional(syntax.component_reference, "="),
-        syntax.IDENT, "(", Optional(syntax.expression_list), ")",
+        syntax.IDENT,
+        "(",
+        Optional(syntax.expression_list),
+        ")",
     )
 
 
@@ -208,7 +237,7 @@ def element_list():
     element_list =
         (element ";")*
     """
-    return ZeroOrMore(syntax.element, ';')
+    return ZeroOrMore(syntax.element, ";")
 
 
 def element():
@@ -234,11 +263,8 @@ def element():
             [
                 (
                     syntax.REPLACEABLE,
-                    [
-                        syntax.class_definition,
-                        syntax.component_clause
-                    ],
-                    Optional(syntax.constraining_clause, syntax.comment)
+                    [syntax.class_definition, syntax.component_clause],
+                    Optional(syntax.constraining_clause, syntax.comment),
                 ),
                 [syntax.class_definition, syntax.component_clause],
             ],

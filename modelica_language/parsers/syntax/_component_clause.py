@@ -1,4 +1,3 @@
-
 __all__ = (
     "component_clause",
     "type_prefix",
@@ -9,7 +8,8 @@ __all__ = (
 )
 
 from arpeggio import (
-    Optional, OneOrMore,
+    Optional,
+    OneOrMore,
 )
 from .. import syntax
 
@@ -20,8 +20,10 @@ def component_clause():
         type_prefix type_specifier array_subscripts? component_list
     """
     return (
-        syntax.type_prefix, syntax.type_specifier,
-        Optional(syntax.array_subscripts), syntax.component_list
+        syntax.type_prefix,
+        syntax.type_specifier,
+        Optional(syntax.array_subscripts),
+        syntax.component_list,
     )
 
 
@@ -31,12 +33,7 @@ def type_prefix():
         (FLOW/STREAM)? (DISCRETE/PARAMETER/CONSTANT)? (INPUT/OUTPUT)?
     """
     return (
-        Optional(
-            [
-                syntax.FLOW,
-                syntax.STREAM
-            ]
-        ),
+        Optional([syntax.FLOW, syntax.STREAM]),
         Optional(
             [
                 syntax.DISCRETE,
@@ -67,7 +64,8 @@ def component_declaration():
         declaration condition_attribute? comment
     """
     return (
-        syntax.declaration, Optional(syntax.condition_attribute),
+        syntax.declaration,
+        Optional(syntax.condition_attribute),
         syntax.comment,
     )
 

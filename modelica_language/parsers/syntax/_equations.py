@@ -1,4 +1,3 @@
-
 __all__ = (
     "equation_section",
     "algorithm_section",
@@ -17,7 +16,9 @@ __all__ = (
 )
 
 from arpeggio import (
-    Optional, ZeroOrMore, OneOrMore,
+    Optional,
+    ZeroOrMore,
+    OneOrMore,
 )
 from .. import syntax
 
@@ -28,7 +29,8 @@ def equation_section():
         INITIAL? EQUATION (equation ";")*
     """
     return (
-        Optional(syntax.INITIAL), syntax.EQUATION,
+        Optional(syntax.INITIAL),
+        syntax.EQUATION,
         ZeroOrMore(syntax.equation, ";"),
     )
 
@@ -39,7 +41,8 @@ def algorithm_section():
         INITIAL? ALGORITHM (statement ";")*
     """
     return (
-        Optional(syntax.INITIAL), syntax.ALGORITHM,
+        Optional(syntax.INITIAL),
+        syntax.ALGORITHM,
         ZeroOrMore(syntax.statement, ";"),
     )
 
@@ -95,8 +98,12 @@ def statement():
             syntax.while_statement,
             syntax.when_statement,
             (
-                "(", syntax.output_expression_list, ")", ":=",
-                syntax.component_reference, syntax.function_call_args,
+                "(",
+                syntax.output_expression_list,
+                ")",
+                ":=",
+                syntax.component_reference,
+                syntax.function_call_args,
             ),
             (
                 syntax.component_reference,
@@ -117,24 +124,32 @@ def if_equation():
     """
     return (
         (
-            syntax.IF, syntax.expression, syntax.THEN,
+            syntax.IF,
+            syntax.expression,
+            syntax.THEN,
             ZeroOrMore(
-                syntax.equation, ";",
+                syntax.equation,
+                ";",
             ),
         ),
         ZeroOrMore(
-            syntax.ELSEIF, syntax.expression, syntax.THEN,
+            syntax.ELSEIF,
+            syntax.expression,
+            syntax.THEN,
             ZeroOrMore(
-                syntax.equation, ";",
+                syntax.equation,
+                ";",
             ),
         ),
         Optional(
             syntax.ELSE,
             ZeroOrMore(
-                syntax.equation, ";",
+                syntax.equation,
+                ";",
             ),
         ),
-        syntax.END, syntax.IF,
+        syntax.END,
+        syntax.IF,
     )
 
 
@@ -148,24 +163,32 @@ def if_statement():
     """
     return (
         (
-            syntax.IF, syntax.expression, syntax.THEN,
+            syntax.IF,
+            syntax.expression,
+            syntax.THEN,
             ZeroOrMore(
-                syntax.statement, ";",
+                syntax.statement,
+                ";",
             ),
         ),
         ZeroOrMore(
-            syntax.ELSEIF, syntax.expression, syntax.THEN,
+            syntax.ELSEIF,
+            syntax.expression,
+            syntax.THEN,
             ZeroOrMore(
-                syntax.statement, ";",
+                syntax.statement,
+                ";",
             ),
         ),
         Optional(
             syntax.ELSE,
             ZeroOrMore(
-                syntax.statement, ";",
+                syntax.statement,
+                ";",
             ),
         ),
-        syntax.END, syntax.IF,
+        syntax.END,
+        syntax.IF,
     )
 
 
@@ -177,11 +200,15 @@ def for_equation():
         END FOR
     """
     return (
-        syntax.FOR, syntax.for_indices, syntax.LOOP,
+        syntax.FOR,
+        syntax.for_indices,
+        syntax.LOOP,
         ZeroOrMore(
-            syntax.equation, ";",
+            syntax.equation,
+            ";",
         ),
-        syntax.END, syntax.FOR,
+        syntax.END,
+        syntax.FOR,
     )
 
 
@@ -193,11 +220,15 @@ def for_statement():
         END FOR
     """
     return (
-        syntax.FOR, syntax.for_indices, syntax.LOOP,
+        syntax.FOR,
+        syntax.for_indices,
+        syntax.LOOP,
         ZeroOrMore(
-            syntax.statement, ";",
+            syntax.statement,
+            ";",
         ),
-        syntax.END, syntax.FOR,
+        syntax.END,
+        syntax.FOR,
     )
 
 
@@ -225,11 +256,15 @@ def while_statement():
         END WHILE
     """
     return (
-        syntax.WHILE, syntax.expression, syntax.LOOP,
+        syntax.WHILE,
+        syntax.expression,
+        syntax.LOOP,
         ZeroOrMore(
-            syntax.statement, ";",
+            syntax.statement,
+            ";",
         ),
-        syntax.END, syntax.WHILE,
+        syntax.END,
+        syntax.WHILE,
     )
 
 
@@ -242,18 +277,25 @@ def when_equation():
     """
     return (
         (
-            syntax.WHEN, syntax.expression, syntax.THEN,
+            syntax.WHEN,
+            syntax.expression,
+            syntax.THEN,
             ZeroOrMore(
-                syntax.equation, ";",
+                syntax.equation,
+                ";",
             ),
         ),
         ZeroOrMore(
-            syntax.ELSEWHEN, syntax.expression, syntax.THEN,
+            syntax.ELSEWHEN,
+            syntax.expression,
+            syntax.THEN,
             ZeroOrMore(
-                syntax.equation, ";",
+                syntax.equation,
+                ";",
             ),
         ),
-        syntax.END, syntax.WHEN,
+        syntax.END,
+        syntax.WHEN,
     )
 
 
@@ -266,18 +308,25 @@ def when_statement():
     """
     return (
         (
-            syntax.WHEN, syntax.expression, syntax.THEN,
+            syntax.WHEN,
+            syntax.expression,
+            syntax.THEN,
             ZeroOrMore(
-                syntax.statement, ";",
+                syntax.statement,
+                ";",
             ),
         ),
         ZeroOrMore(
-            syntax.ELSEWHEN, syntax.expression, syntax.THEN,
+            syntax.ELSEWHEN,
+            syntax.expression,
+            syntax.THEN,
             ZeroOrMore(
-                syntax.statement, ";",
+                syntax.statement,
+                ";",
             ),
         ),
-        syntax.END, syntax.WHEN,
+        syntax.END,
+        syntax.WHEN,
     )
 
 
@@ -288,5 +337,9 @@ def connect_clause():
     """
     return (
         syntax.CONNECT,
-        "(", syntax.component_reference, ",", syntax.component_reference, ")",
+        "(",
+        syntax.component_reference,
+        ",",
+        syntax.component_reference,
+        ")",
     )

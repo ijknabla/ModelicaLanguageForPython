@@ -1,4 +1,3 @@
-
 __all__ = (
     # keywords
     "ANY_KEYWORD",
