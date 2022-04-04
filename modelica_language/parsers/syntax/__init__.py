@@ -95,6 +95,18 @@ __all__ = (
     "component_declaration",
     "condition_attribute",
     "declaration",
+    # modification
+    "modification",
+    "class_modification",
+    "argument_list",
+    "argument",
+    "element_modification_or_replaceable",
+    "element_modification",
+    "element_redeclaration",
+    "element_replaceable",
+    "component_clause1",
+    "component_declaration1",
+    "short_class_definition",
 )
 
 from ._keyword import (
@@ -196,6 +208,18 @@ from ._component_clause import (
     condition_attribute,
     declaration,
 )
-from ._modification import *
+from ._modification import (
+    modification,
+    class_modification,
+    argument_list,
+    argument,
+    element_modification_or_replaceable,
+    element_modification,
+    element_redeclaration,
+    element_replaceable,
+    component_clause1,
+    component_declaration1,
+    short_class_definition,
+)
 from ._equations import *
 from ._expressions import *
