@@ -30,3 +30,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.flake8]
 exclude = ".venv"
+
+[tool.black]
+line-length = 79
