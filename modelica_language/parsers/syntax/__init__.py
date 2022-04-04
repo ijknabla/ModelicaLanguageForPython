@@ -61,6 +61,11 @@ __all__ = (
     "WHEN",
     "WHILE",
     "WITHIN",
+    # lexical,
+    "IDENT",
+    "STRING",
+    "UNSIGNED_NUMBER",
+    "CPP_STYLE_COMMENT",
 )
 
 from ._keyword import (
@@ -125,7 +130,12 @@ from ._keyword import (
     WHILE,
     WITHIN,
 )
-from ._lexical import *
+from ._lexical import (
+    IDENT,
+    STRING,
+    UNSIGNED_NUMBER,
+    CPP_STYLE_COMMENT,
+)
 from ._stored_definition import *
 from ._class_definition import *
 from ._extends import *
