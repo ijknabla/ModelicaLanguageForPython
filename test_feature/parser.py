@@ -152,6 +152,7 @@ def syntax_primary() -> Any:
 
 def syntax_rule_reference() -> Any:
     return [
+        LEXICAL_RULE_NAME,
         SYNTAX_RULE_NAME,
     ], Not(SYNTAX_ASSIGNMENT_OPERATOR)
 
