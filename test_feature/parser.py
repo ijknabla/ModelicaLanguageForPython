@@ -3,11 +3,12 @@ from arpeggio.peg import regex
 from typing import Any
 
 LEXICAL_ASSIGNMENT_OPERATOR = ["=", "|="]
+SYNTAX_ASSIGNMENT_OPERATOR = [":", "|:"]
 NOT_OPERATOR = "!"
 OR_OPERATOR = "|"
 
 
-# lexical rules
+# # lexical rules
 def KEYWORD() -> RegExMatch:
     return RegExMatch("`[a-z]+`")
 
@@ -28,14 +29,19 @@ def LEXICAL_RULE_NAME() -> RegExMatch:
     return RegExMatch("[A-Z]([0-9A-Z]|-)*")
 
 
-# grammar rules
+def SYNTAX_RULE_NAME() -> RegExMatch:
+    return RegExMatch("[a-z]([0-9a-z]|-)*")
+
+
+# # grammar rule
 def grammar() -> Any:
     return (
-        OneOrMore(lexical_rule),
+        OneOrMore([lexical_rule, syntax_rule]),
         EOF,
     )
 
 
+# ## lexical rule
 def lexical_rule() -> Any:
     return [
         keywords_assignment,
@@ -100,7 +106,53 @@ def lexical_rule_reference() -> Any:
     ], Not(LEXICAL_ASSIGNMENT_OPERATOR)
 
 
-# comment rule
+# ## syntax rule
+def syntax_rule() -> Any:
+    return [
+        syntax_assignment,
+    ]
+
+
+def syntax_assignment() -> Any:
+    return (
+        SYNTAX_RULE_NAME,
+        SYNTAX_ASSIGNMENT_OPERATOR,
+        syntax_expression,
+    )
+
+
+def syntax_expression() -> Any:
+    return (syntax_sequence,)
+
+
+def syntax_sequence() -> Any:
+    return OneOrMore(syntax_quantity)
+
+
+def syntax_quantity() -> Any:
+    return [
+        ("[", syntax_expression, "]"),
+        ("{", syntax_expression, "}"),
+        syntax_primary,
+    ]
+
+
+def syntax_primary() -> Any:
+    return [
+        ("(", syntax_expression, ")"),
+        KEYWORD,
+        TEXT,
+        syntax_rule_reference,
+    ]
+
+
+def syntax_rule_reference() -> Any:
+    return [
+        SYNTAX_RULE_NAME,
+    ], Not(SYNTAX_ASSIGNMENT_OPERATOR)
+
+
+# # comment rule
 def comment() -> Any:
     return [
         RegExMatch(r"//.*"),
