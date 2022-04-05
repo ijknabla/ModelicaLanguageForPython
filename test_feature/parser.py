@@ -116,9 +116,9 @@ def lexical_primary() -> Any:
 
 def lexical_rule_reference() -> Any:
     return [
-        KEYWORDS_RULE_NAME,
-        LEXICAL_RULE_NAME,
-    ], Not(LEXICAL_ASSIGNMENT_OPERATOR)
+        (KEYWORDS_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        (LEXICAL_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+    ]
 
 
 def syntax_expression() -> Any:
@@ -152,9 +152,9 @@ def syntax_primary() -> Any:
 
 def syntax_rule_reference() -> Any:
     return [
-        LEXICAL_RULE_NAME,
-        SYNTAX_RULE_NAME,
-    ], Not(SYNTAX_ASSIGNMENT_OPERATOR)
+        (LEXICAL_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        (SYNTAX_RULE_NAME, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
+    ]
 
 
 # # comment rule
