@@ -47,7 +47,6 @@ def grammar() -> Any:
     )
 
 
-# ## lexical rule
 def keywords_assignment() -> Any:
     return (
         KEYWORDS_RULE_NAME,
@@ -64,6 +63,15 @@ def lexical_assignment() -> Any:
     )
 
 
+def syntax_assignment() -> Any:
+    return (
+        SYNTAX_RULE_NAME,
+        SYNTAX_ASSIGNMENT_OPERATOR,
+        syntax_expression,
+    )
+
+
+# ## expression rule
 def lexical_expression() -> Any:
     return (lexical_ordered_choice,)
 
@@ -103,15 +111,6 @@ def lexical_rule_reference() -> Any:
         KEYWORDS_RULE_NAME,
         LEXICAL_RULE_NAME,
     ], Not(LEXICAL_ASSIGNMENT_OPERATOR)
-
-
-# ## syntax rule
-def syntax_assignment() -> Any:
-    return (
-        SYNTAX_RULE_NAME,
-        SYNTAX_ASSIGNMENT_OPERATOR,
-        syntax_expression,
-    )
 
 
 def syntax_expression() -> Any:
