@@ -1,4 +1,5 @@
 from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch
+from arpeggio.peg import regex
 from typing import Any
 
 
@@ -16,6 +17,10 @@ def KEYWORD() -> RegExMatch:
 
 def TEXT() -> RegExMatch:
     return RegExMatch(r'"[^"]*"+')
+
+
+def REGEX() -> Any:
+    return regex
 
 
 def LEXICAL_RULE_NAME() -> RegExMatch:
@@ -67,6 +72,7 @@ def lexical_sequence() -> Any:
 
 def lexical_quantity() -> Any:
     return [
+        ("[", lexical_expression, "]"),
         ("{", lexical_expression, "}"),
         lexical_term,
     ]
@@ -81,6 +87,7 @@ def lexical_primary() -> Any:
         ("(", lexical_expression, ")"),
         KEYWORD,
         TEXT,
+        REGEX,
         lexical_rule_reference,
     ]
 
