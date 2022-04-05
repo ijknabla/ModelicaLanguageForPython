@@ -1,9 +1,6 @@
-from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch
+from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch, StrMatch
 from arpeggio.peg import regex
 from typing import Any
-
-
-KEYWORDS_TARGET = "@KEYWORDS@"
 
 LEXICAL_ASSIGNMENT_OPERATOR = ["=", "|="]
 NOT_OPERATOR = "!"
@@ -21,6 +18,10 @@ def TEXT() -> RegExMatch:
 
 def REGEX() -> Any:
     return regex
+
+
+def KEYWORDS_RULE_NAME() -> StrMatch:
+    return StrMatch("@KEYWORDS@")
 
 
 def LEXICAL_RULE_NAME() -> RegExMatch:
@@ -44,9 +45,9 @@ def lexical_rule() -> Any:
 
 def keywords_assignment() -> Any:
     return (
-        KEYWORDS_TARGET,
+        KEYWORDS_RULE_NAME,
         LEXICAL_ASSIGNMENT_OPERATOR,
-        OneOrMore(KEYWORD, sep="|"),
+        OneOrMore(KEYWORD, sep=OR_OPERATOR),
     )
 
 
@@ -94,7 +95,7 @@ def lexical_primary() -> Any:
 
 def lexical_rule_reference() -> Any:
     return [
-        KEYWORDS_TARGET,
+        KEYWORDS_RULE_NAME,
         LEXICAL_RULE_NAME,
     ], Not(LEXICAL_ASSIGNMENT_OPERATOR)
 
