@@ -14,6 +14,10 @@ def KEYWORD() -> RegExMatch:
     return RegExMatch("`[a-z]+`")
 
 
+def TEXT() -> RegExMatch:
+    return RegExMatch(r'"[^"]*"+')
+
+
 def LEXICAL_RULE_NAME() -> RegExMatch:
     return RegExMatch("[A-Z]([0-9A-Z]|-)*")
 
@@ -74,7 +78,9 @@ def lexical_term() -> Any:
 
 def lexical_primary() -> Any:
     return [
+        ("(", lexical_expression, ")"),
         KEYWORD,
+        TEXT,
         lexical_rule_reference,
     ]
 
