@@ -51,7 +51,7 @@ def keywords_assignment() -> Any:
     return (
         KEYWORDS_RULE_NAME,
         LEXICAL_ASSIGNMENT_OPERATOR,
-        OneOrMore(KEYWORD, sep=OR_OPERATOR),
+        keywords_expression,
     )
 
 
@@ -72,6 +72,14 @@ def syntax_assignment() -> Any:
 
 
 # ## expression rule
+def keywords_expression() -> Any:
+    return (keywords_ordered_choice,)
+
+
+def keywords_ordered_choice() -> Any:
+    return OneOrMore(KEYWORD, sep=OR_OPERATOR)
+
+
 def lexical_expression() -> Any:
     return (lexical_ordered_choice,)
 
