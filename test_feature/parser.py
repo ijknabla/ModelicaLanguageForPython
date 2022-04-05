@@ -1,10 +1,21 @@
-from arpeggio import EOF, OneOrMore, RegExMatch
+from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch
 from typing import Any
+
+
+KEYWORDS_TARGET = "@KEYWORDS@"
+
+LEXICAL_ASSIGNMENT_OPERATOR = ["=", "|="]
+NOT_OPERATOR = "!"
+OR_OPERATOR = "|"
 
 
 # lexical rules
 def KEYWORD() -> RegExMatch:
     return RegExMatch("`[a-z]+`")
+
+
+def LEXICAL_RULE_NAME() -> RegExMatch:
+    return RegExMatch("[A-Z]([0-9A-Z]|-)*")
 
 
 # grammar rules
@@ -16,15 +27,63 @@ def grammar() -> Any:
 
 
 def lexical_rule() -> Any:
-    return [keywords_assignment]
+    return [
+        keywords_assignment,
+        lexical_assignment,
+    ]
 
 
 def keywords_assignment() -> Any:
     return (
-        "@KEYWORDS@",
-        ["=", "|="],
+        KEYWORDS_TARGET,
+        LEXICAL_ASSIGNMENT_OPERATOR,
         OneOrMore(KEYWORD, sep="|"),
     )
+
+
+def lexical_assignment() -> Any:
+    return (
+        LEXICAL_RULE_NAME,
+        LEXICAL_ASSIGNMENT_OPERATOR,
+        lexical_expression,
+    )
+
+
+def lexical_expression() -> Any:
+    return (lexical_ordered_choice,)
+
+
+def lexical_ordered_choice() -> Any:
+    return OneOrMore(lexical_sequence, sep=OR_OPERATOR)
+
+
+def lexical_sequence() -> Any:
+    return OneOrMore(lexical_quantity)
+
+
+def lexical_quantity() -> Any:
+    return [
+        ("{", lexical_expression, "}"),
+        lexical_term,
+    ]
+
+
+def lexical_term() -> Any:
+    return Optional(NOT_OPERATOR), lexical_primary
+
+
+def lexical_primary() -> Any:
+    return [
+        KEYWORD,
+        lexical_rule_reference,
+    ]
+
+
+def lexical_rule_reference() -> Any:
+    return [
+        KEYWORDS_TARGET,
+        LEXICAL_RULE_NAME,
+    ], Not(LEXICAL_ASSIGNMENT_OPERATOR)
 
 
 # comment rule
