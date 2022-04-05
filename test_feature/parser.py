@@ -122,7 +122,11 @@ def syntax_assignment() -> Any:
 
 
 def syntax_expression() -> Any:
-    return (syntax_sequence,)
+    return (syntax_ordered_choice,)
+
+
+def syntax_ordered_choice() -> Any:
+    return OneOrMore(syntax_sequence, sep=OR_OPERATOR)
 
 
 def syntax_sequence() -> Any:
