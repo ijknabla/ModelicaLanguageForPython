@@ -30,7 +30,7 @@
  */
 
 // IDENT = NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
-IDENT = ~@KEYWORDS@ NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
+IDENT = !@KEYWORDS@ NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
 Q-IDENT = "'" ( Q-CHAR | S-ESCAPE ) { Q-CHAR | S-ESCAPE | """ } "'"
 // NONDIGIT = "_" | letters "a" to "z" | letters "A" to "Z"
 NONDIGIT = r'_[a-z][A-Z]'
