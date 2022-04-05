@@ -36,19 +36,18 @@ def SYNTAX_RULE_NAME() -> RegExMatch:
 # # grammar rule
 def grammar() -> Any:
     return (
-        OneOrMore([lexical_rule, syntax_rule]),
+        OneOrMore(
+            [
+                keywords_assignment,
+                lexical_assignment,
+                syntax_assignment,
+            ]
+        ),
         EOF,
     )
 
 
 # ## lexical rule
-def lexical_rule() -> Any:
-    return [
-        keywords_assignment,
-        lexical_assignment,
-    ]
-
-
 def keywords_assignment() -> Any:
     return (
         KEYWORDS_RULE_NAME,
@@ -107,12 +106,6 @@ def lexical_rule_reference() -> Any:
 
 
 # ## syntax rule
-def syntax_rule() -> Any:
-    return [
-        syntax_assignment,
-    ]
-
-
 def syntax_assignment() -> Any:
     return (
         SYNTAX_RULE_NAME,
