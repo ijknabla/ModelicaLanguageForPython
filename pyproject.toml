@@ -37,6 +37,6 @@ line-length = 79
 
 [[tool.mypy.overrides]]
 module = [
-    "arpeggio",
+    "arpeggio.*",
 ]
 ignore_missing_imports = true
