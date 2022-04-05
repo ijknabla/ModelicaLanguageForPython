@@ -25,6 +25,10 @@ def KEYWORDS_RULE_NAME() -> StrMatch:
     return StrMatch("@KEYWORDS@")
 
 
+def EOF_RULE_NAME() -> StrMatch:
+    return StrMatch("@EOF@")
+
+
 def LEXICAL_RULE_NAME() -> RegExMatch:
     return RegExMatch("[A-Z]([0-9A-Z]|-)*")
 
@@ -85,7 +89,9 @@ def lexical_expression() -> Any:
 
 
 def lexical_ordered_choice() -> Any:
-    return OneOrMore(lexical_sequence, sep=OR_OPERATOR)
+    return OneOrMore(
+        (Not(LEXICAL_ASSIGNMENT_OPERATOR), lexical_sequence), sep=OR_OPERATOR
+    )
 
 
 def lexical_sequence() -> Any:
@@ -154,6 +160,7 @@ def syntax_rule_reference() -> Any:
     return [
         (LEXICAL_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
         (SYNTAX_RULE_NAME, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
+        EOF_RULE_NAME,
     ]
 
 
