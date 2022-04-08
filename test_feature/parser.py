@@ -33,11 +33,11 @@ def EOF_RULE_NAME() -> StrMatch:
     return StrMatch("$EOF")
 
 
-def LEXICAL_RULE_NAME() -> RegExMatch:
+def LEXICAL_RULE_IDENTIFIER() -> RegExMatch:
     return RegExMatch("[A-Z]([0-9A-Z]|-)*")
 
 
-def SYNTAX_RULE_NAME() -> RegExMatch:
+def SYNTAX_RULE_IDENTIFIER() -> RegExMatch:
     return RegExMatch("[a-z]([0-9a-z]|-)*")
 
 
@@ -65,7 +65,7 @@ def keywords_assignment() -> Any:
 
 def lexical_assignment() -> Any:
     return (
-        LEXICAL_RULE_NAME,
+        LEXICAL_RULE_IDENTIFIER,
         LEXICAL_ASSIGNMENT_OPERATOR,
         lexical_expression,
     )
@@ -73,7 +73,7 @@ def lexical_assignment() -> Any:
 
 def syntax_assignment() -> Any:
     return (
-        SYNTAX_RULE_NAME,
+        SYNTAX_RULE_IDENTIFIER,
         SYNTAX_ASSIGNMENT_OPERATOR,
         syntax_expression,
     )
@@ -127,7 +127,7 @@ def lexical_primary() -> Any:
 def lexical_rule_reference() -> Any:
     return [
         (KEYWORDS_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
-        (LEXICAL_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
     ]
 
 
@@ -162,8 +162,8 @@ def syntax_primary() -> Any:
 
 def syntax_rule_reference() -> Any:
     return [
-        (LEXICAL_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
-        (SYNTAX_RULE_NAME, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
+        (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        (SYNTAX_RULE_IDENTIFIER, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
         EOF_RULE_NAME,
     ]
 
