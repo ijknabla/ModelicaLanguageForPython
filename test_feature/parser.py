@@ -1,7 +1,16 @@
 __all__ = ("Parser",)
 
 import arpeggio
-from typing import Any, List, MutableMapping, Optional, Tuple, Union
+from copy import copy
+from typing import (
+    AbstractSet,
+    Any,
+    List,
+    MutableMapping,
+    Optional,
+    Tuple,
+    Union,
+)
 from typing_extensions import Final
 import warnings
 
@@ -318,6 +327,79 @@ class GrammarVisitor(
 
     visit_lexical_rule = __visit_rule
     visit_syntax_rule = __visit_rule
+
+    def visit_grammar(
+        self, node: Any, children: Any
+    ) -> Tuple[ParsingExpressionLike, Optional[ParsingExpressionLike]]:
+        resolved: AbstractSet[arpeggio.ParsingExpression] = set()
+
+        def _resolve(
+            node: ParsingExpressionLike,
+        ) -> arpeggio.ParsingExpression:
+            """
+            Resolves CrossRefs from the parser model.
+            """
+
+            if node in resolved:
+                return node
+            resolved.add(node)
+
+            def get_rule_by_name(rule_name: str) -> ParsingExpressionLike:
+                try:
+                    return self.__rules[rule_name]
+                except KeyError:
+                    raise SemanticError(
+                        'Rule "{}" does not exists.'.format(rule_name)
+                    )
+
+            def resolve_rule_by_name(
+                rule_name: str,
+            ) -> arpeggio.ParsingExpression:
+
+                if self.debug:
+                    self.dprint("Resolving crossref {}".format(rule_name))
+
+                resolved_rule = get_rule_by_name(rule_name)
+                while type(resolved_rule) is arpeggio.CrossRef:
+                    target_rule = resolved_rule.target_rule_name
+                    resolved_rule = get_rule_by_name(target_rule)
+
+                # If resolved rule hasn't got the same name it
+                # should be cloned and preserved in the peg_rules cache
+                if resolved_rule.rule_name != rule_name:
+                    resolved_rule = copy(resolved_rule)
+                    resolved_rule.rule_name = rule_name
+                    self.__rules[rule_name] = resolved_rule
+                    if self.debug:
+                        self.dprint(
+                            "Resolving: cloned to {} = > {}".format(
+                                resolved_rule.rule_name, resolved_rule.name
+                            )
+                        )
+                return resolved_rule
+
+            if isinstance(node, arpeggio.CrossRef):
+                # The root rule is a cross-ref
+                resolved_rule = resolve_rule_by_name(node.target_rule_name)
+                return _resolve(resolved_rule)
+            else:
+                # Resolve children nodes
+                for i, n in enumerate(node.nodes):
+                    node.nodes[i] = _resolve(n)
+                resolved.add(node)
+                return node
+
+        # Find root and comment rules
+        root_rule, comment_rule = None, None
+        for rule in children:
+            if rule.rule_name == self.__root_rule_name:
+                root_rule = _resolve(rule)
+            if rule.rule_name == self.__comment_rule_name:
+                comment_rule = _resolve(rule)
+
+        if root_rule is None:
+            raise SemanticError("Root rule not found!")
+        return root_rule, comment_rule
 
 
 class Parser(
