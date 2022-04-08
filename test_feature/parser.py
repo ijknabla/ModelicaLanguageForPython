@@ -259,6 +259,22 @@ class GrammarVisitor(
     visit_lexical_quantity = __visit_quantity
     visit_syntax_quantity = __visit_quantity
 
+    def __visit_sequence(
+        self, node: Any, children: Any
+    ) -> ParsingExpressionLike:
+        head, *tail = children
+        if not tail:
+            return head
+        else:
+            return arpeggio.Sequence(nodes=[head, *tail])
+
+    def visit_lexical_sequence(
+        self, node: Any, children: Any
+    ) -> ParsingExpressionLike:
+        return arpeggio.Combine(nodes=self.__visit_sequence(node, children))
+
+    visit_syntax_sequence = __visit_sequence
+
 
 class Parser(
     arpeggio.Parser,  # type: ignore
