@@ -71,8 +71,8 @@ UNSIGNED-NUMBER =
 // Modelica uses the same comment syntax as C++ and Java
 // (i.e., // signals the start of a line comment and /**/ ... . */ is a multi-line comment)
 $COMMENT =
-     r"//.*"                   // single-line comment
-   | r"/\*([^*]|\*(?!/))*\*/"  // multi-line comment
+     r'//.*'                   // single-line comment
+   | r'/\*([^*]|\*(?!/))*\*/'  // multi-line comment
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#grammar

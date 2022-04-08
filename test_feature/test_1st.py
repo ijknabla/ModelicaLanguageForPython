@@ -8,7 +8,7 @@ from .syntax import v3_4
 dialects = [
     "",
     """
-IDENT |= r"\\$\\w*"
+IDENT |= r'\\$\\w*'
     """,
     """
 file: stored-definition $EOF

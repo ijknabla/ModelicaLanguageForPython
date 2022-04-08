@@ -23,11 +23,8 @@ def TEXT() -> RegExMatch:
     return RegExMatch(r'"[^"]*"+')
 
 
-def REGEX() -> Any:
-    return [
-        RegExMatch(r"""r'[^'\\]*(?:\\.[^'\\]*)*'"""),
-        RegExMatch(r'''r"[^"\\]*(?:\\.[^"\\]*)*"'''),
-    ]
+def REGEX() -> RegExMatch:
+    return RegExMatch(r"""r'[^'\\]*(?:\\.[^'\\]*)*'""")
 
 
 def LEXICAL_RULE_IDENTIFIER() -> RegExMatch:
