@@ -163,5 +163,7 @@ def comment() -> Any:
     ]
 
 
-class Parser(ArpeggioParser):
+class Parser(
+    ArpeggioParser,  # type: ignore
+):
     ...
