@@ -275,6 +275,24 @@ class GrammarVisitor(
 
     visit_syntax_sequence = __visit_sequence
 
+    def __visit_ordered_choice(
+        self, node: Any, children: Any
+    ) -> ParsingExpressionLike:
+        head, *tail = (
+            child
+            for child in children
+            if isinstance(
+                child, (arpeggio.ParsingExpression, arpeggio.CrossRef)
+            )
+        )
+        if not tail:
+            return head
+        else:
+            return arpeggio.OrderedChoice(nodes=[head, *tail])
+
+    visit_lexical_ordered_choice = __visit_ordered_choice
+    visit_syntax_ordered_choice = __visit_ordered_choice
+
 
 class Parser(
     arpeggio.Parser,  # type: ignore
