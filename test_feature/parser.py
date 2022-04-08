@@ -58,7 +58,8 @@ def grammar() -> Any:
 
 
 def lexical_rule() -> Any:
-    # In the lexical rule, the special rules $KEYWORD and $COMMENT can be defined.
+    # In the lexical rule, the special rules
+    # $KEYWORD and $COMMENT can be defined.
     # However, $EOF cannot be defined.
     return (
         [
