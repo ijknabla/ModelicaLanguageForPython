@@ -192,7 +192,7 @@ class GrammarVisitor(
         self.__ignore_case = ignore_case
         self.__rules = dict(self.__DEFAULT_RULES)
 
-    def visit_KEYWORD(self, node, children):
+    def visit_KEYWORD(self, node: Any, children: Any) -> ParsingExpressionLike:
         match = arpeggio.RegExMatch(
             rf"{node.value[1:-1]}(?![0-9_a-zA-Z])",
             ignore_case=self.__ignore_case,
@@ -200,12 +200,12 @@ class GrammarVisitor(
         match.compile()
         return match
 
-    def visit_TEXT(self, node, children):
+    def visit_TEXT(self, node: Any, children: Any) -> ParsingExpressionLike:
         return arpeggio.StrMatch(
             node.value[1:-1], ignore_case=self.__ignore_case
         )
 
-    def visit_REGEX(self, node, children):
+    def visit_REGEX(self, node: Any, children: Any) -> ParsingExpressionLike:
         match = arpeggio.RegExMatch(
             node.value[2:-1], ignore_case=self.__ignore_case
         )
