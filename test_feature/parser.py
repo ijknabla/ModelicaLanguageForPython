@@ -166,7 +166,18 @@ def comment() -> Any:
 class GrammarVisitor(
     arpeggio.PTNodeVisitor,  # type: ignore
 ):
-    ...
+    __DEFAULT_RULES = {
+        EOF_RULE_NAME: arpeggio.EndOfFile(),
+    }
+
+    def __init__(
+        self, root_rule_name, comment_rule_name, ignore_case, *args, **kwargs
+    ):
+        super().__init__(*args, **kwargs)
+        self.__root_rule_name = root_rule_name
+        self.__comment_rule_name = comment_rule_name
+        self.__ignore_case = ignore_case
+        self.__rules = dict(self.__DEFAULT_RULES)
 
 
 class Parser(
