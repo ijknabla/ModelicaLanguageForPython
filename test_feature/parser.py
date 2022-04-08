@@ -46,17 +46,17 @@ def SYNTAX_RULE_IDENTIFIER() -> RegExMatch:
     return RegExMatch("[a-z]([0-9a-z]|-)*")
 
 
+def SYNTAX_RULE_REFERENCE() -> Any:
+    return [
+        (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        (SYNTAX_RULE_IDENTIFIER, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
+        EOF_RULE_NAME,
+    ]
+
+
 # # grammar rule
 def grammar() -> Any:
-    return (
-        OneOrMore(
-            [
-                lexical_rule,
-                syntax_assignment,
-            ]
-        ),
-        EOF,
-    )
+    return (OneOrMore([lexical_rule, syntax_rule]), EOF)
 
 
 def lexical_rule() -> Any:
@@ -72,7 +72,7 @@ def lexical_rule() -> Any:
     )
 
 
-def syntax_assignment() -> Any:
+def syntax_rule() -> Any:
     return (
         SYNTAX_RULE_IDENTIFIER,
         SYNTAX_ASSIGNMENT_OPERATOR,
@@ -142,15 +142,7 @@ def syntax_primary() -> Any:
         ("(", syntax_expression, ")"),
         KEYWORD,
         TEXT,
-        syntax_rule_reference,
-    ]
-
-
-def syntax_rule_reference() -> Any:
-    return [
-        (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
-        (SYNTAX_RULE_IDENTIFIER, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
-        EOF_RULE_NAME,
+        SYNTAX_RULE_REFERENCE,
     ]
 
 
