@@ -1,4 +1,4 @@
-from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch, StrMatch
+from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch
 from typing import Any, List
 from typing_extensions import Final
 
@@ -10,6 +10,7 @@ OR_OPERATOR: Final[str] = "|"
 
 # ## Lexical keyword
 KEYWORD_RULE_NAME: Final[str] = "$KEYWORD"
+EOF_RULE_NAME: Final[str] = "$EOF"
 
 
 # # lexical rules
@@ -26,10 +27,6 @@ def REGEX() -> Any:
         RegExMatch(r"""r'[^'\\]*(?:\\.[^'\\]*)*'"""),
         RegExMatch(r'''r"[^"\\]*(?:\\.[^"\\]*)*"'''),
     ]
-
-
-def EOF_RULE_NAME() -> StrMatch:
-    return StrMatch("$EOF")
 
 
 def LEXICAL_RULE_IDENTIFIER() -> RegExMatch:
@@ -55,6 +52,7 @@ def grammar() -> Any:
 
 def lexical_rule() -> Any:
     # In the lexical rule, a special rule $KEYWORD can be defined.
+    # However, $EOF cannot be defined.
     return (
         [
             KEYWORD_RULE_NAME,
