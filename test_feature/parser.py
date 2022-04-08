@@ -2,6 +2,7 @@ from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch, StrMatch
 from arpeggio.peg import regex
 from typing import Any
 
+
 LEXICAL_ASSIGNMENT_OPERATOR = ["=", "|="]
 SYNTAX_ASSIGNMENT_OPERATOR = [":", "|:"]
 NOT_OPERATOR = "!"
@@ -18,7 +19,10 @@ def TEXT() -> RegExMatch:
 
 
 def REGEX() -> Any:
-    return regex
+    return [
+        RegExMatch(r"""r'[^'\\]*(?:\\.[^'\\]*)*'"""),
+        RegExMatch(r'''r"[^"\\]*(?:\\.[^"\\]*)*"'''),
+    ]
 
 
 def KEYWORDS_RULE_NAME() -> StrMatch:
