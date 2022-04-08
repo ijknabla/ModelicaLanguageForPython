@@ -1,15 +1,16 @@
 from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch, StrMatch
 from arpeggio.peg import regex
-from typing import Any
+from typing import Any, List
+from typing_extensions import Final
 
 
-LEXICAL_ASSIGNMENT_OPERATOR = ["=", "|="]
-SYNTAX_ASSIGNMENT_OPERATOR = [":", "|:"]
-NOT_OPERATOR = "!"
-OR_OPERATOR = "|"
+LEXICAL_ASSIGNMENT_OPERATOR: Final[List[str]] = ["=", "|="]
+SYNTAX_ASSIGNMENT_OPERATOR: Final[List[str]] = [":", "|:"]
+NOT_OPERATOR: Final[str] = "!"
+OR_OPERATOR: Final[str] = "|"
 
 # ## Lexical keyword
-KEYWORD_RULE_NAME = "$KEYWORD"
+KEYWORD_RULE_NAME: Final[str] = "$KEYWORD"
 
 
 # # lexical rules
