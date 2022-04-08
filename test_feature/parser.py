@@ -239,6 +239,26 @@ class GrammarVisitor(
 
         raise NotImplementedError()
 
+    def __visit_quantity(
+        self, node: Any, children: Any
+    ) -> ParsingExpressionLike:
+        (child,) = children
+        try:
+            L, _, R = node
+        except ValueError:
+            L, R = None, None
+
+        if (L, R) == (None, None):
+            return child
+        elif (L, R) == ("[", "]"):
+            return arpeggio.Optional(nodes=[child])
+        elif (L, R) == ("{", "}"):
+            return arpeggio.ZeroOrMore(nodes=[child])
+        raise NotImplementedError()
+
+    visit_lexical_quantity = __visit_quantity
+    visit_syntax_quantity = __visit_quantity
+
 
 class Parser(
     arpeggio.Parser,  # type: ignore
