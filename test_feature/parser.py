@@ -10,6 +10,7 @@ OR_OPERATOR: Final[str] = "|"
 
 # ## Lexical keyword
 KEYWORD_RULE_NAME: Final[str] = "$KEYWORD"
+COMMENT_RULE_NAME: Final[str] = "$COMMENT"
 EOF_RULE_NAME: Final[str] = "$EOF"
 
 
@@ -60,11 +61,12 @@ def grammar() -> Any:
 
 
 def lexical_rule() -> Any:
-    # In the lexical rule, a special rule $KEYWORD can be defined.
+    # In the lexical rule, the special rules $KEYWORD and $COMMENT can be defined.
     # However, $EOF cannot be defined.
     return (
         [
             KEYWORD_RULE_NAME,
+            COMMENT_RULE_NAME,
             LEXICAL_RULE_IDENTIFIER,
         ],
         LEXICAL_ASSIGNMENT_OPERATOR,
