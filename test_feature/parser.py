@@ -5,7 +5,7 @@ from typing import Any, List, MutableMapping, Optional, Tuple, Union
 from typing_extensions import Final
 import warnings
 
-from .exceptions import ParserWarning
+from .exceptions import ParserWarning, SemanticError
 
 
 ParsingExpressionLike = Union[arpeggio.ParsingExpression, arpeggio.CrossRef]
@@ -292,6 +292,32 @@ class GrammarVisitor(
 
     visit_lexical_ordered_choice = __visit_ordered_choice
     visit_syntax_ordered_choice = __visit_ordered_choice
+
+    def __visit_rule(self, node: Any, children: Any) -> ParsingExpressionLike:
+        rule_name, operator, new_rule = children
+
+        if operator in {"=", ":"}:
+            rule = new_rule
+        elif operator in {"|=", "|:"}:
+            try:
+                previous_rule = self.__rules[rule_name]
+            except KeyError as keyError:
+                raise SemanticError(
+                    f'Rule "{rule_name}" does not exists.'
+                ) from keyError
+            rule = arpeggio.OrderedChoice(nodes=[previous_rule, new_rule])
+        else:
+            raise NotImplementedError()
+
+        # Keep a map of parser rules for cross reference
+        # resolving.
+        rule.rule_name = rule_name
+        rule.root = True
+        self.__rules[rule_name] = rule
+        return rule
+
+    visit_lexical_rule = __visit_rule
+    visit_syntax_rule = __visit_rule
 
 
 class Parser(
