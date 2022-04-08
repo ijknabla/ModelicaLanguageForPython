@@ -1,6 +1,13 @@
 __all__ = ("Parser",)
 
-from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch
+from arpeggio import (
+    EOF,
+    Not,
+    OneOrMore,
+    Optional,
+    Parser as ArpeggioParser,
+    RegExMatch,
+)
 from typing import Any, List
 from typing_extensions import Final
 
@@ -156,5 +163,5 @@ def comment() -> Any:
     ]
 
 
-class Parser:
+class Parser(ArpeggioParser):
     ...
