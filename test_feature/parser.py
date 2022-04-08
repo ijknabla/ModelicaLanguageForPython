@@ -3,18 +3,18 @@ from typing import Any, List
 from typing_extensions import Final
 
 
+# ## Lexical symbols & keywords
 LEXICAL_ASSIGNMENT_OPERATOR: Final[List[str]] = ["=", "|="]
 SYNTAX_ASSIGNMENT_OPERATOR: Final[List[str]] = [":", "|:"]
 NOT_OPERATOR: Final[str] = "!"
 OR_OPERATOR: Final[str] = "|"
 
-# ## Lexical keyword
 KEYWORD_RULE_NAME: Final[str] = "$KEYWORD"
 COMMENT_RULE_NAME: Final[str] = "$COMMENT"
 EOF_RULE_NAME: Final[str] = "$EOF"
 
 
-# # lexical rules
+# ## Lexical rules
 def KEYWORD() -> RegExMatch:
     return RegExMatch("`[a-z]+`")
 
@@ -23,11 +23,8 @@ def TEXT() -> RegExMatch:
     return RegExMatch(r'"[^"]*"+')
 
 
-def REGEX() -> Any:
-    return [
-        RegExMatch(r"""r'[^'\\]*(?:\\.[^'\\]*)*'"""),
-        RegExMatch(r'''r"[^"\\]*(?:\\.[^"\\]*)*"'''),
-    ]
+def REGEX() -> RegExMatch:
+    return RegExMatch(r"""r'[^'\\]*(?:\\.[^'\\]*)*'""")
 
 
 def LEXICAL_RULE_IDENTIFIER() -> RegExMatch:
@@ -55,7 +52,7 @@ def SYNTAX_RULE_REFERENCE() -> Any:
     ]
 
 
-# # grammar rule
+# ## Syntax rules
 def grammar() -> Any:
     return (OneOrMore([lexical_rule, syntax_rule]), EOF)
 
@@ -148,7 +145,7 @@ def syntax_primary() -> Any:
     ]
 
 
-# # comment rule
+# ## Comment rule
 def comment() -> Any:
     return [
         RegExMatch(r"//.*"),
