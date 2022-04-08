@@ -5,11 +5,17 @@ from arpeggio import (
     Not,
     OneOrMore,
     Optional,
+    PTNodeVisitor,
     Parser as ArpeggioParser,
+    ParserPython as ArpeggioParserPython,
     RegExMatch,
+    visit_parse_tree,
 )
 from typing import Any, List
 from typing_extensions import Final
+import warnings
+
+from .exceptions import ParserWarning
 
 
 # ## Lexical symbols & keywords
@@ -163,7 +169,78 @@ def comment() -> Any:
     ]
 
 
+class GrammarVisitor(PTNodeVisitor):
+    ...
+
+
 class Parser(
     ArpeggioParser,  # type: ignore
 ):
-    ...
+    def __init__(
+        self,
+        language_def,
+        root_rule_name,
+        comment_rule_name=COMMENT_RULE_NAME,
+        *args,
+        **kwargs,
+    ):
+        """
+        Constructs parser from textual PEG definition.
+
+        Args:
+            language_def (str): A string describing language grammar using
+                PEG notation.
+            root_rule_name(str): The name of the root rule.
+            comment_rule_name(str): The name of the rule for comments.
+        """
+
+        ignore_case = kwargs.get("ignore_case", None)
+        if ignore_case:
+            warnings.warn(
+                (
+                    f"ignore_case is {ignore_case!r}\n"
+                    "Modelica grammar should be Case sensitive.",
+                ),
+                ParserWarning,
+            )
+
+        super().__init__(*args, ignore_case=ignore_case, **kwargs)
+        self.root_rule_name = root_rule_name
+        self.comment_rule_name = comment_rule_name
+
+        # PEG Abstract Syntax Graph
+        self.parser_model, self.comments_model = self._from_peg(language_def)
+        # Comments should be optional and there can be more of them
+        if self.comments_model:
+            self.comments_model.root = True
+            self.comments_model.rule_name = comment_rule_name
+
+        # In debug mode export parser model to dot for
+        # visualization
+        if self.debug:
+            from arpeggio.export import PMDOTExporter
+
+            root_rule = self.parser_model.rule_name
+            PMDOTExporter().exportFile(
+                self.parser_model, "{}_peg_parser_model.dot".format(root_rule)
+            )
+
+    def _parse(self):
+        return self.parser_model.parse(self)
+
+    def _from_peg(self, language_def):
+        parser = ArpeggioParserPython(
+            grammar, comment, reduce_tree=False, debug=self.debug
+        )
+        parser.root_rule_name = self.root_rule_name
+        parse_tree = parser.parse(language_def)
+
+        return visit_parse_tree(
+            parse_tree,
+            GrammarVisitor(
+                self.root_rule_name,
+                self.comment_rule_name,
+                self.ignore_case,
+                debug=self.debug,
+            ),
+        )
