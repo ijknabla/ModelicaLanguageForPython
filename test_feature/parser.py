@@ -1,5 +1,4 @@
 from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch, StrMatch
-from arpeggio.peg import regex
 from typing import Any, List
 from typing_extensions import Final
 
