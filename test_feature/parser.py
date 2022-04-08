@@ -45,8 +45,7 @@ def grammar() -> Any:
     return (
         OneOrMore(
             [
-                keywords_assignment,
-                lexical_assignment,
+                lexical_rule,
                 syntax_assignment,
             ]
         ),
@@ -54,17 +53,13 @@ def grammar() -> Any:
     )
 
 
-def keywords_assignment() -> Any:
+def lexical_rule() -> Any:
+    # In the lexical rule, a special rule $KEYWORD can be defined.
     return (
-        KEYWORD_RULE_NAME,
-        LEXICAL_ASSIGNMENT_OPERATOR,
-        keywords_expression,
-    )
-
-
-def lexical_assignment() -> Any:
-    return (
-        LEXICAL_RULE_IDENTIFIER,
+        [
+            KEYWORD_RULE_NAME,
+            LEXICAL_RULE_IDENTIFIER,
+        ],
         LEXICAL_ASSIGNMENT_OPERATOR,
         lexical_expression,
     )
