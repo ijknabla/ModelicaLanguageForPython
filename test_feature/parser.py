@@ -1,11 +1,17 @@
-from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch, StrMatch
-from arpeggio.peg import regex
-from typing import Any
+from arpeggio import EOF, Not, OneOrMore, Optional, RegExMatch
+from typing import Any, List
+from typing_extensions import Final
 
-LEXICAL_ASSIGNMENT_OPERATOR = ["=", "|="]
-SYNTAX_ASSIGNMENT_OPERATOR = [":", "|:"]
-NOT_OPERATOR = "!"
-OR_OPERATOR = "|"
+
+LEXICAL_ASSIGNMENT_OPERATOR: Final[List[str]] = ["=", "|="]
+SYNTAX_ASSIGNMENT_OPERATOR: Final[List[str]] = [":", "|:"]
+NOT_OPERATOR: Final[str] = "!"
+OR_OPERATOR: Final[str] = "|"
+
+# ## Lexical keyword
+KEYWORD_RULE_NAME: Final[str] = "$KEYWORD"
+COMMENT_RULE_NAME: Final[str] = "$COMMENT"
+EOF_RULE_NAME: Final[str] = "$EOF"
 
 
 # # lexical rules
@@ -18,72 +24,65 @@ def TEXT() -> RegExMatch:
 
 
 def REGEX() -> Any:
-    return regex
+    return [
+        RegExMatch(r"""r'[^'\\]*(?:\\.[^'\\]*)*'"""),
+        RegExMatch(r'''r"[^"\\]*(?:\\.[^"\\]*)*"'''),
+    ]
 
 
-def KEYWORDS_RULE_NAME() -> StrMatch:
-    return StrMatch("@KEYWORDS@")
-
-
-def EOF_RULE_NAME() -> StrMatch:
-    return StrMatch("@EOF@")
-
-
-def LEXICAL_RULE_NAME() -> RegExMatch:
+def LEXICAL_RULE_IDENTIFIER() -> RegExMatch:
     return RegExMatch("[A-Z]([0-9A-Z]|-)*")
 
 
-def SYNTAX_RULE_NAME() -> RegExMatch:
+def LEXICAL_RULE_REFERENCE() -> Any:
+    return (
+        [
+            (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+            (KEYWORD_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        ],
+    )
+
+
+def SYNTAX_RULE_IDENTIFIER() -> RegExMatch:
     return RegExMatch("[a-z]([0-9a-z]|-)*")
+
+
+def SYNTAX_RULE_REFERENCE() -> Any:
+    return [
+        (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        (SYNTAX_RULE_IDENTIFIER, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
+        EOF_RULE_NAME,
+    ]
 
 
 # # grammar rule
 def grammar() -> Any:
+    return (OneOrMore([lexical_rule, syntax_rule]), EOF)
+
+
+def lexical_rule() -> Any:
+    # In the lexical rule, the special rules $KEYWORD and $COMMENT can be defined.
+    # However, $EOF cannot be defined.
     return (
-        OneOrMore(
-            [
-                keywords_assignment,
-                lexical_assignment,
-                syntax_assignment,
-            ]
-        ),
-        EOF,
-    )
-
-
-def keywords_assignment() -> Any:
-    return (
-        KEYWORDS_RULE_NAME,
-        LEXICAL_ASSIGNMENT_OPERATOR,
-        keywords_expression,
-    )
-
-
-def lexical_assignment() -> Any:
-    return (
-        LEXICAL_RULE_NAME,
+        [
+            KEYWORD_RULE_NAME,
+            COMMENT_RULE_NAME,
+            LEXICAL_RULE_IDENTIFIER,
+        ],
         LEXICAL_ASSIGNMENT_OPERATOR,
         lexical_expression,
     )
 
 
-def syntax_assignment() -> Any:
+def syntax_rule() -> Any:
     return (
-        SYNTAX_RULE_NAME,
+        SYNTAX_RULE_IDENTIFIER,
         SYNTAX_ASSIGNMENT_OPERATOR,
         syntax_expression,
     )
 
 
 # ## expression rule
-def keywords_expression() -> Any:
-    return (keywords_ordered_choice,)
-
-
-def keywords_ordered_choice() -> Any:
-    return OneOrMore(KEYWORD, sep=OR_OPERATOR)
-
-
 def lexical_expression() -> Any:
     return (lexical_ordered_choice,)
 
@@ -116,14 +115,7 @@ def lexical_primary() -> Any:
         KEYWORD,
         TEXT,
         REGEX,
-        lexical_rule_reference,
-    ]
-
-
-def lexical_rule_reference() -> Any:
-    return [
-        (KEYWORDS_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
-        (LEXICAL_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        LEXICAL_RULE_REFERENCE,
     ]
 
 
@@ -152,15 +144,7 @@ def syntax_primary() -> Any:
         ("(", syntax_expression, ")"),
         KEYWORD,
         TEXT,
-        syntax_rule_reference,
-    ]
-
-
-def syntax_rule_reference() -> Any:
-    return [
-        (LEXICAL_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
-        (SYNTAX_RULE_NAME, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
-        EOF_RULE_NAME,
+        SYNTAX_RULE_REFERENCE,
     ]
 
 

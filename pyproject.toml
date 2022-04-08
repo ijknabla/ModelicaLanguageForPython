@@ -17,6 +17,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.6"
 Arpeggio = ">=1.6"
+typing-extensions = ">=3.7"
 
 [tool.poetry.dev-dependencies]
 pyproject-flake8 = "^0.0.1-alpha.2"
