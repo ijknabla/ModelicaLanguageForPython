@@ -1,11 +1,14 @@
 __all__ = ("Parser",)
 
 import arpeggio
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, MutableMapping, Optional, Tuple, Union
 from typing_extensions import Final
 import warnings
 
 from .exceptions import ParserWarning
+
+
+ParsingExpressionLike = Union[arpeggio.ParsingExpression, arpeggio.CrossRef]
 
 
 # ## Lexical symbols & keywords
@@ -166,13 +169,23 @@ def comment() -> Any:
 class GrammarVisitor(
     arpeggio.PTNodeVisitor,  # type: ignore
 ):
+    __root_rule_name: str
+    __comment_rule_name: str
+    __ignore_case: bool
+    __rules: MutableMapping[str, ParsingExpressionLike]
+
     __DEFAULT_RULES = {
         EOF_RULE_NAME: arpeggio.EndOfFile(),
     }
 
     def __init__(
-        self, root_rule_name, comment_rule_name, ignore_case, *args, **kwargs
-    ):
+        self,
+        root_rule_name: str,
+        comment_rule_name: str,
+        ignore_case: bool,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.__root_rule_name = root_rule_name
         self.__comment_rule_name = comment_rule_name
@@ -237,10 +250,7 @@ class Parser(
 
     def _from_peg(
         self, language_def: str
-    ) -> Tuple[
-        arpeggio.ParsingExpression,
-        Optional[arpeggio.ParsingExpression],
-    ]:
+    ) -> Tuple[ParsingExpressionLike, Optional[ParsingExpressionLike]]:
         parser = arpeggio.ParserPython(
             grammar, comment, reduce_tree=False, debug=self.debug
         )
