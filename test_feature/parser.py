@@ -212,6 +212,14 @@ class GrammarVisitor(
         match.compile()
         return match
 
+    def visit_LEXICAL_RULE_REFERENCE(self, node, children):
+        return arpeggio.CrossRef(node.value)
+
+    def visit_SYNTAX_RULE_REFERENCE(self, node, children):
+        skipws = arpeggio.RegExMatch(r"\s*")
+        skipws.compile()
+        return arpeggio.Sequence(nodes=[skipws, arpeggio.CrossRef(node.value)])
+
 
 class Parser(
     arpeggio.Parser,  # type: ignore
