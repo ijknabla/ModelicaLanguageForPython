@@ -455,7 +455,7 @@ class Parser(
                 self.parser_model, "{}_peg_parser_model.dot".format(root_rule)
             )
 
-    def _parse(self) -> Any:  # TODO check type
+    def _parse(self) -> arpeggio.ParseTreeNode:
         return self.parser_model.parse(self)
 
     def _from_peg(
