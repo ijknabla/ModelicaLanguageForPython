@@ -224,6 +224,21 @@ class GrammarVisitor(
         skipws.compile()
         return arpeggio.Sequence(nodes=[skipws, arpeggio.CrossRef(node.value)])
 
+    def visit_lexical_term(
+        self, node: Any, children: Any
+    ) -> ParsingExpressionLike:
+        if len(children) == 2:
+            operator, child = children
+        else:
+            operator, (child,) = None, children
+
+        if operator is None:
+            return child
+        elif operator == "!":
+            return arpeggio.Not(nodes=[child])
+
+        raise NotImplementedError()
+
 
 class Parser(
     arpeggio.Parser,  # type: ignore
