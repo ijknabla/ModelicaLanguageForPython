@@ -33,6 +33,15 @@ def LEXICAL_RULE_IDENTIFIER() -> RegExMatch:
     return RegExMatch("[A-Z]([0-9A-Z]|-)*")
 
 
+def LEXICAL_RULE_REFERENCE() -> Any:
+    return (
+        [
+            (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+            (KEYWORD_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        ],
+    )
+
+
 def SYNTAX_RULE_IDENTIFIER() -> RegExMatch:
     return RegExMatch("[a-z]([0-9a-z]|-)*")
 
@@ -104,14 +113,7 @@ def lexical_primary() -> Any:
         KEYWORD,
         TEXT,
         REGEX,
-        lexical_rule_reference,
-    ]
-
-
-def lexical_rule_reference() -> Any:
-    return [
-        (KEYWORD_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
-        (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        LEXICAL_RULE_REFERENCE,
     ]
 
 
