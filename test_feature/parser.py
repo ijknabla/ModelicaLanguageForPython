@@ -17,6 +17,7 @@ import warnings
 from .exceptions import ParserWarning, SemanticError
 
 
+ParsingExpression = arpeggio.ParsingExpression
 ParsingExpressionLike = Union[arpeggio.ParsingExpression, arpeggio.CrossRef]
 
 
@@ -330,12 +331,12 @@ class GrammarVisitor(
 
     def visit_grammar(
         self, node: Any, children: Any
-    ) -> Tuple[ParsingExpressionLike, Optional[ParsingExpressionLike]]:
-        resolved: AbstractSet[arpeggio.ParsingExpression] = set()
+    ) -> Tuple[ParsingExpression, Optional[ParsingExpression]]:
+        resolved: AbstractSet[ParsingExpression] = set()
 
         def _resolve(
             node: ParsingExpressionLike,
-        ) -> arpeggio.ParsingExpression:
+        ) -> ParsingExpression:
             """
             Resolves CrossRefs from the parser model.
             """
@@ -354,7 +355,7 @@ class GrammarVisitor(
 
             def resolve_rule_by_name(
                 rule_name: str,
-            ) -> arpeggio.ParsingExpression:
+            ) -> ParsingExpression:
 
                 if self.debug:
                     self.dprint("Resolving crossref {}".format(rule_name))
@@ -459,7 +460,7 @@ class Parser(
 
     def _from_peg(
         self, language_def: str
-    ) -> Tuple[ParsingExpressionLike, Optional[ParsingExpressionLike]]:
+    ) -> Tuple[ParsingExpression, Optional[ParsingExpression]]:
         parser = arpeggio.ParserPython(
             grammar, comment, reduce_tree=False, debug=self.debug
         )
