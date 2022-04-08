@@ -22,11 +22,11 @@ def REGEX() -> Any:
 
 
 def KEYWORDS_RULE_NAME() -> StrMatch:
-    return StrMatch("@KEYWORDS@")
+    return StrMatch("$KEYWORD")
 
 
 def EOF_RULE_NAME() -> StrMatch:
-    return StrMatch("@EOF@")
+    return StrMatch("$EOF")
 
 
 def LEXICAL_RULE_NAME() -> RegExMatch:

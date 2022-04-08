@@ -11,7 +11,7 @@ dialects = [
 IDENT |= r"\\$\\w*"
     """,
     """
-file: stored-definition @EOF@
+file: stored-definition $EOF
     """,
 ]
 
