@@ -1,50 +1,65 @@
 /**
+ * # Modelica Version 3.4 Syntax
+ *
+ * The following syntactic meta symbols are used (extended BNF):
+ *
+ * [ ]         optional
+ * { }         repeat zero or more times
+ * |           or
+ * "text"      The text is treated as a single token (no whitespace between any characters)
+ * !           When prefixed, indicates that it does not begin with that element
+ * r'regex',   The string prefixed with r is a regular expression and is treated as a single token
+ * `keyword`   Keyword literal is treated as a single token with no word component characters following
+ */
+
+/**
  * https://specification.modelica.org/maint/3.4/Ch2.html#identifiers-names-and-keywords
- * ### 2.3.3 Modelica Keywords
+ * #### 2.3.3 Modelica Keywords
  * The following Modelica keywords are reserved words and may not be used as identifiers, except as listed in section B.1:
  */
 $KEYWORD =
-   `algorithm`       | `discrete`      | `false`     | `loop`        | `pure`
-   | `and`           | `each`          | `final`     | `model`       | `record`
-   | `annotation`    | `else`          | `flow`      | `not`         | `redeclare`
-                     | `elseif`        | `for`       | `operator`    | `replaceable`
-   | `block`         | `elsewhen`      | `function`  | `or`          | `return`
-   | `break`         | `encapsulated`  | `if`        | `outer`       | `stream`
-   | `class`         | `end`           | `import`    | `output`      | `then`
-   | `connect`       | `enumeration`   | `impure`    | `package`     | `true`
-   | `connector`     | `equation`      | `in`        | `parameter`   | `type`
-   | `constant`      | `expandable`    | `initial`   | `partial`     | `when`
-   | `constrainedby` | `extends`       | `inner`     | `protected`   | `while`
-   | `der`           | `external`      | `input`     | `public`      | `within`
+   `algorithm`     | `discrete`      | `false`     | `loop`        | `pure`          |
+   `and`           | `each`          | `final`     | `model`       | `record`        |
+   `annotation`    | `else`          | `flow`      | `not`         | `redeclare`     |
+                     `elseif`        | `for`       | `operator`    | `replaceable`   |
+   `block`         | `elsewhen`      | `function`  | `or`          | `return`        |
+   `break`         | `encapsulated`  | `if`        | `outer`       | `stream`        |
+   `class`         | `end`           | `import`    | `output`      | `then`          |
+   `connect`       | `enumeration`   | `impure`    | `package`     | `true`          |
+   `connector`     | `equation`      | `in`        | `parameter`   | `type`          |
+   `constant`      | `expandable`    | `initial`   | `partial`     | `when`          |
+   `constrainedby` | `extends`       | `inner`     | `protected`   | `while`         |
+   `der`           | `external`      | `input`     | `public`      | `within`
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#lexical-conventions
- * ## B.1 Lexical conventions
- * The following syntactic meta symbols are used (extended BNF):
- *
- * [ ] optional
- * { } repeat zero or more times
- * | or
- * "text" The text is treated as a single token (no whitespace between any characters)
- * ~ do not match at current location
+ * ### B.1 Lexical conventions
  */
-
-// IDENT = NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
 IDENT = !$KEYWORD NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
+
 Q-IDENT = "'" ( Q-CHAR | S-ESCAPE ) { Q-CHAR | S-ESCAPE | """ } "'"
-// NONDIGIT = "_" | letters "a" to "z" | letters "A" to "Z"
+
 NONDIGIT = "_" | r'[a-z]' | r'[A-Z]'
+
 STRING = """ { S-CHAR | S-ESCAPE } """
-// S-CHAR = see below
-S-CHAR = r'[^"\\]'
-Q-CHAR = NONDIGIT | DIGIT | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," |
+
+S-CHAR = r'[^"\\]'  // see below
+
+Q-CHAR =
+  NONDIGIT | DIGIT | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," |
    "-" | "." | "/" | ":" | ";" | "<" | ">" | "=" | "?" | "@" | "[" | "]" | "^" |
    "{" | "}" | "|" | "~" | " "
-S-ESCAPE = "\'" | "\"" | "\?" | "\\" |
+
+S-ESCAPE =
+   "\'" | "\"" | "\?" | "\\" |
    "\a" | "\b" | "\f" | "\n" | "\r" | "\t" | "\v"
+
 DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
 UNSIGNED-INTEGER = DIGIT { DIGIT }
-UNSIGNED-NUMBER = UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
+
+UNSIGNED-NUMBER =
+   UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
    [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]
 
 /**
@@ -61,17 +76,20 @@ $COMMENT =
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#grammar
- * ## B.2 Grammar
- * https://specification.modelica.org/maint/3.4/A2.html#stored-definition-within
- * ### B.2.1 Stored Definition - Within
+ * ### B.2 Grammar
  */
-stored-definition:
+
+/**
+ * https://specification.modelica.org/maint/3.4/A2.html#stored-definition-within
+ * #### B.2.1 Stored Definition - Within
+ */
+stored-definition :
    [ `within` [ name ] ";" ]
    { [ `final` ] class-definition ";" }
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#class-definition
- * ### B.2.2 Class Definition
+ * #### B.2.2 Class Definition
  */
 class-definition :
    [ `encapsulated` ] class-prefixes
@@ -125,6 +143,7 @@ external-function-call :
 
 element-list :
    { element ";" }
+
 element :
    import-clause |
    extends-clause |
@@ -133,7 +152,7 @@ element :
    [ `inner` ] [ `outer` ]
    ( ( class-definition | component-clause ) |
    `replaceable` ( class-definition | component-clause )
-   [ constraining-clause  comment ] )
+   [ constraining-clause comment ] )
 
 import-clause :
    `import` ( IDENT "=" name | name ["." ( "*" | "{" import-list "}" ) ] ) comment
@@ -143,7 +162,7 @@ import-list :
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#extends
- * ### B.2.3 Extends
+ * #### B.2.3 Extends
  */
 extends-clause :
    `extends` type-specifier [ class-modification ] [ annotation-comment ]
@@ -153,9 +172,9 @@ constraining-clause :
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#component-clause
- * ### B.2.4 Component Clause
+ * #### B.2.4 Component Clause
  */
-component-clause:
+component-clause :
    type-prefix type-specifier [ array-subscripts ] component-list
 
 type-prefix :
@@ -168,7 +187,7 @@ component-list :
 component-declaration :
    declaration [ condition-attribute ] comment
 
-condition-attribute:
+condition-attribute :
    `if` expression
 
 declaration :
@@ -176,7 +195,7 @@ declaration :
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#modification
- * ### B.2.5 Modification
+ * #### B.2.5 Modification
  */
 modification :
    class-modification [ "=" expression ]
@@ -218,7 +237,7 @@ short-class-definition :
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#equations1
- * ### B.2.6 Equations
+ * #### B.2.6 Equations
  */
 equation-section :
    [ `initial` ] `equation` { equation ";" }
@@ -281,7 +300,7 @@ for-statement :
 for-indices :
    for-index {"," for-index}
 
-for-index:
+for-index :
    IDENT [ `in` expression ]
 
 while-statement :
@@ -308,7 +327,7 @@ connect-clause :
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#expressions1
- * B.2.7 Expressions
+ * #### B.2.7 Expressions
  */
 expression :
    simple-expression
@@ -385,14 +404,14 @@ array-arguments :
 array-arguments-non-first :
    expression [ "," array-arguments-non-first ]
 
-named-arguments: named-argument [ "," named-arguments ]
+named-arguments : named-argument [ "," named-arguments ]
 
-named-argument: IDENT "=" function-argument
+named-argument : IDENT "=" function-argument
 
 function-argument :
    `function` type-specifier "(" [ named-arguments ] ")" | expression
 
-output-expression-list:
+output-expression-list :
    [ expression ] { "," [ expression ] }
 
 expression-list :
