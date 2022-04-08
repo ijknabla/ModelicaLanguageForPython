@@ -8,6 +8,9 @@ SYNTAX_ASSIGNMENT_OPERATOR = [":", "|:"]
 NOT_OPERATOR = "!"
 OR_OPERATOR = "|"
 
+# ## Lexical keyword
+KEYWORD_RULE_NAME = "$KEYWORD"
+
 
 # # lexical rules
 def KEYWORD() -> RegExMatch:
@@ -23,10 +26,6 @@ def REGEX() -> Any:
         RegExMatch(r"""r'[^'\\]*(?:\\.[^'\\]*)*'"""),
         RegExMatch(r'''r"[^"\\]*(?:\\.[^"\\]*)*"'''),
     ]
-
-
-def KEYWORDS_RULE_NAME() -> StrMatch:
-    return StrMatch("$KEYWORD")
 
 
 def EOF_RULE_NAME() -> StrMatch:
@@ -57,7 +56,7 @@ def grammar() -> Any:
 
 def keywords_assignment() -> Any:
     return (
-        KEYWORDS_RULE_NAME,
+        KEYWORD_RULE_NAME,
         LEXICAL_ASSIGNMENT_OPERATOR,
         keywords_expression,
     )
@@ -126,7 +125,7 @@ def lexical_primary() -> Any:
 
 def lexical_rule_reference() -> Any:
     return [
-        (KEYWORDS_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        (KEYWORD_RULE_NAME, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
         (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
     ]
 
