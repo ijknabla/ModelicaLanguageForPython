@@ -1,26 +1,9 @@
-from arpeggio import ParserPython, NoMatch
+from arpeggio import NoMatch
 from contextlib import ExitStack
 import pytest
 
-from .parser import comment, grammar, Parser
+from .parser import Parser
 from .syntax import v3_4
-
-
-dialects = [
-    "",
-    """
-IDENT |= r'\\$\\w*'
-    """,
-    """
-file: stored-definition $EOF
-    """,
-]
-
-
-@pytest.mark.parametrize("dialect", dialects)
-def test_syntax(dialect: str) -> None:
-    parser = ParserPython(grammar, comment)
-    parser.parse(v3_4() + dialect)
 
 
 @pytest.fixture
