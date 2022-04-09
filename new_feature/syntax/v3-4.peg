@@ -111,7 +111,7 @@ long-class-specifier :
 short-class-specifier :
    IDENT "=" base-prefix type-specifier [ array-subscripts ]
    [ class-modification ] comment
-   | IDENT "=" enumeration "(" ( [enum-list] | ":" ) ")" comment
+   | IDENT "=" `enumeration` "(" ( [enum-list] | ":" ) ")" comment
 
 der-class-specifier :
    IDENT "=" `der` "(" type-specifier "," IDENT { "," IDENT } ")" comment
