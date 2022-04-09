@@ -348,7 +348,7 @@ class GrammarVisitor(
         resolved: Set[ParsingExpression] = set()
 
         def _resolve(
-            node: ParsingExpressionLike,
+            node: ParsingExpression,
         ) -> ParsingExpression:
             """
             Resolves CrossRefs from the parser model.
