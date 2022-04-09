@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     class ParsingExpression:
         root: bool
         rule_name: str
-        nodes: MutableSequence["ParsingExpression"]
+        nodes: MutableSequence["ParsingExpressionLike"]
 
         @property
         def name(self) -> str:
@@ -345,16 +345,19 @@ class GrammarVisitor(
     def visit_grammar(
         self, node: Any, children: Any
     ) -> Tuple[ParsingExpression, Optional[ParsingExpression]]:
-        resolved: Set[ParsingExpression] = set()
+        resolved: Set[ParsingExpressionLike] = set()
 
         def _resolve(
-            node: ParsingExpression,
+            node: ParsingExpressionLike,
         ) -> ParsingExpression:
             """
             Resolves CrossRefs from the parser model.
             """
 
             if node in resolved:
+                # Why? : The rule already included in `resolved`
+                # has been determined to be ParsingExpression.
+                assert isinstance(node, ParsingExpression)
                 return node
             resolved.add(node)
 
@@ -392,7 +395,7 @@ class GrammarVisitor(
                         )
                 return resolved_rule
 
-            if isinstance(node, arpeggio.CrossRef):
+            if isinstance(node, CrossRef):
                 # The root rule is a cross-ref
                 resolved_rule = resolve_rule_by_name(node.target_rule_name)
                 return _resolve(resolved_rule)
