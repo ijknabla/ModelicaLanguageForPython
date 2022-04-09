@@ -3,11 +3,13 @@ __all__ = ("Parser",)
 import arpeggio
 from copy import copy
 from typing import (
-    AbstractSet,
+    TYPE_CHECKING,
+    Set,
     Any,
     List,
     MutableMapping,
     Optional,
+    MutableSequence,
     Tuple,
     Union,
 )
@@ -17,8 +19,33 @@ import warnings
 from .exceptions import ParserWarning, SemanticError
 
 
-ParsingExpression = arpeggio.ParsingExpression
-ParsingExpressionLike = Union[arpeggio.ParsingExpression, arpeggio.CrossRef]
+if TYPE_CHECKING:
+
+    class ParsingExpression:
+        root: bool
+        rule_name: str
+        nodes: MutableSequence["ParsingExpressionLike"]
+
+        @property
+        def name(self) -> str:
+            ...
+
+        def parse(self, _: Any) -> Any:
+            ...
+
+    class CrossRef:
+        rule_name: str
+
+        @property
+        def target_rule_name(self) -> str:
+            ...
+
+
+else:
+    ParsingExpression = arpeggio.ParsingExpression
+    CrossRef = arpeggio.CrossRef
+
+ParsingExpressionLike = Union[ParsingExpression, CrossRef]
 
 
 # ## Lexical symbols & keywords
@@ -202,7 +229,7 @@ class GrammarVisitor(
         self.__ignore_case = ignore_case
         self.__rules = dict(self.__DEFAULT_RULES)
 
-    def visit_KEYWORD(self, node: Any, children: Any) -> ParsingExpressionLike:
+    def visit_KEYWORD(self, node: Any, children: Any) -> Any:
         match = arpeggio.RegExMatch(
             rf"{node.value[1:-1]}(?![0-9_a-zA-Z])",
             ignore_case=self.__ignore_case,
@@ -210,33 +237,27 @@ class GrammarVisitor(
         match.compile()
         return match
 
-    def visit_TEXT(self, node: Any, children: Any) -> ParsingExpressionLike:
+    def visit_TEXT(self, node: Any, children: Any) -> Any:
         return arpeggio.StrMatch(
             node.value[1:-1], ignore_case=self.__ignore_case
         )
 
-    def visit_REGEX(self, node: Any, children: Any) -> ParsingExpressionLike:
+    def visit_REGEX(self, node: Any, children: Any) -> Any:
         match = arpeggio.RegExMatch(
             node.value[2:-1], ignore_case=self.__ignore_case
         )
         match.compile()
         return match
 
-    def visit_LEXICAL_RULE_REFERENCE(
-        self, node: Any, children: Any
-    ) -> ParsingExpressionLike:
+    def visit_LEXICAL_RULE_REFERENCE(self, node: Any, children: Any) -> Any:
         return arpeggio.CrossRef(node.value)
 
-    def visit_SYNTAX_RULE_REFERENCE(
-        self, node: Any, children: Any
-    ) -> ParsingExpressionLike:
+    def visit_SYNTAX_RULE_REFERENCE(self, node: Any, children: Any) -> Any:
         skipws = arpeggio.RegExMatch(r"\s*")
         skipws.compile()
         return arpeggio.Sequence(nodes=[skipws, arpeggio.CrossRef(node.value)])
 
-    def visit_lexical_term(
-        self, node: Any, children: Any
-    ) -> ParsingExpressionLike:
+    def visit_lexical_term(self, node: Any, children: Any) -> Any:
         if len(children) == 2:
             operator, child = children
         else:
@@ -249,9 +270,7 @@ class GrammarVisitor(
 
         raise NotImplementedError()
 
-    def __visit_quantity(
-        self, node: Any, children: Any
-    ) -> ParsingExpressionLike:
+    def __visit_quantity(self, node: Any, children: Any) -> Any:
         (child,) = children
         try:
             L, _, R = node
@@ -269,25 +288,19 @@ class GrammarVisitor(
     visit_lexical_quantity = __visit_quantity
     visit_syntax_quantity = __visit_quantity
 
-    def __visit_sequence(
-        self, node: Any, children: Any
-    ) -> ParsingExpressionLike:
+    def __visit_sequence(self, node: Any, children: Any) -> Any:
         head, *tail = children
         if not tail:
             return head
         else:
             return arpeggio.Sequence(nodes=[head, *tail])
 
-    def visit_lexical_sequence(
-        self, node: Any, children: Any
-    ) -> ParsingExpressionLike:
+    def visit_lexical_sequence(self, node: Any, children: Any) -> Any:
         return arpeggio.Combine(nodes=self.__visit_sequence(node, children))
 
     visit_syntax_sequence = __visit_sequence
 
-    def __visit_ordered_choice(
-        self, node: Any, children: Any
-    ) -> ParsingExpressionLike:
+    def __visit_ordered_choice(self, node: Any, children: Any) -> Any:
         head, *tail = (
             child
             for child in children
@@ -303,7 +316,7 @@ class GrammarVisitor(
     visit_lexical_ordered_choice = __visit_ordered_choice
     visit_syntax_ordered_choice = __visit_ordered_choice
 
-    def __visit_rule(self, node: Any, children: Any) -> ParsingExpressionLike:
+    def __visit_rule(self, node: Any, children: Any) -> Any:
         rule_name, operator, new_rule = children
 
         if operator in {"=", ":"}:
@@ -332,7 +345,7 @@ class GrammarVisitor(
     def visit_grammar(
         self, node: Any, children: Any
     ) -> Tuple[ParsingExpression, Optional[ParsingExpression]]:
-        resolved: AbstractSet[ParsingExpression] = set()
+        resolved: Set[ParsingExpressionLike] = set()
 
         def _resolve(
             node: ParsingExpressionLike,
@@ -342,6 +355,9 @@ class GrammarVisitor(
             """
 
             if node in resolved:
+                # Why? : The rule already included in `resolved`
+                # has been determined to be ParsingExpression.
+                assert isinstance(node, ParsingExpression)
                 return node
             resolved.add(node)
 
@@ -361,7 +377,7 @@ class GrammarVisitor(
                     self.dprint("Resolving crossref {}".format(rule_name))
 
                 resolved_rule = get_rule_by_name(rule_name)
-                while type(resolved_rule) is arpeggio.CrossRef:
+                while isinstance(resolved_rule, CrossRef):
                     target_rule = resolved_rule.target_rule_name
                     resolved_rule = get_rule_by_name(target_rule)
 
@@ -379,7 +395,7 @@ class GrammarVisitor(
                         )
                 return resolved_rule
 
-            if isinstance(node, arpeggio.CrossRef):
+            if isinstance(node, CrossRef):
                 # The root rule is a cross-ref
                 resolved_rule = resolve_rule_by_name(node.target_rule_name)
                 return _resolve(resolved_rule)
