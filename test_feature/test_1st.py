@@ -1,6 +1,12 @@
 from arpeggio import NoMatch
 from contextlib import ExitStack
+from io import BytesIO
+from pathlib import PurePosixPath
 import pytest
+import re
+from typing import Iterator, Tuple
+from urllib import request
+from zipfile import ZipFile
 
 from .parser import Parser
 from .syntax import v3_4
@@ -79,3 +85,58 @@ def test_ident_dialect_parser(
         if not match:
             stack.enter_context(pytest.raises(NoMatch))
         ident_dialect_parser.parse(text)
+
+
+@pytest.fixture(scope="module")
+def modelica_parser() -> Parser:
+    return Parser(
+        v3_4()
+        + """
+file: stored-definition $EOF
+        """,
+        "file",
+        memoization=True,
+    )
+
+
+def download_mo_from_zip(
+    zip_url: str,
+) -> Iterator[Tuple[PurePosixPath, str]]:
+    with ExitStack() as stack:
+        responce = stack.enter_context(request.urlopen(zip_url))
+        zipFile = stack.enter_context(
+            ZipFile(BytesIO(responce.read()), mode="r")
+        )
+        for path in map(PurePosixPath, zipFile.namelist()):
+            if not path.suffix == ".mo":
+                continue
+            with zipFile.open(str(path)) as file:
+                yield path, file.read().decode("utf-8-sig")
+
+
+MODELICA_COMPLIENCE_URL = "https://github.com/modelica/Modelica-Compliance/archive/refs/heads/master.zip"  # noqa: E501
+
+
+@pytest.mark.parametrize(
+    "path, content",
+    (*download_mo_from_zip(MODELICA_COMPLIENCE_URL),),
+)
+def test_modelica_parser(
+    modelica_parser: Parser,
+    path: PurePosixPath,
+    content: str,
+) -> None:
+    annotations = list(
+        re.finditer(r"shouldPass\s*=\s*(?P<shouldPass>true|false)", content)
+    )
+    if not annotations:
+        shouldPass = True
+    else:
+        (annotation,) = annotations
+        shouldPass = eval(annotation.group("shouldPass").capitalize())
+
+    try:
+        modelica_parser.parse(content)
+    except NoMatch:
+        if not shouldPass:
+            raise
