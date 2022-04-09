@@ -8,8 +8,8 @@ from typing import Iterator, Tuple
 from urllib import request
 from zipfile import ZipFile
 
-from test_feature.parser import Parser
-from test_feature.syntax import v3_4
+from new_feature.parser import Parser
+from new_feature.syntax import v3_4
 
 
 @pytest.fixture(scope="module")
