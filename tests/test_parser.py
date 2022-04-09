@@ -5,8 +5,8 @@ from pkg_resources import resource_filename
 import pytest
 import re
 
-from new_feature.parser import Parser
-from new_feature.syntax import v3_4
+from modelica_language.parser import Parser
+from modelica_language.syntax import v3_4
 
 
 @pytest.fixture(scope="module")
