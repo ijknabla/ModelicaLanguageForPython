@@ -3,11 +3,13 @@ __all__ = ("Parser",)
 import arpeggio
 from copy import copy
 from typing import (
-    AbstractSet,
+    TYPE_CHECKING,
+    Set,
     Any,
     List,
     MutableMapping,
     Optional,
+    MutableSequence,
     Tuple,
     Union,
 )
@@ -17,8 +19,33 @@ import warnings
 from .exceptions import ParserWarning, SemanticError
 
 
-ParsingExpression = arpeggio.ParsingExpression
-ParsingExpressionLike = Union[arpeggio.ParsingExpression, arpeggio.CrossRef]
+if TYPE_CHECKING:
+
+    class ParsingExpression:
+        root: bool
+        rule_name: str
+        nodes: MutableSequence["ParsingExpression"]
+
+        @property
+        def name(self) -> str:
+            ...
+
+        def parse(self, _: Any) -> Any:
+            ...
+
+    class CrossRef:
+        rule_name: str
+
+        @property
+        def target_rule_name(self) -> str:
+            ...
+
+
+else:
+    ParsingExpression = arpeggio.ParsingExpression
+    CrossRef = arpeggio.CrossRef
+
+ParsingExpressionLike = Union[ParsingExpression, CrossRef]
 
 
 # ## Lexical symbols & keywords
@@ -332,7 +359,7 @@ class GrammarVisitor(
     def visit_grammar(
         self, node: Any, children: Any
     ) -> Tuple[ParsingExpression, Optional[ParsingExpression]]:
-        resolved: AbstractSet[ParsingExpression] = set()
+        resolved: Set[ParsingExpression] = set()
 
         def _resolve(
             node: ParsingExpressionLike,
