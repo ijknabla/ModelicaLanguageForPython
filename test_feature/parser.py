@@ -374,7 +374,7 @@ class GrammarVisitor(
                     self.dprint("Resolving crossref {}".format(rule_name))
 
                 resolved_rule = get_rule_by_name(rule_name)
-                while type(resolved_rule) is arpeggio.CrossRef:
+                while isinstance(resolved_rule, CrossRef):
                     target_rule = resolved_rule.target_rule_name
                     resolved_rule = get_rule_by_name(target_rule)
 
