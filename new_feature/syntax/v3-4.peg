@@ -10,6 +10,9 @@
  * !           When prefixed, indicates that it does not begin with that element
  * r'regex',   The string prefixed with r is a regular expression and is treated as a single token
  * `keyword`   Keyword literal is treated as a single token with no word component characters following
+ *
+ * In Parsing Expression Grammar, the first match is always chosen, so the result may change
+ * depending on the order of or. In this file, the order of or is adjusted.
  */
 
 /**
@@ -111,7 +114,7 @@ long-class-specifier :
 short-class-specifier :
    IDENT "=" base-prefix type-specifier [ array-subscripts ]
    [ class-modification ] comment
-   | IDENT "=" enumeration "(" ( [enum-list] | ":" ) ")" comment
+   | IDENT "=" `enumeration` "(" ( [enum-list] | ":" ) ")" comment
 
 der-class-specifier :
    IDENT "=" `der` "(" type-specifier "," IDENT { "," IDENT } ")" comment
@@ -323,7 +326,7 @@ when-statement :
    `end` `when`
 
 connect-clause :
-   connect "(" component-reference "," component-reference ")"
+   `connect` "(" component-reference "," component-reference ")"
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#expressions1
@@ -350,7 +353,8 @@ relation :
    arithmetic-expression [ relational-operator arithmetic-expression ]
 
 relational-operator :
-   "<" | "<=" | ">" | ">=" | "==" | "<>"
+   "==" | "<>" | "<=" | ">=" |  // 2-letter operators
+   "<" | ">"                    // 1-letter operators
 
 arithmetic-expression :
    [ add-operator ] term { add-operator term }
@@ -390,9 +394,9 @@ function-call-args :
    "(" [ function-arguments ] ")"
 
 function-arguments :
-   expression [ "," function-arguments-non-first | `for` for-indices ]
+   named-arguments
    | `function` type-specifier "(" [ named-arguments ] ")" [ "," function-arguments-non-first ]
-   | named-arguments
+   | expression [ "," function-arguments-non-first | `for` for-indices ]
 
 function-arguments-non-first :
    function-argument [ "," function-arguments-non-first ]
