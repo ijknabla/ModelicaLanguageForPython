@@ -323,7 +323,7 @@ when-statement :
    `end` `when`
 
 connect-clause :
-   connect "(" component-reference "," component-reference ")"
+   `connect` "(" component-reference "," component-reference ")"
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#expressions1
