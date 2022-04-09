@@ -6,7 +6,7 @@ from .parser import Parser
 from .syntax import v3_4
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def ident_parser() -> Parser:
     return Parser(
         v3_4()
@@ -43,7 +43,7 @@ def test_ident_parser(
         ident_parser.parse(text)
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def ident_dialect_parser() -> Parser:
     return Parser(
         v3_4()
