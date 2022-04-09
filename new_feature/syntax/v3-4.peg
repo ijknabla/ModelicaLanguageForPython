@@ -350,7 +350,8 @@ relation :
    arithmetic-expression [ relational-operator arithmetic-expression ]
 
 relational-operator :
-   "<" | "<=" | ">" | ">=" | "==" | "<>"
+   "==" | "<>" | "<=" | ">=" |  // 2-letter operators
+   "<" | ">"                    // 1-letter operators
 
 arithmetic-expression :
    [ add-operator ] term { add-operator term }
