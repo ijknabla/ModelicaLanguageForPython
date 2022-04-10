@@ -1,7 +1,7 @@
-import functools
-import pkg_resources
+__all__ = ("v3_4",)
+
+from pkg_resources import resource_string
 
 
-@functools.lru_cache(1)
 def v3_4() -> str:
-    return pkg_resources.resource_string(__name__, "v3-4.peg").decode("ASCII")
+    return resource_string(__name__, "v3-4.peg").decode("ascii")
