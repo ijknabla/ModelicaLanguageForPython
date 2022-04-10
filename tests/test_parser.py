@@ -5,14 +5,13 @@ from pkg_resources import resource_filename
 import pytest
 import re
 
-from modelica_language.parser import Parser
-from modelica_language.syntax import v3_4
+from modelica_language import Parser, syntax
 
 
 @pytest.fixture(scope="module")
 def ident_parser() -> Parser:
     return Parser(
-        v3_4()
+        syntax.v3_4()
         + """
 file: IDENT $EOF
         """,
@@ -49,7 +48,7 @@ def test_ident_parser(
 @pytest.fixture(scope="module")
 def ident_dialect_parser() -> Parser:
     return Parser(
-        v3_4()
+        syntax.v3_4()
         + """
 IDENT |= r'\\$\\w*'
 file: IDENT $EOF
@@ -87,7 +86,7 @@ def test_ident_dialect_parser(
 @pytest.fixture(scope="module")
 def modelica_parser() -> Parser:
     return Parser(
-        v3_4()
+        syntax.v3_4()
         + """
 file: stored-definition $EOF
         """,
