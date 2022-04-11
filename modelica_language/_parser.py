@@ -3,7 +3,6 @@ __all__ = ("Parser",)
 from arpeggio import (
     Combine,
     CrossRef,
-    EOF,
     EndOfFile,
     Not,
     OneOrMore,
@@ -11,8 +10,8 @@ from arpeggio import (
     OrderedChoice,
     PTNodeVisitor,
     ParseTreeNode,
-    Parser,
-    ParserPython,
+    Parser as ArpeggioParser,
+    ParserPython as ArpeggioPythonParser,
     ParsingExpression,
     RegExMatch,
     Sequence,
@@ -88,7 +87,7 @@ def SYNTAX_RULE_REFERENCE() -> Any:
 
 # ## Syntax rules
 def grammar() -> Any:
-    return (OneOrMore([lexical_rule, syntax_rule]), EOF)
+    return (OneOrMore([lexical_rule, syntax_rule]), EndOfFile())
 
 
 def lexical_rule() -> Any:
@@ -189,9 +188,7 @@ def comment() -> Any:
     ]
 
 
-class GrammarVisitor(
-    PTNodeVisitor,  # type: ignore
-):
+class GrammarVisitor(PTNodeVisitor):
     __root_rule_name: str
     __comment_rule_name: str
     __ignore_case: bool
@@ -399,9 +396,7 @@ class GrammarVisitor(
         return root_rule, comment_rule
 
 
-class Parser(
-    Parser,  # type: ignore
-):
+class Parser(ArpeggioParser):
     def __init__(
         self,
         language_def: str,
@@ -457,7 +452,7 @@ class Parser(
     def _from_peg(
         self, language_def: str
     ) -> Tuple[ParsingExpression, NoneOr[ParsingExpression]]:
-        parser = ParserPython(
+        parser = ArpeggioPythonParser(
             grammar, comment, reduce_tree=False, debug=self.debug
         )
         parser.root_rule_name = self.root_rule_name
