@@ -1,15 +1,31 @@
 __all__ = ("Parser",)
 
-import arpeggio
+from arpeggio import (
+    Combine,
+    CrossRef,
+    EndOfFile,
+    Not,
+    OneOrMore,
+    Optional,
+    OrderedChoice,
+    PTNodeVisitor,
+    ParseTreeNode,
+    Parser as ArpeggioParser,
+    ParserPython as ArpeggioPythonParser,
+    ParsingExpression,
+    RegExMatch,
+    Sequence,
+    StrMatch,
+    ZeroOrMore,
+    visit_parse_tree,
+)
 from copy import copy
 from typing import (
-    TYPE_CHECKING,
     Set,
     Any,
     List,
     MutableMapping,
-    Optional,
-    MutableSequence,
+    Optional as NoneOr,
     Tuple,
     Union,
 )
@@ -18,32 +34,6 @@ import warnings
 
 from .exceptions import ParserWarning, SemanticError
 
-
-if TYPE_CHECKING:
-
-    class ParsingExpression:
-        root: bool
-        rule_name: str
-        nodes: MutableSequence["ParsingExpressionLike"]
-
-        @property
-        def name(self) -> str:
-            ...
-
-        def parse(self, _: Any) -> Any:
-            ...
-
-    class CrossRef:
-        rule_name: str
-
-        @property
-        def target_rule_name(self) -> str:
-            ...
-
-
-else:
-    ParsingExpression = arpeggio.ParsingExpression
-    CrossRef = arpeggio.CrossRef
 
 ParsingExpressionLike = Union[ParsingExpression, CrossRef]
 
@@ -60,49 +50,44 @@ EOF_RULE_NAME: Final[str] = "$EOF"
 
 
 # ## Lexical rules
-def KEYWORD() -> arpeggio.RegExMatch:
-    return arpeggio.RegExMatch("`[a-z]+`")
+def KEYWORD() -> RegExMatch:
+    return RegExMatch("`[a-z]+`")
 
 
-def TEXT() -> arpeggio.RegExMatch:
-    return arpeggio.RegExMatch(r'"[^"]*"+')
+def TEXT() -> RegExMatch:
+    return RegExMatch(r'"[^"]*"+')
 
 
-def REGEX() -> arpeggio.RegExMatch:
-    return arpeggio.RegExMatch(r"""r'[^'\\]*(?:\\.[^'\\]*)*'""")
+def REGEX() -> RegExMatch:
+    return RegExMatch(r"""r'[^'\\]*(?:\\.[^'\\]*)*'""")
 
 
-def LEXICAL_RULE_IDENTIFIER() -> arpeggio.RegExMatch:
-    return arpeggio.RegExMatch("[A-Z]([0-9A-Z]|-)*")
+def LEXICAL_RULE_IDENTIFIER() -> RegExMatch:
+    return RegExMatch("[A-Z]([0-9A-Z]|-)*")
 
 
-def LEXICAL_RULE_REFERENCE() -> Any:
-    return (
-        [
-            (
-                LEXICAL_RULE_IDENTIFIER,
-                arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR),
-            ),
-            (KEYWORD_RULE_NAME, arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR)),
-        ],
+def LEXICAL_RULE_REFERENCE() -> ParsingExpression:
+    return Sequence(
+        OrderedChoice([LEXICAL_RULE_IDENTIFIER, KEYWORD_RULE_NAME]),
+        Not(LEXICAL_ASSIGNMENT_OPERATOR),
     )
 
 
-def SYNTAX_RULE_IDENTIFIER() -> arpeggio.RegExMatch:
-    return arpeggio.RegExMatch("[a-z]([0-9a-z]|-)*")
+def SYNTAX_RULE_IDENTIFIER() -> RegExMatch:
+    return RegExMatch("[a-z]([0-9a-z]|-)*")
 
 
 def SYNTAX_RULE_REFERENCE() -> Any:
     return [
-        (LEXICAL_RULE_IDENTIFIER, arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR)),
-        (SYNTAX_RULE_IDENTIFIER, arpeggio.Not(SYNTAX_ASSIGNMENT_OPERATOR)),
+        (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
+        (SYNTAX_RULE_IDENTIFIER, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
         EOF_RULE_NAME,
     ]
 
 
 # ## Syntax rules
 def grammar() -> Any:
-    return (arpeggio.OneOrMore([lexical_rule, syntax_rule]), arpeggio.EOF)
+    return (OneOrMore([lexical_rule, syntax_rule]), EndOfFile())
 
 
 def lexical_rule() -> Any:
@@ -134,14 +119,14 @@ def lexical_expression() -> Any:
 
 
 def lexical_ordered_choice() -> Any:
-    return arpeggio.OneOrMore(
-        (arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR), lexical_sequence),
+    return OneOrMore(
+        (Not(LEXICAL_ASSIGNMENT_OPERATOR), lexical_sequence),
         sep=OR_OPERATOR,
     )
 
 
 def lexical_sequence() -> Any:
-    return arpeggio.OneOrMore(lexical_quantity)
+    return OneOrMore(lexical_quantity)
 
 
 def lexical_quantity() -> Any:
@@ -153,7 +138,7 @@ def lexical_quantity() -> Any:
 
 
 def lexical_term() -> Any:
-    return arpeggio.Optional(NOT_OPERATOR), lexical_primary
+    return Optional(NOT_OPERATOR), lexical_primary
 
 
 def lexical_primary() -> Any:
@@ -171,11 +156,11 @@ def syntax_expression() -> Any:
 
 
 def syntax_ordered_choice() -> Any:
-    return arpeggio.OneOrMore(syntax_sequence, sep=OR_OPERATOR)
+    return OneOrMore(syntax_sequence, sep=OR_OPERATOR)
 
 
 def syntax_sequence() -> Any:
-    return arpeggio.OneOrMore(syntax_quantity)
+    return OneOrMore(syntax_quantity)
 
 
 def syntax_quantity() -> Any:
@@ -198,21 +183,19 @@ def syntax_primary() -> Any:
 # ## Comment rule
 def comment() -> Any:
     return [
-        arpeggio.RegExMatch(r"//.*"),
-        arpeggio.RegExMatch(r"/\*([^*]|\*[^/])*\*/"),
+        RegExMatch(r"//.*"),
+        RegExMatch(r"/\*([^*]|\*[^/])*\*/"),
     ]
 
 
-class GrammarVisitor(
-    arpeggio.PTNodeVisitor,  # type: ignore
-):
+class GrammarVisitor(PTNodeVisitor):
     __root_rule_name: str
     __comment_rule_name: str
     __ignore_case: bool
     __rules: MutableMapping[str, ParsingExpressionLike]
 
     __DEFAULT_RULES = {
-        EOF_RULE_NAME: arpeggio.EndOfFile(),
+        EOF_RULE_NAME: EndOfFile(),
     }
 
     def __init__(
@@ -230,7 +213,7 @@ class GrammarVisitor(
         self.__rules = dict(self.__DEFAULT_RULES)
 
     def visit_KEYWORD(self, node: Any, children: Any) -> Any:
-        match = arpeggio.RegExMatch(
+        match = RegExMatch(
             rf"{node.value[1:-1]}(?![0-9_a-zA-Z])",
             ignore_case=self.__ignore_case,
         )
@@ -238,24 +221,20 @@ class GrammarVisitor(
         return match
 
     def visit_TEXT(self, node: Any, children: Any) -> Any:
-        return arpeggio.StrMatch(
-            node.value[1:-1], ignore_case=self.__ignore_case
-        )
+        return StrMatch(node.value[1:-1], ignore_case=self.__ignore_case)
 
     def visit_REGEX(self, node: Any, children: Any) -> Any:
-        match = arpeggio.RegExMatch(
-            node.value[2:-1], ignore_case=self.__ignore_case
-        )
+        match = RegExMatch(node.value[2:-1], ignore_case=self.__ignore_case)
         match.compile()
         return match
 
     def visit_LEXICAL_RULE_REFERENCE(self, node: Any, children: Any) -> Any:
-        return arpeggio.CrossRef(node.value)
+        return CrossRef(node.value)
 
     def visit_SYNTAX_RULE_REFERENCE(self, node: Any, children: Any) -> Any:
-        skipws = arpeggio.RegExMatch(r"\s*")
+        skipws = RegExMatch(r"\s*")
         skipws.compile()
-        return arpeggio.Sequence(nodes=[skipws, arpeggio.CrossRef(node.value)])
+        return Sequence(nodes=[skipws, CrossRef(node.value)])
 
     def visit_lexical_term(self, node: Any, children: Any) -> Any:
         if len(children) == 2:
@@ -266,7 +245,7 @@ class GrammarVisitor(
         if operator is None:
             return child
         elif operator == "!":
-            return arpeggio.Not(nodes=[child])
+            return Not(nodes=[child])
 
         raise NotImplementedError()
 
@@ -280,9 +259,9 @@ class GrammarVisitor(
         if (L, R) == (None, None):
             return child
         elif (L, R) == ("[", "]"):
-            return arpeggio.Optional(nodes=[child])
+            return Optional(nodes=[child])
         elif (L, R) == ("{", "}"):
-            return arpeggio.ZeroOrMore(nodes=[child])
+            return ZeroOrMore(nodes=[child])
         raise NotImplementedError()
 
     visit_lexical_quantity = __visit_quantity
@@ -293,10 +272,10 @@ class GrammarVisitor(
         if not tail:
             return head
         else:
-            return arpeggio.Sequence(nodes=[head, *tail])
+            return Sequence(nodes=[head, *tail])
 
     def visit_lexical_sequence(self, node: Any, children: Any) -> Any:
-        return arpeggio.Combine(nodes=self.__visit_sequence(node, children))
+        return Combine(nodes=self.__visit_sequence(node, children))
 
     visit_syntax_sequence = __visit_sequence
 
@@ -304,14 +283,12 @@ class GrammarVisitor(
         head, *tail = (
             child
             for child in children
-            if isinstance(
-                child, (arpeggio.ParsingExpression, arpeggio.CrossRef)
-            )
+            if isinstance(child, (ParsingExpression, CrossRef))
         )
         if not tail:
             return head
         else:
-            return arpeggio.OrderedChoice(nodes=[head, *tail])
+            return OrderedChoice(nodes=[head, *tail])
 
     visit_lexical_ordered_choice = __visit_ordered_choice
     visit_syntax_ordered_choice = __visit_ordered_choice
@@ -328,7 +305,7 @@ class GrammarVisitor(
                 raise SemanticError(
                     f'Rule "{rule_name}" does not exists.'
                 ) from keyError
-            rule = arpeggio.OrderedChoice(nodes=[previous_rule, new_rule])
+            rule = OrderedChoice(nodes=[previous_rule, new_rule])
         else:
             raise NotImplementedError()
 
@@ -344,7 +321,7 @@ class GrammarVisitor(
 
     def visit_grammar(
         self, node: Any, children: Any
-    ) -> Tuple[ParsingExpression, Optional[ParsingExpression]]:
+    ) -> Tuple[ParsingExpression, NoneOr[ParsingExpression]]:
         resolved: Set[ParsingExpressionLike] = set()
 
         def _resolve(
@@ -419,9 +396,7 @@ class GrammarVisitor(
         return root_rule, comment_rule
 
 
-class Parser(
-    arpeggio.Parser,  # type: ignore
-):
+class Parser(ArpeggioParser):
     def __init__(
         self,
         language_def: str,
@@ -450,7 +425,7 @@ class Parser(
                 ParserWarning,
             )
 
-        super().__init__(*args, ignore_case=ignore_case, **kwargs)
+        super().__init__(*args, **kwargs)
         self.root_rule_name = root_rule_name
         self.comment_rule_name = comment_rule_name
 
@@ -471,19 +446,18 @@ class Parser(
                 self.parser_model, "{}_peg_parser_model.dot".format(root_rule)
             )
 
-    def _parse(self) -> arpeggio.ParseTreeNode:
+    def _parse(self) -> ParseTreeNode:
         return self.parser_model.parse(self)
 
     def _from_peg(
         self, language_def: str
-    ) -> Tuple[ParsingExpression, Optional[ParsingExpression]]:
-        parser = arpeggio.ParserPython(
+    ) -> Tuple[ParsingExpression, NoneOr[ParsingExpression]]:
+        parser = ArpeggioPythonParser(
             grammar, comment, reduce_tree=False, debug=self.debug
         )
-        parser.root_rule_name = self.root_rule_name
         parse_tree = parser.parse(language_def)
 
-        return arpeggio.visit_parse_tree(  # type: ignore
+        return visit_parse_tree(  # type: ignore
             parse_tree,
             GrammarVisitor(
                 self.root_rule_name,
