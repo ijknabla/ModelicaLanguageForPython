@@ -19,7 +19,6 @@ _ParsingExpressionArgument = Union[
     _Sequence[_AtomicParsingExpressionArgument],
 ]
 
-
 class NoMatch(Exception): ...
 
 class DebugPrinter:
