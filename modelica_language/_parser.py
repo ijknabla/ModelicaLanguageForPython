@@ -77,15 +77,17 @@ def LEXICAL_RULE_IDENTIFIER() -> arpeggio.RegExMatch:
 
 
 def LEXICAL_RULE_REFERENCE() -> arpeggio.ParsingExpression:
-    return [
-        arpeggio.Sequence(
-            LEXICAL_RULE_IDENTIFIER,
-            arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR),
-        ),
-        arpeggio.Sequence(
-            KEYWORD_RULE_NAME, arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR)
-        ),
-    ]
+    return arpeggio.OrderedChoice(
+        [
+            arpeggio.Sequence(
+                LEXICAL_RULE_IDENTIFIER,
+                arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR),
+            ),
+            arpeggio.Sequence(
+                KEYWORD_RULE_NAME, arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR)
+            ),
+        ]
+    )
 
 
 def SYNTAX_RULE_IDENTIFIER() -> arpeggio.RegExMatch:
