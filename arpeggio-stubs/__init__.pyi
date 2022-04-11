@@ -1,7 +1,19 @@
-from typing import Any, Callable, Iterable, MutableSequence, Union
+from typing import (
+    Any,
+    Callable,
+    Iterable,
+    MutableSequence,
+    Sequence as _Sequence,
+    Union,
+)
 
 _ParsingExpressionArgument = Union[
-    str, CrossRef, ParsingExpression, Callable[[], ParsingExpression]
+    str,
+    CrossRef,
+    ParsingExpression,
+    _Sequence[str],
+    _Sequence[ParsingExpression],
+    Callable[[], ParsingExpression],
 ]
 
 class NoMatch(Exception): ...
