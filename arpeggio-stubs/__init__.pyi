@@ -7,14 +7,18 @@ from typing import (
     Union,
 )
 
-_ParsingExpressionArgument = Union[
+_AtomicParsingExpressionArgument = Union[
     str,
     CrossRef,
     ParsingExpression,
-    _Sequence[str],
-    _Sequence[ParsingExpression],
     Callable[[], ParsingExpression],
 ]
+
+_ParsingExpressionArgument = Union[
+    _AtomicParsingExpressionArgument,
+    _Sequence[_AtomicParsingExpressionArgument],
+]
+
 
 class NoMatch(Exception): ...
 
