@@ -455,7 +455,6 @@ class Parser(ArpeggioParser):
         parser = ArpeggioPythonParser(
             grammar, comment, reduce_tree=False, debug=self.debug
         )
-        parser.root_rule_name = self.root_rule_name
         parse_tree = parser.parse(language_def)
 
         return visit_parse_tree(  # type: ignore
