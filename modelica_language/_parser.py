@@ -425,7 +425,7 @@ class Parser(ArpeggioParser):
                 ParserWarning,
             )
 
-        super().__init__(*args, ignore_case=ignore_case, **kwargs)
+        super().__init__(*args, **kwargs)
         self.root_rule_name = root_rule_name
         self.comment_rule_name = comment_rule_name
 
@@ -439,7 +439,7 @@ class Parser(ArpeggioParser):
         # In debug mode export parser model to dot for
         # visualization
         if self.debug:
-            from export import PMDOTExporter
+            from arpeggio.export import PMDOTExporter
 
             root_rule = self.parser_model.rule_name
             PMDOTExporter().exportFile(
