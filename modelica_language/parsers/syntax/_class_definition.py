@@ -193,8 +193,8 @@ def composition():  # type: ignore
         syntax.element_list,
         ZeroOrMore(
             [
-                (syntax.PUBLIC, syntax.element_list),
-                (syntax.PROTECTED, syntax.element_list),
+                (syntax.PUBLIC, syntax.element_list),  # type: ignore
+                (syntax.PROTECTED, syntax.element_list),  # type: ignore
                 syntax.equation_section,
                 syntax.algorithm_section,
             ]
@@ -292,7 +292,7 @@ def import_clause():  # type: ignore
                     ".",
                     [
                         "*",
-                        ("{", syntax.import_list, "}"),
+                        ("{", syntax.import_list, "}"),  # type: ignore
                     ],
                 ),
             ),

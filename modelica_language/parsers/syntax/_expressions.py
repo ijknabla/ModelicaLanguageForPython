@@ -262,8 +262,8 @@ def function_arguments():  # type: ignore
             syntax.expression,
             Optional(
                 [
-                    (",", syntax.function_arguments_non_first),
-                    (syntax.FOR, syntax.for_indices),
+                    (",", syntax.function_arguments_non_first),  # type: ignore
+                    (syntax.FOR, syntax.for_indices),  # type: ignore
                 ]
             ),
         ),
@@ -301,8 +301,8 @@ def array_arguments():  # type: ignore
         syntax.expression,
         Optional(
             [
-                (",", syntax.array_arguments_non_first),
-                (syntax.FOR, syntax.for_indices),
+                (",", syntax.array_arguments_non_first),  # type: ignore
+                (syntax.FOR, syntax.for_indices),  # type: ignore
             ]
         ),
     )
