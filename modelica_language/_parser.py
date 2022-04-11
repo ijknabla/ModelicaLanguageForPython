@@ -76,16 +76,16 @@ def LEXICAL_RULE_IDENTIFIER() -> arpeggio.RegExMatch:
     return arpeggio.RegExMatch("[A-Z]([0-9A-Z]|-)*")
 
 
-def LEXICAL_RULE_REFERENCE() -> Any:
-    return (
-        [
-            (
-                LEXICAL_RULE_IDENTIFIER,
-                arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR),
-            ),
-            (KEYWORD_RULE_NAME, arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR)),
-        ],
-    )
+def LEXICAL_RULE_REFERENCE() -> arpeggio.ParsingExpression:
+    return [
+        arpeggio.Sequence(
+            LEXICAL_RULE_IDENTIFIER,
+            arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR),
+        ),
+        arpeggio.Sequence(
+            KEYWORD_RULE_NAME, arpeggio.Not(LEXICAL_ASSIGNMENT_OPERATOR)
+        ),
+    ]
 
 
 def SYNTAX_RULE_IDENTIFIER() -> arpeggio.RegExMatch:
