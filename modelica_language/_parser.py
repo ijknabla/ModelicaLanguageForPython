@@ -66,15 +66,15 @@ def LEXICAL_RULE_IDENTIFIER() -> RegExMatch:
     return RegExMatch("[A-Z]([0-9A-Z]|-)*")
 
 
-def LEXICAL_RULE_REFERENCE() -> ParsingExpression:
+def SYNTAX_RULE_IDENTIFIER() -> RegExMatch:
+    return RegExMatch("[a-z]([0-9a-z]|-)*")
+
+
+def PART_OF_WORD_REFERENCE() -> ParsingExpression:
     return Sequence(
         OrderedChoice([LEXICAL_RULE_IDENTIFIER, KEYWORD_RULE_NAME]),
         Not(LEXICAL_ASSIGNMENT_OPERATOR),
     )
-
-
-def SYNTAX_RULE_IDENTIFIER() -> RegExMatch:
-    return RegExMatch("[a-z]([0-9a-z]|-)*")
 
 
 def WORD_REFERENCE() -> ParsingExpression:
@@ -159,7 +159,7 @@ def lexical_primary() -> ParsingExpression:
             KEYWORD,
             TEXT,
             REGEX,
-            LEXICAL_RULE_REFERENCE,
+            PART_OF_WORD_REFERENCE,
         ]
     )
 
@@ -259,7 +259,7 @@ class GrammarVisitor(PTNodeVisitor):
     def __visit_REFERENCE(self, node: Any, children: Any) -> Any:
         return CrossRef(node.value)
 
-    visit_LEXICAL_RULE_REFERENCE = __visit_REFERENCE
+    visit_PART_OF_WORD_REFERENCE = __visit_REFERENCE
 
     def visit_WORD_REFERENCE(self, node: Any, children: Any) -> Any:
         crossref = self.__visit_REFERENCE(node, children)
