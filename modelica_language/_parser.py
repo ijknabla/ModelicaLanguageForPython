@@ -229,8 +229,8 @@ class GrammarVisitor(PTNodeVisitor):
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.__root_rule_name = root_rule_name
-        self.__comment_rule_name = comment_rule_name
+        self.__root_rule_name = self.hyphen2underscore(root_rule_name)
+        self.__comment_rule_name = self.hyphen2underscore(comment_rule_name)
         self.__ignore_case = ignore_case
         self.__rules = dict(self.__DEFAULT_RULES)
 
@@ -250,8 +250,16 @@ class GrammarVisitor(PTNodeVisitor):
         match.compile()
         return match
 
+    def __visit_IDENTIFIER(self, node: Any, children: Any) -> Any:
+        return self.hyphen2underscore(node.value)
+
+    visit_LEXICAL_RULE_IDENTIFIER = __visit_IDENTIFIER
+    visit_SYNTAX_RULE_IDENTIFIER = __visit_IDENTIFIER
+
     def __visit_REFERENCE(self, node: Any, children: Any) -> Any:
-        return CrossRef(node.value)
+        identifier = self.hyphen2underscore(node.value)
+        assert "-" not in identifier
+        return CrossRef(identifier)
 
     visit_PART_OF_WORD_REFERENCE = __visit_REFERENCE
 
@@ -320,6 +328,7 @@ class GrammarVisitor(PTNodeVisitor):
 
     def __visit_rule(self, node: Any, children: Any) -> Any:
         rule_name, operator, new_rule = children
+        assert "-" not in rule_name
 
         if operator in {"=", ":"}:
             rule = new_rule
@@ -426,6 +435,10 @@ class GrammarVisitor(PTNodeVisitor):
         skipws = RegExMatch(r"\s*")
         skipws.compile()
         return skipws
+
+    @staticmethod
+    def hyphen2underscore(hyphen: str) -> str:
+        return hyphen.replace("-", "_")
 
 
 class Parser(ArpeggioParser):
