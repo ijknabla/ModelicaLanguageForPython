@@ -257,7 +257,7 @@ class GrammarVisitor(PTNodeVisitor):
     visit_SYNTAX_RULE_IDENTIFIER = __visit_IDENTIFIER
 
     def __visit_REFERENCE(self, node: Any, children: Any) -> Any:
-        identifier = self.hyphen2underscore(node.value)
+        (identifier,) = children
         assert "-" not in identifier
         return CrossRef(identifier)
 
