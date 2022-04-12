@@ -77,36 +77,42 @@ def SYNTAX_RULE_IDENTIFIER() -> RegExMatch:
     return RegExMatch("[a-z]([0-9a-z]|-)*")
 
 
-def SYNTAX_RULE_REFERENCE() -> Any:
-    return [
-        (LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)),
-        (SYNTAX_RULE_IDENTIFIER, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
-        EOF_RULE_NAME,
-    ]
+def SYNTAX_RULE_REFERENCE() -> ParsingExpression:
+    return OrderedChoice(
+        [
+            Sequence(
+                LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)
+            ),
+            Sequence(SYNTAX_RULE_IDENTIFIER, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
+            EOF_RULE_NAME,
+        ]
+    )
 
 
 # ## Syntax rules
-def grammar() -> Any:
-    return (OneOrMore([lexical_rule, syntax_rule]), EndOfFile())
+def grammar() -> ParsingExpression:
+    return Sequence(OneOrMore([lexical_rule, syntax_rule]), EndOfFile())
 
 
-def lexical_rule() -> Any:
+def lexical_rule() -> ParsingExpression:
     # In the lexical rule, the special rules
     # $KEYWORD and $COMMENT can be defined.
     # However, $EOF cannot be defined.
-    return (
-        [
-            KEYWORD_RULE_NAME,
-            COMMENT_RULE_NAME,
-            LEXICAL_RULE_IDENTIFIER,
-        ],
+    return Sequence(
+        OrderedChoice(
+            [
+                KEYWORD_RULE_NAME,
+                COMMENT_RULE_NAME,
+                LEXICAL_RULE_IDENTIFIER,
+            ]
+        ),
         LEXICAL_ASSIGNMENT_OPERATOR,
         lexical_expression,
     )
 
 
-def syntax_rule() -> Any:
-    return (
+def syntax_rule() -> ParsingExpression:
+    return Sequence(
         SYNTAX_RULE_IDENTIFIER,
         SYNTAX_ASSIGNMENT_OPERATOR,
         syntax_expression,
@@ -114,78 +120,92 @@ def syntax_rule() -> Any:
 
 
 # ## expression rule
-def lexical_expression() -> Any:
-    return (lexical_ordered_choice,)
+def lexical_expression() -> ParsingExpression:
+    return Sequence(
+        lexical_ordered_choice,
+    )
 
 
-def lexical_ordered_choice() -> Any:
+def lexical_ordered_choice() -> ParsingExpression:
     return OneOrMore(
         (Not(LEXICAL_ASSIGNMENT_OPERATOR), lexical_sequence),
         sep=OR_OPERATOR,
     )
 
 
-def lexical_sequence() -> Any:
+def lexical_sequence() -> ParsingExpression:
     return OneOrMore(lexical_quantity)
 
 
-def lexical_quantity() -> Any:
-    return [
-        ("[", lexical_expression, "]"),
-        ("{", lexical_expression, "}"),
-        lexical_term,
-    ]
+def lexical_quantity() -> ParsingExpression:
+    return OrderedChoice(
+        [
+            Sequence("[", lexical_expression, "]"),
+            Sequence("{", lexical_expression, "}"),
+            lexical_term,
+        ]
+    )
 
 
-def lexical_term() -> Any:
-    return Optional(NOT_OPERATOR), lexical_primary
+def lexical_term() -> ParsingExpression:
+    return Sequence(Optional(NOT_OPERATOR), lexical_primary)
 
 
-def lexical_primary() -> Any:
-    return [
-        ("(", lexical_expression, ")"),
-        KEYWORD,
-        TEXT,
-        REGEX,
-        LEXICAL_RULE_REFERENCE,
-    ]
+def lexical_primary() -> ParsingExpression:
+    return OrderedChoice(
+        [
+            Sequence("(", lexical_expression, ")"),
+            KEYWORD,
+            TEXT,
+            REGEX,
+            LEXICAL_RULE_REFERENCE,
+        ]
+    )
 
 
-def syntax_expression() -> Any:
-    return (syntax_ordered_choice,)
+def syntax_expression() -> ParsingExpression:
+    return Sequence(
+        syntax_ordered_choice,
+    )
 
 
-def syntax_ordered_choice() -> Any:
+def syntax_ordered_choice() -> ParsingExpression:
     return OneOrMore(syntax_sequence, sep=OR_OPERATOR)
 
 
-def syntax_sequence() -> Any:
+def syntax_sequence() -> ParsingExpression:
     return OneOrMore(syntax_quantity)
 
 
-def syntax_quantity() -> Any:
-    return [
-        ("[", syntax_expression, "]"),
-        ("{", syntax_expression, "}"),
-        syntax_primary,
-    ]
+def syntax_quantity() -> ParsingExpression:
+    return OrderedChoice(
+        [
+            Sequence("[", syntax_expression, "]"),
+            Sequence("{", syntax_expression, "}"),
+            syntax_primary,
+        ]
+    )
 
 
-def syntax_primary() -> Any:
-    return [
-        ("(", syntax_expression, ")"),
-        KEYWORD,
-        TEXT,
-        SYNTAX_RULE_REFERENCE,
-    ]
+def syntax_primary() -> ParsingExpression:
+    return OrderedChoice(
+        [
+            Sequence("(", syntax_expression, ")"),
+            KEYWORD,
+            TEXT,
+            SYNTAX_RULE_REFERENCE,
+        ]
+    )
 
 
 # ## Comment rule
-def comment() -> Any:
-    return [
-        RegExMatch(r"//.*"),
-        RegExMatch(r"/\*([^*]|\*[^/])*\*/"),
-    ]
+def comment() -> ParsingExpression:
+    return OrderedChoice(
+        [
+            RegExMatch(r"//.*"),
+            RegExMatch(r"/\*([^*]|\*[^/])*\*/"),
+        ]
+    )
 
 
 class GrammarVisitor(PTNodeVisitor):
