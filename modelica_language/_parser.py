@@ -234,12 +234,6 @@ class GrammarVisitor(PTNodeVisitor):
         self.__ignore_case = ignore_case
         self.__rules = dict(self.__DEFAULT_RULES)
 
-    @property
-    def __skipws(self) -> RegExMatch:
-        skipws = RegExMatch(r"\s*")
-        skipws.compile()
-        return skipws
-
     def visit_KEYWORD(self, node: Any, children: Any) -> Any:
         match = RegExMatch(
             rf"{node.value[1:-1]}(?![0-9_a-zA-Z])",
@@ -263,7 +257,7 @@ class GrammarVisitor(PTNodeVisitor):
 
     def visit_WORD_REFERENCE(self, node: Any, children: Any) -> Any:
         crossref = self.__visit_REFERENCE(node, children)
-        return Sequence(nodes=[self.__skipws, crossref])
+        return Sequence(nodes=[self.skipws, crossref])
 
     visit_SYNTAX_REFERENCE = __visit_REFERENCE
 
@@ -425,6 +419,13 @@ class GrammarVisitor(PTNodeVisitor):
         if root_rule is None:
             raise SemanticError("Root rule not found!")
         return root_rule, comment_rule
+
+    # Utilities
+    @property
+    def skipws(self) -> RegExMatch:
+        skipws = RegExMatch(r"\s*")
+        skipws.compile()
+        return skipws
 
 
 class Parser(ArpeggioParser):
