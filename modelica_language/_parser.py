@@ -77,12 +77,13 @@ def SYNTAX_RULE_IDENTIFIER() -> RegExMatch:
     return RegExMatch("[a-z]([0-9a-z]|-)*")
 
 
-def SYNTAX_RULE_REFERENCE() -> ParsingExpression:
+def WORD_REFERENCE() -> ParsingExpression:
+    return Sequence(LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR))
+
+
+def SYNTAX_REFERENCE() -> ParsingExpression:
     return OrderedChoice(
         [
-            Sequence(
-                LEXICAL_RULE_IDENTIFIER, Not(LEXICAL_ASSIGNMENT_OPERATOR)
-            ),
             Sequence(SYNTAX_RULE_IDENTIFIER, Not(SYNTAX_ASSIGNMENT_OPERATOR)),
             EOF_RULE_NAME,
         ]
@@ -193,7 +194,8 @@ def syntax_primary() -> ParsingExpression:
             Sequence("(", syntax_expression, ")"),
             KEYWORD,
             TEXT,
-            SYNTAX_RULE_REFERENCE,
+            WORD_REFERENCE,
+            SYNTAX_REFERENCE,
         ]
     )
 
@@ -232,6 +234,12 @@ class GrammarVisitor(PTNodeVisitor):
         self.__ignore_case = ignore_case
         self.__rules = dict(self.__DEFAULT_RULES)
 
+    @property
+    def __skipws(self) -> RegExMatch:
+        skipws = RegExMatch(r"\s*")
+        skipws.compile()
+        return skipws
+
     def visit_KEYWORD(self, node: Any, children: Any) -> Any:
         match = RegExMatch(
             rf"{node.value[1:-1]}(?![0-9_a-zA-Z])",
@@ -248,13 +256,16 @@ class GrammarVisitor(PTNodeVisitor):
         match.compile()
         return match
 
-    def visit_LEXICAL_RULE_REFERENCE(self, node: Any, children: Any) -> Any:
+    def __visit_REFERENCE(self, node: Any, children: Any) -> Any:
         return CrossRef(node.value)
 
-    def visit_SYNTAX_RULE_REFERENCE(self, node: Any, children: Any) -> Any:
-        skipws = RegExMatch(r"\s*")
-        skipws.compile()
-        return Sequence(nodes=[skipws, CrossRef(node.value)])
+    visit_LEXICAL_RULE_REFERENCE = __visit_REFERENCE
+
+    def visit_WORD_REFERENCE(self, node: Any, children: Any) -> Any:
+        crossref = self.__visit_REFERENCE(node, children)
+        return Sequence(nodes=[self.__skipws, crossref])
+
+    visit_SYNTAX_REFERENCE = __visit_REFERENCE
 
     def visit_lexical_term(self, node: Any, children: Any) -> Any:
         if len(children) == 2:
