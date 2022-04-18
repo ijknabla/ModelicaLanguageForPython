@@ -312,7 +312,7 @@ class GrammarVisitor(PTNodeVisitor):
         if not tail:
             return head
         else:
-            return Combine(nodes=Sequence(nodes=[head, *tail]))
+            return Combine(nodes=[Sequence(nodes=[head, *tail])])
 
     visit_syntax_sequence = __visit_sequence
 
