@@ -428,15 +428,20 @@ class GrammarVisitor(PTNodeVisitor):
                 return node
 
         # Find root and comment rules
-        root_rule, comment_rule = None, None
+        assert self.__syntax_rule_names <= self.__rules.keys()
+
+        if self.__root_rule_name not in self.__syntax_rule_names:
+            raise SemanticError(
+                f'Root syntax rule "{self.__root_rule_name}" does not exists.'
+            )
+        else:
+            root_rule = _resolve(self.__rules[self.__root_rule_name])
+
+        comment_rule = None
         for rule in children:
-            if rule.rule_name == self.__root_rule_name:
-                root_rule = _resolve(rule)
             if rule.rule_name == self.__comment_rule_name:
                 comment_rule = _resolve(rule)
 
-        if root_rule is None:
-            raise SemanticError("Root rule not found!")
         return root_rule, comment_rule
 
     # Utilities
