@@ -21,11 +21,11 @@ from arpeggio import (
 )
 from copy import copy
 from typing import (
-    Set,
     Any,
     List,
     MutableMapping,
     Optional as NoneOr,
+    Set,
     Tuple,
     Union,
 )
@@ -215,6 +215,7 @@ class GrammarVisitor(PTNodeVisitor):
     __comment_rule_name: str
     __ignore_case: bool
     __rules: MutableMapping[str, ParsingExpressionLike]
+    __syntax_rule_names: Set[str]
 
     __DEFAULT_RULES = {
         EOF_RULE_NAME: EndOfFile(),
@@ -233,6 +234,7 @@ class GrammarVisitor(PTNodeVisitor):
         self.__comment_rule_name = self.hyphen2underscore(comment_rule_name)
         self.__ignore_case = ignore_case
         self.__rules = dict(self.__DEFAULT_RULES)
+        self.__syntax_rule_names = set()
 
     def visit_KEYWORD(self, node: Any, children: Any) -> Any:
         match = RegExMatch(
@@ -355,7 +357,11 @@ class GrammarVisitor(PTNodeVisitor):
         return rule
 
     visit_lexical_rule = __visit_rule
-    visit_syntax_rule = __visit_rule
+
+    def visit_syntax_rule(self, node: Any, children: Any) -> Any:
+        rule_name, *_ = children
+        self.__syntax_rule_names.add(rule_name)
+        return self.__visit_rule(node, children)
 
     def visit_grammar(
         self, node: Any, children: Any
@@ -422,15 +428,20 @@ class GrammarVisitor(PTNodeVisitor):
                 return node
 
         # Find root and comment rules
-        root_rule, comment_rule = None, None
+        assert self.__syntax_rule_names <= self.__rules.keys()
+
+        if self.__root_rule_name not in self.__syntax_rule_names:
+            raise SemanticError(
+                f'Root syntax rule "{self.__root_rule_name}" does not exists.'
+            )
+        else:
+            root_rule = _resolve(self.__rules[self.__root_rule_name])
+
+        comment_rule = None
         for rule in children:
-            if rule.rule_name == self.__root_rule_name:
-                root_rule = _resolve(rule)
             if rule.rule_name == self.__comment_rule_name:
                 comment_rule = _resolve(rule)
 
-        if root_rule is None:
-            raise SemanticError("Root rule not found!")
         return root_rule, comment_rule
 
     # Utilities
