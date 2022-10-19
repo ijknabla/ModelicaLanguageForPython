@@ -37,3 +37,6 @@ line-length = 79
 [tool.flake8]
 exclude = ".venv"
 
+[tool.isort]
+profile = "black"
+line_length = 79
