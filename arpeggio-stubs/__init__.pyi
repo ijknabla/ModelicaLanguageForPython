@@ -1,11 +1,6 @@
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    MutableSequence,
-    Sequence as _Sequence,
-    Union,
-)
+from typing import Any, Callable, Iterable, MutableSequence
+from typing import Sequence as _Sequence
+from typing import Union
 
 _AtomicParsingExpressionArgument = Union[
     str,

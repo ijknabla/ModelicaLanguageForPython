@@ -5,9 +5,9 @@ __all__ = (
     "CPP_STYLE_COMMENT",
 )
 
-from arpeggio import RegExMatch, Not
-from .. import syntax
-from .. import regex
+from arpeggio import Not, RegExMatch
+
+from .. import regex, syntax
 
 
 def IDENT():  # type: ignore

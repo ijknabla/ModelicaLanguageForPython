@@ -1,6 +1,7 @@
-from arpeggio import NoMatch
 from contextlib import ExitStack
+
 import pytest
+from arpeggio import NoMatch
 
 from modelica_language import Parser, syntax
 
