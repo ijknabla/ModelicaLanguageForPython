@@ -11,8 +11,8 @@ from modelica_language import Parser, syntax
 @pytest.fixture(scope="module")
 def modelica_parser() -> Parser:
     return Parser(
-        syntax.v3_4()
-        + """
+        f"""
+{syntax.v3_4()}
 file: stored-definition $EOF
         """,
         "file",
@@ -20,21 +20,25 @@ file: stored-definition $EOF
     )
 
 
+SOURCE_DIRECTORY = Path(
+    resource_filename(__name__, "Modelica-Compliance/ModelicaCompliance/")
+)
+SOURCE_FILES = tuple(SOURCE_DIRECTORY.rglob("*.mo"))
+
+
 @pytest.mark.parametrize(
-    "path",
-    [
-        *Path(
-            resource_filename(
-                __name__, "Modelica-Compliance/ModelicaCompliance/"
-            )
-        ).glob("**/*.mo")
+    "source_file",
+    SOURCE_FILES,
+    ids=[
+        f"{source_file.relative_to(SOURCE_DIRECTORY)}"
+        for source_file in SOURCE_FILES
     ],
 )
 def test_modelica_parser(
     modelica_parser: Parser,
-    path: Path,
+    source_file: Path,
 ) -> None:
-    content = path.read_text(encoding="utf-8-sig")
+    content = source_file.read_text(encoding="utf-8-sig")
 
     annotations = list(
         re.finditer(r"shouldPass\s*=\s*(?P<shouldPass>true|false)", content)
