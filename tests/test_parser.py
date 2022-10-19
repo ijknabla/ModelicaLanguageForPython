@@ -9,8 +9,8 @@ from modelica_language import Parser, syntax
 @pytest.fixture(scope="module")
 def ident_parser() -> Parser:
     return Parser(
-        syntax.v3_4()
-        + """
+        f"""
+{syntax.v3_4()}
 file: IDENT $EOF
         """,
         "file",
@@ -46,8 +46,8 @@ def test_ident_parser(
 @pytest.fixture(scope="module")
 def ident_dialect_parser() -> Parser:
     return Parser(
-        syntax.v3_4()
-        + """
+        f"""
+{syntax.v3_4()}
 IDENT |= r'\\$\\w*'
 file: IDENT $EOF
         """,

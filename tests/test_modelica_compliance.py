@@ -11,8 +11,8 @@ from modelica_language import Parser, syntax
 @pytest.fixture(scope="module")
 def modelica_parser() -> Parser:
     return Parser(
-        syntax.v3_4()
-        + """
+        f"""
+{syntax.v3_4()}
 file: stored-definition $EOF
         """,
         "file",
