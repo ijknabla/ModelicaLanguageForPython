@@ -1,8 +1,9 @@
-from arpeggio import NoMatch
-from pathlib import Path
-from pkg_resources import resource_filename
-import pytest
 import re
+from pathlib import Path
+
+import pytest
+from arpeggio import NoMatch
+from pkg_resources import resource_filename
 
 from modelica_language import Parser, syntax
 

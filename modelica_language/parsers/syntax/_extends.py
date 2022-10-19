@@ -4,6 +4,7 @@ __all__ = (
 )
 
 from arpeggio import Optional
+
 from .. import syntax
 
 

@@ -32,7 +32,8 @@ __all__ = (
     "annotation",
 )
 
-from arpeggio import Optional, ZeroOrMore, OneOrMore
+from arpeggio import OneOrMore, Optional, ZeroOrMore
+
 from .. import syntax
 
 

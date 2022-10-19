@@ -1,5 +1,11 @@
 __all__ = ("Parser",)
 
+import warnings
+from copy import copy
+from typing import Any, List, MutableMapping
+from typing import Optional as NoneOr
+from typing import Set, Tuple, Union
+
 from arpeggio import (
     Combine,
     CrossRef,
@@ -8,32 +14,22 @@ from arpeggio import (
     OneOrMore,
     Optional,
     OrderedChoice,
-    PTNodeVisitor,
+)
+from arpeggio import Parser as ArpeggioParser
+from arpeggio import ParserPython as ArpeggioPythonParser
+from arpeggio import (
     ParseTreeNode,
-    Parser as ArpeggioParser,
-    ParserPython as ArpeggioPythonParser,
     ParsingExpression,
+    PTNodeVisitor,
     RegExMatch,
     Sequence,
     StrMatch,
     ZeroOrMore,
     visit_parse_tree,
 )
-from copy import copy
-from typing import (
-    Any,
-    List,
-    MutableMapping,
-    Optional as NoneOr,
-    Set,
-    Tuple,
-    Union,
-)
 from typing_extensions import Final
-import warnings
 
 from .exceptions import ParserWarning, SemanticError
-
 
 ParsingExpressionLike = Union[ParsingExpression, CrossRef]
 

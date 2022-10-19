@@ -3,5 +3,5 @@ __all__ = (
     "syntax",
 )
 
-from ._parser import Parser
 from . import syntax
+from ._parser import Parser

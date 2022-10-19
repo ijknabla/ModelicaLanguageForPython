@@ -1,6 +1,7 @@
 __all__ = ("stored_definition",)
 
 from arpeggio import Optional, ZeroOrMore
+
 from .. import syntax
 
 

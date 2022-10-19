@@ -19,19 +19,24 @@ python = "^3.6"
 Arpeggio = ">=1.6"
 typing-extensions = ">=3.7"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pyproject-flake8 = "^0.0.1-alpha.2"
 mypy = "^0.910"
 pytest = "^6.2.5"
 black = ">=20.8.b1"
 types-setuptools = "^57.4.11"
+isort = "^5.8"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.black]
+line-length = 79
+
 [tool.flake8]
 exclude = ".venv"
 
-[tool.black]
-line-length = 79
+[tool.isort]
+profile = "black"
+line_length = 79
