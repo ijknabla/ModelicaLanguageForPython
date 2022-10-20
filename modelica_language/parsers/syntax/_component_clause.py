@@ -7,10 +7,8 @@ __all__ = (
     "declaration",
 )
 
-from arpeggio import (
-    Optional,
-    OneOrMore,
-)
+from arpeggio import OneOrMore, Optional
+
 from .. import syntax
 
 

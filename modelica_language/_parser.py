@@ -1,5 +1,11 @@
 __all__ = ("Parser",)
 
+import warnings
+from copy import copy
+from typing import Any, List, MutableMapping
+from typing import Optional as NoneOr
+from typing import Set, Tuple, Union
+
 from arpeggio import (
     Combine,
     CrossRef,
@@ -8,32 +14,22 @@ from arpeggio import (
     OneOrMore,
     Optional,
     OrderedChoice,
-    PTNodeVisitor,
+)
+from arpeggio import Parser as ArpeggioParser
+from arpeggio import ParserPython as ArpeggioPythonParser
+from arpeggio import (
     ParseTreeNode,
-    Parser as ArpeggioParser,
-    ParserPython as ArpeggioPythonParser,
     ParsingExpression,
+    PTNodeVisitor,
     RegExMatch,
     Sequence,
     StrMatch,
     ZeroOrMore,
     visit_parse_tree,
 )
-from copy import copy
-from typing import (
-    Set,
-    Any,
-    List,
-    MutableMapping,
-    Optional as NoneOr,
-    Tuple,
-    Union,
-)
 from typing_extensions import Final
-import warnings
 
 from .exceptions import ParserWarning, SemanticError
-
 
 ParsingExpressionLike = Union[ParsingExpression, CrossRef]
 
@@ -215,6 +211,7 @@ class GrammarVisitor(PTNodeVisitor):
     __comment_rule_name: str
     __ignore_case: bool
     __rules: MutableMapping[str, ParsingExpressionLike]
+    __syntax_rule_names: Set[str]
 
     __DEFAULT_RULES = {
         EOF_RULE_NAME: EndOfFile(),
@@ -229,16 +226,11 @@ class GrammarVisitor(PTNodeVisitor):
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.__root_rule_name = root_rule_name
-        self.__comment_rule_name = comment_rule_name
+        self.__root_rule_name = self.hyphen2underscore(root_rule_name)
+        self.__comment_rule_name = self.hyphen2underscore(comment_rule_name)
         self.__ignore_case = ignore_case
         self.__rules = dict(self.__DEFAULT_RULES)
-
-    @property
-    def __skipws(self) -> RegExMatch:
-        skipws = RegExMatch(r"\s*")
-        skipws.compile()
-        return skipws
+        self.__syntax_rule_names = set()
 
     def visit_KEYWORD(self, node: Any, children: Any) -> Any:
         match = RegExMatch(
@@ -256,14 +248,22 @@ class GrammarVisitor(PTNodeVisitor):
         match.compile()
         return match
 
+    def __visit_IDENTIFIER(self, node: Any, children: Any) -> Any:
+        return self.hyphen2underscore(node.value)
+
+    visit_LEXICAL_RULE_IDENTIFIER = __visit_IDENTIFIER
+    visit_SYNTAX_RULE_IDENTIFIER = __visit_IDENTIFIER
+
     def __visit_REFERENCE(self, node: Any, children: Any) -> Any:
-        return CrossRef(node.value)
+        (identifier,) = children
+        assert "-" not in identifier
+        return CrossRef(identifier)
 
     visit_PART_OF_WORD_REFERENCE = __visit_REFERENCE
 
     def visit_WORD_REFERENCE(self, node: Any, children: Any) -> Any:
         crossref = self.__visit_REFERENCE(node, children)
-        return Sequence(nodes=[self.__skipws, crossref])
+        return Sequence(nodes=[self.skipws, crossref])
 
     visit_SYNTAX_REFERENCE = __visit_REFERENCE
 
@@ -306,7 +306,11 @@ class GrammarVisitor(PTNodeVisitor):
             return Sequence(nodes=[head, *tail])
 
     def visit_lexical_sequence(self, node: Any, children: Any) -> Any:
-        return Combine(nodes=self.__visit_sequence(node, children))
+        head, *tail = children
+        if not tail:
+            return head
+        else:
+            return Combine(nodes=[Sequence(nodes=[head, *tail])])
 
     visit_syntax_sequence = __visit_sequence
 
@@ -326,6 +330,7 @@ class GrammarVisitor(PTNodeVisitor):
 
     def __visit_rule(self, node: Any, children: Any) -> Any:
         rule_name, operator, new_rule = children
+        assert "-" not in rule_name
 
         if operator in {"=", ":"}:
             rule = new_rule
@@ -348,7 +353,11 @@ class GrammarVisitor(PTNodeVisitor):
         return rule
 
     visit_lexical_rule = __visit_rule
-    visit_syntax_rule = __visit_rule
+
+    def visit_syntax_rule(self, node: Any, children: Any) -> Any:
+        rule_name, *_ = children
+        self.__syntax_rule_names.add(rule_name)
+        return self.__visit_rule(node, children)
 
     def visit_grammar(
         self, node: Any, children: Any
@@ -415,16 +424,32 @@ class GrammarVisitor(PTNodeVisitor):
                 return node
 
         # Find root and comment rules
-        root_rule, comment_rule = None, None
+        assert self.__syntax_rule_names <= self.__rules.keys()
+
+        if self.__root_rule_name not in self.__syntax_rule_names:
+            raise SemanticError(
+                f'Root syntax rule "{self.__root_rule_name}" does not exists.'
+            )
+        else:
+            root_rule = _resolve(self.__rules[self.__root_rule_name])
+
+        comment_rule = None
         for rule in children:
-            if rule.rule_name == self.__root_rule_name:
-                root_rule = _resolve(rule)
             if rule.rule_name == self.__comment_rule_name:
                 comment_rule = _resolve(rule)
 
-        if root_rule is None:
-            raise SemanticError("Root rule not found!")
         return root_rule, comment_rule
+
+    # Utilities
+    @property
+    def skipws(self) -> RegExMatch:
+        skipws = RegExMatch(r"\s*")
+        skipws.compile()
+        return skipws
+
+    @staticmethod
+    def hyphen2underscore(hyphen: str) -> str:
+        return hyphen.replace("-", "_")
 
 
 class Parser(ArpeggioParser):

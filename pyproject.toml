@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ModelicaLanguage"
-version = "0.0.0a7"
+version = "0.0.0a8"
 description = "Modelica parser and class representation for Python"
 repository = "https://github.com/ijknabla/ModelicaLanguageForPython"
 authors = ["ijknabla <ijknabla@gmail.com>"]
@@ -25,13 +25,18 @@ mypy = "^0.910"
 pytest = "^6.2.5"
 black = ">=20.8.b1"
 types-setuptools = "^57.4.11"
+isort = "^5.8"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.black]
+line-length = 79
+
 [tool.flake8]
 exclude = ".venv"
 
-[tool.black]
-line-length = 79
+[tool.isort]
+profile = "black"
+line_length = 79
