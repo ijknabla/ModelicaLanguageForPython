@@ -24,8 +24,8 @@ pyproject-flake8 = "^0.0.1-alpha.2"
 mypy = "^0.910"
 pytest = "^6.2.5"
 black = [
-    {version = "==20.8.b1", python = "3.6.*"},
-    {version = "^21.4b0", python = "^3.7"},
+    {version = "==20.8.b1", python = "<3.6.2"},
+    {version = "^22", python = ">=3.6.2"},
 ]
 types-setuptools = "^57.4.11"
 isort = "^5.8"
