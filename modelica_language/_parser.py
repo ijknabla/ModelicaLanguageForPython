@@ -1,4 +1,4 @@
-__all__ = ("Parser",)
+__all__ = ("ParserPEG",)
 
 import warnings
 from copy import copy
@@ -452,7 +452,7 @@ class GrammarVisitor(PTNodeVisitor):
         return hyphen.replace("-", "_")
 
 
-class Parser(ArpeggioParser):
+class ParserPEG(ArpeggioParser):
     def __init__(
         self,
         language_def: str,
