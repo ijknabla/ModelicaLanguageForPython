@@ -29,7 +29,7 @@ from arpeggio import (
 )
 from typing_extensions import Final
 
-from .exceptions import ParserWarning, SemanticError
+from ..exceptions import ParserWarning, SemanticError
 
 ParsingExpressionLike = Union[ParsingExpression, CrossRef]
 
