@@ -339,7 +339,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=4.6)", "pytest-black (
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "70b7b4a5b7161c1b4f0394be14cf11745dba252b85fd4ee6929bc2507f66189a"
+content-hash = "e037be51f0d5880ce978ccf523ef73da053c034d288ff0bdd71c827b07533e22"
 
 [metadata.files]
 arpeggio = [
