@@ -394,13 +394,13 @@ function-call-args :
    "(" [ function-arguments ] ")"
 
 function-arguments :
-   named-arguments
-   | `function` type-specifier "(" [ named-arguments ] ")" [ "," function-arguments-non-first ]
+   `function` type-specifier "(" [ named-arguments ] ")" [ "," function-arguments-non-first ]
+   | named-arguments
    | expression [ "," function-arguments-non-first | `for` for-indices ]
 
 function-arguments-non-first :
-   function-argument [ "," function-arguments-non-first ]
-   | named-arguments
+   named-arguments
+   | function-argument [ "," function-arguments-non-first ]
 
 array-arguments :
    expression [ "," array-arguments-non-first | `for` for-indices ]
