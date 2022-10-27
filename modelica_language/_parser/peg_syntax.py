@@ -103,17 +103,17 @@ def REGEX() -> ParsingExpressionLike:
 
 @parsing_expression
 def EOF_RULE() -> ParsingExpressionLike:
-    return "$EOF"
+    return "$EOF$"
 
 
 @parsing_expression
 def LEXICAL_RULE() -> ParsingExpressionLike:
-    return Not(EOF_RULE), RegExMatch(r"\$?[A-Z]([0-9A-Z]|-)*")
+    return RegExMatch(r"[A-Z]([0-9A-Z]|-)*[0-9A-Z]")
 
 
 @parsing_expression
 def SYNTAX_RULE() -> ParsingExpressionLike:
-    return RegExMatch("[a-z]([0-9a-z]|-)*")
+    return RegExMatch(r"[a-z]([0-9a-z]|-)*[0-9a-z]")
 
 
 # ## PEG syntax rules

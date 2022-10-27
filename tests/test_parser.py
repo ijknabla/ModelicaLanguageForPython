@@ -11,7 +11,7 @@ def ident_parser() -> ParserPEG:
     return ParserPEG(
         f"""
 {syntax.v3_4()}
-file: IDENT $EOF
+file: IDENT $EOF$
         """,
         "file",
     )
@@ -49,7 +49,7 @@ def ident_dialect_parser() -> ParserPEG:
         f"""
 {syntax.v3_4()}
 IDENT |= r'\\$\\w*'
-file: IDENT $EOF
+file: IDENT $EOF$
         """,
         "file",
     )

@@ -42,10 +42,10 @@ def peg_parser() -> ParserPEG:
     return ParserPEG(
         f"""
 {v3_4()}
-file: stored-definition $EOF
+file: stored-definition $EOF$
         """,
         "file",
-        "$COMMENT",
+        "COMMENT",
     )
 
 
