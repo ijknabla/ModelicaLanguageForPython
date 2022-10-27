@@ -141,7 +141,7 @@ class LexicalReference(Reference):
 
     def getParsingExpression(self) -> arpeggio.ParsingExpression:
         parsingExpression = self.target.getParsingExpression()
-        if parsingExpression.root and parsingExpression.rule_name == peg2py(
+        if parsingExpression.root and parsingExpression.rule_name != peg2py(
             self.ruleName
         ):
             parsingExpression = copy(parsingExpression)
@@ -575,25 +575,28 @@ class PEGVisitor(arpeggio.PTNodeVisitor):
         for element in lexicalReferences | nonTerminals:
             parsingExpressions[element] = element.getParsingExpression()
 
-        not_resolved = deque(syntaxReferences)
-        while not_resolved:
-            reference = not_resolved.popleft()
-            target = reference.target
-
-            if not isinstance(target, arpeggio.ParsingExpression):
-                if target not in parsingExpressions:
-                    not_resolved.append(reference)
+        notResolvedReferences = deque(syntaxReferences)
+        while notResolvedReferences:
+            reference = notResolvedReferences.popleft()
+            resolved: arpeggio.ParsingExpression
+            if not isinstance(reference.target, arpeggio.ParsingExpression):
+                if reference.target not in parsingExpressions:
+                    notResolvedReferences.append(reference)
+                    continue
                 else:
-                    parsingExpressions[reference] = parsingExpressions[target]
+                    resolved = parsingExpressions[reference.target]
             else:
-                if target.root and target.rule_name == peg2py(
-                    reference.ruleName
-                ):
-                    target = copy(target)
-                target.root = True
-                target.rule_name = peg2py(reference.ruleName)
+                resolved = reference.target
 
-                parsingExpressions[reference] = target
+            if resolved.root and resolved.rule_name != peg2py(
+                reference.ruleName
+            ):
+                resolved = copy(resolved)
+
+            resolved.root = True
+            resolved.rule_name = peg2py(reference.ruleName)
+
+            parsingExpressions[reference] = resolved
 
         for nonTerminal in nonTerminals:
             root = parsingExpressions[nonTerminal]
