@@ -45,6 +45,7 @@ def peg_parser() -> ParserPEG:
 file: stored-definition $EOF
         """,
         "file",
+        "$COMMENT",
     )
 
 
