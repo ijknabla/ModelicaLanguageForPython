@@ -1,7 +1,7 @@
 __all__ = (
-    "Parser",
+    "ParserPEG",
     "syntax",
 )
 
 from . import syntax
-from ._parser import Parser
+from ._parser import ParserPEG

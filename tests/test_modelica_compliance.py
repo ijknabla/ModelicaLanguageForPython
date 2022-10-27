@@ -1,22 +1,51 @@
-import re
+import enum
 from pathlib import Path
+from typing import Any, Union
 
 import pytest
-from arpeggio import NoMatch
+from arpeggio import EndOfFile, ParserPython
 from pkg_resources import resource_filename
 
-from modelica_language import Parser, syntax
+from modelica_language import ParserPEG
+from modelica_language.parsers import syntax
+from modelica_language.syntax import v3_4
+
+
+class ParserEnum(enum.Enum):
+    py = enum.auto()
+    peg = enum.auto()
+
+    def select_parser(
+        self, py: ParserPython, peg: ParserPEG
+    ) -> Union[ParserPython, ParserPEG]:
+        if self is ParserEnum.py:
+            return py
+        elif self is ParserEnum.peg:
+            return peg
+        else:
+            raise NotImplementedError()
 
 
 @pytest.fixture(scope="module")
-def modelica_parser() -> Parser:
-    return Parser(
+def py_parser() -> ParserPython:
+    def file() -> Any:
+        return syntax.stored_definition, EndOfFile()
+
+    return ParserPython(
+        file,
+        syntax.CPP_STYLE_COMMENT,
+    )
+
+
+@pytest.fixture(scope="module")
+def peg_parser() -> ParserPEG:
+    return ParserPEG(
         f"""
-{syntax.v3_4()}
-file: stored-definition $EOF
+{v3_4()}
+file: stored-definition $EOF$
         """,
         "file",
-        memoization=True,
+        "COMMENT",
     )
 
 
@@ -27,30 +56,24 @@ SOURCE_FILES = tuple(SOURCE_DIRECTORY.rglob("*.mo"))
 
 
 @pytest.mark.parametrize(
+    "parser_enum",
+    ParserEnum,
+)
+@pytest.mark.parametrize(
     "source_file",
     SOURCE_FILES,
     ids=[
-        f"{source_file.relative_to(SOURCE_DIRECTORY)}"
+        f"{source_file.relative_to(SOURCE_DIRECTORY.parent)}"
         for source_file in SOURCE_FILES
     ],
 )
 def test_modelica_parser(
-    modelica_parser: Parser,
+    parser_enum: ParserEnum,
+    py_parser: ParserPython,
+    peg_parser: ParserPEG,
     source_file: Path,
 ) -> None:
-    content = source_file.read_text(encoding="utf-8-sig")
-
-    annotations = list(
-        re.finditer(r"shouldPass\s*=\s*(?P<shouldPass>true|false)", content)
-    )
-    if not annotations:
-        shouldPass = True
-    else:
-        (annotation,) = annotations
-        shouldPass = eval(annotation.group("shouldPass").capitalize())
-
-    try:
-        modelica_parser.parse(content)
-    except NoMatch:
-        if not shouldPass:
-            raise
+    parser_enum.select_parser(
+        py_parser,
+        peg_parser,
+    ).parse(source_file.read_text(encoding="utf-8-sig"))
