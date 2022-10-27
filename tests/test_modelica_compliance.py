@@ -1,14 +1,14 @@
+import enum
 from pathlib import Path
 from typing import Any, Union
-import enum
 
 import pytest
 from arpeggio import EndOfFile, ParserPython
 from pkg_resources import resource_filename
 
-from modelica_language import Parser as ModelicaPEGParser
-from modelica_language.syntax import v3_4
+from modelica_language import ParserPEG
 from modelica_language.parsers import syntax
+from modelica_language.syntax import v3_4
 
 
 class ParserEnum(enum.Enum):
@@ -16,8 +16,8 @@ class ParserEnum(enum.Enum):
     peg = enum.auto()
 
     def select_parser(
-        self, py: ParserPython, peg: ModelicaPEGParser
-    ) -> Union[ParserPython, ModelicaPEGParser]:
+        self, py: ParserPython, peg: ParserPEG
+    ) -> Union[ParserPython, ParserPEG]:
         if self is ParserEnum.py:
             return py
         elif self is ParserEnum.peg:
@@ -38,13 +38,14 @@ def py_parser() -> ParserPython:
 
 
 @pytest.fixture(scope="module")
-def peg_parser() -> ModelicaPEGParser:
-    return ModelicaPEGParser(
+def peg_parser() -> ParserPEG:
+    return ParserPEG(
         f"""
 {v3_4()}
-file: stored-definition $EOF
+file: stored-definition $EOF$
         """,
         "file",
+        "COMMENT",
     )
 
 
@@ -69,7 +70,7 @@ SOURCE_FILES = tuple(SOURCE_DIRECTORY.rglob("*.mo"))
 def test_modelica_parser(
     parser_enum: ParserEnum,
     py_parser: ParserPython,
-    peg_parser: ModelicaPEGParser,
+    peg_parser: ParserPEG,
     source_file: Path,
 ) -> None:
     parser_enum.select_parser(

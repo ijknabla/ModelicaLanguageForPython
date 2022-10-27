@@ -3,15 +3,15 @@ from contextlib import ExitStack
 import pytest
 from arpeggio import NoMatch
 
-from modelica_language import Parser, syntax
+from modelica_language import ParserPEG, syntax
 
 
 @pytest.fixture(scope="module")
-def ident_parser() -> Parser:
-    return Parser(
+def ident_parser() -> ParserPEG:
+    return ParserPEG(
         f"""
 {syntax.v3_4()}
-file: IDENT $EOF
+file: IDENT $EOF$
         """,
         "file",
     )
@@ -33,7 +33,7 @@ file: IDENT $EOF
     ],
 )
 def test_ident_parser(
-    ident_parser: Parser,
+    ident_parser: ParserPEG,
     text: str,
     match: bool,
 ) -> None:
@@ -44,12 +44,12 @@ def test_ident_parser(
 
 
 @pytest.fixture(scope="module")
-def ident_dialect_parser() -> Parser:
-    return Parser(
+def ident_dialect_parser() -> ParserPEG:
+    return ParserPEG(
         f"""
 {syntax.v3_4()}
 IDENT |= r'\\$\\w*'
-file: IDENT $EOF
+file: IDENT $EOF$
         """,
         "file",
     )
@@ -71,7 +71,7 @@ file: IDENT $EOF
     ],
 )
 def test_ident_dialect_parser(
-    ident_dialect_parser: Parser,
+    ident_dialect_parser: ParserPEG,
     text: str,
     match: bool,
 ) -> None:
