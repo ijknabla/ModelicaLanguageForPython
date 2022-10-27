@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Union
 
 import pytest
-from arpeggio import EndOfFile, ParserPython
+from arpeggio import EndOfFile, ParserPython, ParseTreeNode
 from pkg_resources import resource_filename
 
 from modelica_language import ParserPEG
@@ -73,7 +73,18 @@ def test_modelica_parser(
     peg_parser: ParserPEG,
     source_file: Path,
 ) -> None:
-    parser_enum.select_parser(
+    parser = parser_enum.select_parser(
         py_parser,
         peg_parser,
-    ).parse(source_file.read_text(encoding="utf-8-sig"))
+    )
+
+    assert parser.parser_model.root
+    assert parser.parser_model.rule_name == "file"
+
+    assert parser.comments_model is not None
+    assert parser.comments_model.root
+    assert parser.comments_model.rule_name in ("COMMENT", "CPP_STYLE_COMMENT")
+
+    parseTree = parser.parse(source_file.read_text(encoding="utf-8-sig"))
+
+    assert isinstance(parseTree, ParseTreeNode)

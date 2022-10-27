@@ -113,6 +113,8 @@ def visit_parse_tree(
 
 class Parser(DebugPrinter):
     ignore_case: bool
+    parser_model: ParsingExpression
+    comments_model: ParsingExpression | None
     def __init__(
         self,
         skipws: bool = ...,
