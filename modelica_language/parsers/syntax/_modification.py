@@ -12,7 +12,7 @@ __all__ = (
     "short_class_definition",
 )
 
-from arpeggio import OneOrMore, Optional
+from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
 
@@ -44,7 +44,7 @@ def argument_list():  # type: ignore
     argument_list =
         argument ("," argument)*
     """
-    return OneOrMore(syntax.argument, sep=",")
+    return syntax.argument, ZeroOrMore(",", syntax.argument)
 
 
 def argument():  # type: ignore

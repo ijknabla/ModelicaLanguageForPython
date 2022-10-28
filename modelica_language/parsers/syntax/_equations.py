@@ -15,7 +15,7 @@ __all__ = (
     "connect_clause",
 )
 
-from arpeggio import OneOrMore, Optional, ZeroOrMore
+from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
 
@@ -234,7 +234,7 @@ def for_indices():  # type: ignore
     for_indices =
         for_index ("," for_index)*
     """
-    return OneOrMore(syntax.for_index, sep=",")
+    return syntax.for_index, ZeroOrMore(",", syntax.for_index)
 
 
 def for_index():  # type: ignore

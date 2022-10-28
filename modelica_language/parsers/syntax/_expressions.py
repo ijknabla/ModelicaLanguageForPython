@@ -32,7 +32,7 @@ __all__ = (
     "annotation",
 )
 
-from arpeggio import OneOrMore, Optional, ZeroOrMore
+from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
 
@@ -88,7 +88,7 @@ def logical_expression():  # type: ignore
     logical_expression =
         logical_term (OR logical_term)*
     """
-    return OneOrMore(syntax.logical_term, sep=syntax.OR)
+    return syntax.logical_term, ZeroOrMore(syntax.OR, syntax.logical_term)
 
 
 def logical_term():  # type: ignore
@@ -96,7 +96,7 @@ def logical_term():  # type: ignore
     logical_term =
         logical_factor (AND logical_factor)*
     """
-    return OneOrMore(syntax.logical_factor, sep=syntax.AND)
+    return syntax.logical_factor, ZeroOrMore(syntax.AND, syntax.logical_factor)
 
 
 def logical_factor():  # type: ignore
@@ -134,7 +134,8 @@ def arithmetic_expression():  # type: ignore
 
     return (
         Optional(syntax.add_operator),
-        OneOrMore(syntax.term, sep=syntax.add_operator),
+        syntax.term,
+        ZeroOrMore(syntax.add_operator, syntax.term),
     )
 
 
@@ -151,7 +152,7 @@ def term():  # type: ignore
     term =
         factor (mul_operator factor)*
     """
-    return OneOrMore(syntax.factor, sep=syntax.mul_operator)
+    return syntax.factor, ZeroOrMore(syntax.mul_operator, syntax.factor)
 
 
 def mul_operator():  # type: ignore
@@ -191,7 +192,12 @@ def primary():  # type: ignore
         syntax.UNSIGNED_NUMBER,
         syntax.STRING,
         ("(", syntax.output_expression_list, ")"),
-        ("[", OneOrMore(syntax.expression_list, sep=";"), "]"),
+        (
+            "[",
+            syntax.expression_list,
+            ZeroOrMore(";", syntax.expression_list),
+            "]",
+        ),
         ("{", syntax.array_arguments, "}"),
         (
             [
@@ -217,7 +223,7 @@ def name():  # type: ignore
     """
     name = IDENT ("." IDENT)*
     """
-    return OneOrMore(syntax.IDENT, sep=".")
+    return syntax.IDENT, ZeroOrMore(".", syntax.IDENT)
 
 
 def component_reference():  # type: ignore
@@ -290,7 +296,7 @@ def named_arguments():  # type: ignore
     """
     named_arguments = named_argument ("," named_arguments)?
     """
-    return OneOrMore(syntax.named_argument, sep=",")
+    return syntax.named_argument, ZeroOrMore(",", syntax.named_argument)
 
 
 def array_arguments():  # type: ignore
@@ -314,7 +320,7 @@ def array_arguments_non_first():  # type: ignore
     array_arguments_non_first =
         expression ("," array_arguments_non_first)?
     """
-    return OneOrMore(syntax.expression, sep=",")
+    return syntax.expression, ZeroOrMore(",", syntax.expression)
 
 
 def named_argument():  # type: ignore
@@ -358,7 +364,7 @@ def expression_list():  # type: ignore
     expression_list =
         expression ("," expression)*
     """
-    return OneOrMore(syntax.expression, sep=",")
+    return expression, ZeroOrMore(",", syntax.expression)
 
 
 def array_subscripts():  # type: ignore
@@ -366,7 +372,7 @@ def array_subscripts():  # type: ignore
     array_subscripts =
         "[" subscript ("," subscript)* "]"
     """
-    return "[", OneOrMore(syntax.subscript, sep=","), "]"
+    return "[", syntax.subscript, ZeroOrMore(",", syntax.subscript), "]"
 
 
 def subscript():  # type: ignore
@@ -393,7 +399,7 @@ def string_comment():  # type: ignore
     string_comment =
         (STRING ("+" STRING)*)?
     """
-    return Optional(OneOrMore(syntax.STRING, sep="+"))
+    return Optional(syntax.STRING, ZeroOrMore("+", syntax.STRING))
 
 
 def annotation():  # type: ignore

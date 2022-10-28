@@ -7,7 +7,7 @@ __all__ = (
     "declaration",
 )
 
-from arpeggio import OneOrMore, Optional
+from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
 
@@ -53,7 +53,9 @@ def component_list():  # type: ignore
     component_list =
         component_declaration ("," component_declaration)*
     """
-    return OneOrMore(syntax.component_declaration, sep=",")
+    return syntax.component_declaration, ZeroOrMore(
+        ",", syntax.component_declaration
+    )
 
 
 def component_declaration():  # type: ignore
