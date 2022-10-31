@@ -1,7 +1,8 @@
 from typing import Any
+import enum
 
 import pytest
-from arpeggio import EndOfFile, ParserPython
+from arpeggio import EndOfFile, ParserPython, Parser
 
 from modelica_language import ParserPEG
 from modelica_language.parsers import syntax
@@ -32,7 +33,7 @@ file: IDENT $EOF$
 
 
 @pytest.fixture(scope="module")
-def file_parser() -> ParserPEG:
+def peg_file_parser() -> ParserPEG:
     return ParserPEG(
         f"""
 {v3_4()}
@@ -52,3 +53,22 @@ def py_file_parser() -> ParserPython:
         file,
         syntax.CPP_STYLE_COMMENT,
     )
+
+
+class ParserParmeter(enum.Enum):
+    py = enum.auto()
+    peg = enum.auto()
+
+
+@pytest.fixture(scope="module", params=ParserParmeter)
+def file_parser(
+    request,
+    peg_file_parser: ParserPEG,
+    py_file_parser: ParserPython,
+) -> Parser:
+    if request.param is ParserParmeter.peg:
+        return peg_file_parser
+    elif request.param is ParserParmeter.py:
+        return py_file_parser
+    else:
+        raise NotImplementedError()
