@@ -4,7 +4,6 @@ from typing import Union
 
 _AtomicParsingExpressionArgument = Union[
     str,
-    CrossRef,
     ParsingExpression,
     Callable[[], ParsingExpression],
 ]
@@ -31,12 +30,12 @@ class ParsingExpression:
         *elements: _ParsingExpressionArgument,
         rule_name: str = ...,
         root: bool = ...,
-        nodes: Iterable[_ParsingExpressionArgument] = ...,
+        nodes: Iterable[ParsingExpression] = ...,
         suppress: bool = ...,
     ) -> None: ...
     root: bool
     rule_name: str
-    nodes: MutableSequence[Union[CrossRef, ParsingExpression]]
+    nodes: MutableSequence[ParsingExpression]
     @property
     def name(self) -> str: ...
     def parse(self, parser: Parser) -> ParseTreeNode: ...
@@ -59,6 +58,7 @@ class Repetition(ParsingExpression):
         suppress: bool = ...,
         sep: _ParsingExpressionArgument = ...,
     ) -> None: ...
+    sep: ParsingExpression | None
 
 class Optional(Repetition): ...
 class ZeroOrMore(Repetition): ...

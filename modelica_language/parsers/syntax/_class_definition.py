@@ -17,7 +17,7 @@ __all__ = (
     "import_list",
 )
 
-from arpeggio import OneOrMore, Optional, ZeroOrMore
+from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
 
@@ -142,7 +142,8 @@ def der_class_specifier():  # type: ignore
         "(",
         syntax.type_specifier,
         ",",
-        OneOrMore(syntax.IDENT, sep=","),
+        syntax.IDENT,
+        ZeroOrMore(",", syntax.IDENT),
         ")",
         syntax.comment,
     )
@@ -160,7 +161,9 @@ def enum_list():  # type: ignore
     """
     enum_list = enumeration_literal ("," enumeration_literal)*
     """
-    return OneOrMore(syntax.enumeration_literal, sep=",")
+    return syntax.enumeration_literal, ZeroOrMore(
+        ",", syntax.enumeration_literal
+    )
 
 
 def enumeration_literal():  # type: ignore
@@ -303,4 +306,4 @@ def import_list():  # type: ignore
     import_list =
         IDENT ("," IDENT)*
     """
-    return OneOrMore(syntax.IDENT, sep=",")
+    return syntax.IDENT, ZeroOrMore(",", syntax.IDENT)
