@@ -62,13 +62,14 @@ class ParserParmeter(enum.Enum):
 
 @pytest.fixture(scope="module", params=ParserParmeter)
 def file_parser(
-    request,
+    request: pytest.FixtureRequest,
     peg_file_parser: ParserPEG,
     py_file_parser: ParserPython,
 ) -> Parser:
-    if request.param is ParserParmeter.peg:
+    param = request.param  # type: ignore
+    if param is ParserParmeter.peg:
         return peg_file_parser
-    elif request.param is ParserParmeter.py:
+    elif param is ParserParmeter.py:
         return py_file_parser
     else:
         raise NotImplementedError()
