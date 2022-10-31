@@ -1,11 +1,13 @@
 import re
 from contextlib import ExitStack
+from itertools import permutations
+from typing import Callable
 
 import pytest
-from arpeggio import NoMatch, Parser
+from arpeggio import NoMatch, OrderedChoice, Parser, ParsingExpression
 
 from modelica_language import ParserPEG
-from tests.utils import assert_injective, flatten
+from tests.utils import assert_injective, find, flatten
 
 
 @pytest.mark.parametrize(
@@ -225,6 +227,18 @@ def test_file_parser(file_parser: Parser) -> None:
     )
 
 
+@pytest.mark.parametrize(argnames="ruleName", argvalues=ruleNames)
+def test_compare_parsers(
+    ruleName: str,
+    peg_file_parser: Parser,
+    py_file_parser: Parser,
+) -> None:
+    peg = find(peg_file_parser.parser_model, ruleName, unify_rule_name)
+    py = find(py_file_parser.parser_model, ruleName, unify_rule_name)
+
+    compare_parsing_expression(peg, py, unify_rule_name, unify_rule_name)
+
+
 def unify_rule_name(s: str) -> str:
     if re.match(r"_[a-zA-Z]+_", s):
         s = s[1:-1].upper()
@@ -233,3 +247,33 @@ def unify_rule_name(s: str) -> str:
         "ANY_KEYWORD": "KEYWORD",
         "CPP_STYLE_COMMENT": "COMMENT",
     }.get(s, s)
+
+
+def compare_parsing_expression(
+    a: ParsingExpression,
+    b: ParsingExpression,
+    unify_a: Callable[[str], str] = str,
+    unify_b: Callable[[str], str] = str,
+) -> None:
+    if type(a) is not type(b):
+        raise TypeError(type(a), type(b))
+    if unify_a(a.rule_name) != unify_b(b.rule_name):
+        raise ValueError(a.rule_name, b.rule_name)
+    if len(a.nodes) != len(b.nodes):
+        raise ValueError(len(a.nodes), len(b.nodes))
+
+    exceptions = []
+    for b_nodes in (
+        permutations(b.nodes)
+        if isinstance(b, OrderedChoice)
+        else [(*b.nodes,)]
+    ):
+        for a_, b_ in zip(a.nodes, b_nodes):
+            try:
+                compare_parsing_expression(a_, b_, unify_a, unify_b)
+            except Exception as e:
+                exceptions.append(e)
+                break
+        return
+
+    raise exceptions[0]
