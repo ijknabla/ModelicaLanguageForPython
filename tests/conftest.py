@@ -1,8 +1,8 @@
-from typing import Any
 import enum
+from typing import Any
 
 import pytest
-from arpeggio import EndOfFile, ParserPython, Parser
+from arpeggio import EndOfFile, Parser, ParserPython
 
 from modelica_language import ParserPEG
 from modelica_language.parsers import syntax
