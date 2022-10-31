@@ -120,14 +120,12 @@ def if_equation():  # type: ignore
         END IF
     """
     return (
-        (
-            syntax.IF,
-            syntax.expression,
-            syntax.THEN,
-            ZeroOrMore(
-                syntax.equation,
-                ";",
-            ),
+        syntax.IF,
+        syntax.expression,
+        syntax.THEN,
+        ZeroOrMore(
+            syntax.equation,
+            ";",
         ),
         ZeroOrMore(
             syntax.ELSEIF,
@@ -159,14 +157,12 @@ def if_statement():  # type: ignore
         END IF
     """
     return (
-        (
-            syntax.IF,
-            syntax.expression,
-            syntax.THEN,
-            ZeroOrMore(
-                syntax.statement,
-                ";",
-            ),
+        syntax.IF,
+        syntax.expression,
+        syntax.THEN,
+        ZeroOrMore(
+            syntax.statement,
+            ";",
         ),
         ZeroOrMore(
             syntax.ELSEIF,
@@ -273,14 +269,12 @@ def when_equation():  # type: ignore
         END WHEN
     """
     return (
-        (
-            syntax.WHEN,
-            syntax.expression,
-            syntax.THEN,
-            ZeroOrMore(
-                syntax.equation,
-                ";",
-            ),
+        syntax.WHEN,
+        syntax.expression,
+        syntax.THEN,
+        ZeroOrMore(
+            syntax.equation,
+            ";",
         ),
         ZeroOrMore(
             syntax.ELSEWHEN,
@@ -304,14 +298,12 @@ def when_statement():  # type: ignore
         END WHEN
     """
     return (
-        (
-            syntax.WHEN,
-            syntax.expression,
-            syntax.THEN,
-            ZeroOrMore(
-                syntax.statement,
-                ";",
-            ),
+        syntax.WHEN,
+        syntax.expression,
+        syntax.THEN,
+        ZeroOrMore(
+            syntax.statement,
+            ";",
         ),
         ZeroOrMore(
             syntax.ELSEWHEN,
