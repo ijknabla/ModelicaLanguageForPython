@@ -32,18 +32,7 @@ file: IDENT $EOF$
 
 
 @pytest.fixture(scope="module")
-def py_parser() -> ParserPython:
-    def file() -> Any:
-        return syntax.stored_definition, EndOfFile()
-
-    return ParserPython(
-        file,
-        syntax.CPP_STYLE_COMMENT,
-    )
-
-
-@pytest.fixture(scope="module")
-def peg_parser() -> ParserPEG:
+def file_parser() -> ParserPEG:
     return ParserPEG(
         f"""
 {v3_4()}
@@ -51,4 +40,15 @@ file: stored-definition $EOF$
         """,
         "file",
         "COMMENT",
+    )
+
+
+@pytest.fixture(scope="module")
+def py_file_parser() -> ParserPython:
+    def file() -> Any:
+        return syntax.stored_definition, EndOfFile()
+
+    return ParserPython(
+        file,
+        syntax.CPP_STYLE_COMMENT,
     )

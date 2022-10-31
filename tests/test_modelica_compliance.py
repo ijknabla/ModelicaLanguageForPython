@@ -44,13 +44,13 @@ SOURCE_FILES = tuple(SOURCE_DIRECTORY.rglob("*.mo"))
 )
 def test_modelica_parser(
     parser_enum: ParserEnum,
-    py_parser: ParserPython,
-    peg_parser: ParserPEG,
+    py_file_parser: ParserPython,
+    file_parser: ParserPEG,
     source_file: Path,
 ) -> None:
     parser = parser_enum.select_parser(
-        py_parser,
-        peg_parser,
+        py_file_parser,
+        file_parser,
     )
 
     assert parser.parser_model.root
