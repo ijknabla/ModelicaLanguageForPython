@@ -4,19 +4,8 @@ from contextlib import ExitStack
 import pytest
 from arpeggio import NoMatch
 
-from modelica_language import ParserPEG, syntax
+from modelica_language import ParserPEG
 from tests.utils import assert_injective
-
-
-@pytest.fixture(scope="module")
-def ident_parser() -> ParserPEG:
-    return ParserPEG(
-        f"""
-{syntax.v3_4()}
-file: IDENT $EOF$
-        """,
-        "file",
-    )
 
 
 @pytest.mark.parametrize(
@@ -43,18 +32,6 @@ def test_ident_parser(
         if not match:
             stack.enter_context(pytest.raises(NoMatch))
         ident_parser.parse(text)
-
-
-@pytest.fixture(scope="module")
-def ident_dialect_parser() -> ParserPEG:
-    return ParserPEG(
-        f"""
-{syntax.v3_4()}
-IDENT |= r'\\$\\w*'
-file: IDENT $EOF$
-        """,
-        "file",
-    )
 
 
 @pytest.mark.parametrize(

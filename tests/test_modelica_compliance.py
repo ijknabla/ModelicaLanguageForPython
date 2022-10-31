@@ -1,14 +1,12 @@
 import enum
 from pathlib import Path
-from typing import Any, Union
+from typing import Union
 
 import pytest
-from arpeggio import EndOfFile, ParserPython, ParseTreeNode
+from arpeggio import ParserPython, ParseTreeNode
 from pkg_resources import resource_filename
 
 from modelica_language import ParserPEG
-from modelica_language.parsers import syntax
-from modelica_language.syntax import v3_4
 
 
 class ParserEnum(enum.Enum):
@@ -24,29 +22,6 @@ class ParserEnum(enum.Enum):
             return peg
         else:
             raise NotImplementedError()
-
-
-@pytest.fixture(scope="module")
-def py_parser() -> ParserPython:
-    def file() -> Any:
-        return syntax.stored_definition, EndOfFile()
-
-    return ParserPython(
-        file,
-        syntax.CPP_STYLE_COMMENT,
-    )
-
-
-@pytest.fixture(scope="module")
-def peg_parser() -> ParserPEG:
-    return ParserPEG(
-        f"""
-{v3_4()}
-file: stored-definition $EOF$
-        """,
-        "file",
-        "COMMENT",
-    )
 
 
 SOURCE_DIRECTORY = Path(
