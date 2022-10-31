@@ -1,9 +1,11 @@
+import re
 from contextlib import ExitStack
 
 import pytest
 from arpeggio import NoMatch
 
 from modelica_language import ParserPEG, syntax
+from tests.utils import assert_injective
 
 
 @pytest.fixture(scope="module")
@@ -79,3 +81,12 @@ def test_ident_dialect_parser(
         if not match:
             stack.enter_context(pytest.raises(NoMatch))
         ident_dialect_parser.parse(text)
+
+
+@assert_injective
+def unify(s: str) -> str:
+    if re.match(r"_[a-z]+_", s):
+        s = s[1:-1].upper()
+    return {"annotation": "annotation_comment", "ANY_KEYWORD": "KEYWORD"}.get(
+        s, s
+    )
