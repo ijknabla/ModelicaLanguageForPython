@@ -1,6 +1,6 @@
 from arpeggio import Not, Optional, RegExMatch, ZeroOrMore
 
-from .. import regex, syntax
+from .. import regex
 
 any_keyword = (
     r"("
@@ -361,7 +361,7 @@ class Syntax:
             (FINAL? class_definition ";")*
         """
         return (
-            Optional(cls.WITHIN, Optional(syntax.name), ";"),
+            Optional(cls.WITHIN, Optional(cls.name), ";"),
             ZeroOrMore(Optional(cls.FINAL), cls.class_definition, ";"),
         )
 
@@ -431,14 +431,14 @@ class Syntax:
                 cls.EXTENDS,
                 cls.IDENT,
                 Optional(cls.class_modification),
-                syntax.string_comment,
+                cls.string_comment,
                 cls.composition,
                 cls.END,
                 cls.IDENT,
             ),
             (
                 cls.IDENT,
-                syntax.string_comment,
+                cls.string_comment,
                 cls.composition,
                 cls.END,
                 cls.IDENT,
@@ -461,16 +461,16 @@ class Syntax:
                 "(",
                 [":", Optional(cls.enum_list)],
                 ")",
-                syntax.comment,
+                cls.comment,
             ),
             (
                 cls.IDENT,
                 "=",
                 cls.base_prefix,
-                syntax.type_specifier,
-                Optional(syntax.array_subscripts),
+                cls.type_specifier,
+                Optional(cls.array_subscripts),
                 Optional(cls.class_modification),
-                syntax.comment,
+                cls.comment,
             ),
         ]
 
@@ -485,12 +485,12 @@ class Syntax:
             "=",
             cls.DER,
             "(",
-            syntax.type_specifier,
+            cls.type_specifier,
             ",",
             cls.IDENT,
             ZeroOrMore(",", cls.IDENT),
             ")",
-            syntax.comment,
+            cls.comment,
         )
 
     @classmethod
@@ -515,7 +515,7 @@ class Syntax:
         """
         enumeration_literal = IDENT comment
         """
-        return cls.IDENT, syntax.comment
+        return cls.IDENT, cls.comment
 
     @classmethod
     def composition(cls):  # type: ignore
@@ -548,10 +548,10 @@ class Syntax:
                 cls.EXTERNAL,
                 Optional(cls.language_specification),
                 Optional(cls.external_function_call),
-                Optional(syntax.annotation),
+                Optional(cls.annotation),
                 ";",
             ),
-            Optional(syntax.annotation, ";"),
+            Optional(cls.annotation, ";"),
         )
 
     @classmethod
@@ -569,10 +569,10 @@ class Syntax:
             (component_reference "=")? IDENT "(" expression_list? ")"
         """
         return (
-            Optional(syntax.component_reference, "="),
+            Optional(cls.component_reference, "="),
             cls.IDENT,
             "(",
-            Optional(syntax.expression_list),
+            Optional(cls.expression_list),
             ")",
         )
 
@@ -609,7 +609,7 @@ class Syntax:
                     (
                         cls.REPLACEABLE,
                         [cls.class_definition, cls.component_clause],
-                        Optional(cls.constraining_clause, syntax.comment),
+                        Optional(cls.constraining_clause, cls.comment),
                     ),
                     [cls.class_definition, cls.component_clause],
                 ],
@@ -630,9 +630,9 @@ class Syntax:
         return (
             cls.IMPORT,
             [
-                (cls.IDENT, "=", syntax.name),
+                (cls.IDENT, "=", cls.name),
                 (
-                    syntax.name,
+                    cls.name,
                     Optional(
                         ".",
                         [
@@ -642,7 +642,7 @@ class Syntax:
                     ),
                 ),
             ],
-            syntax.comment,
+            cls.comment,
         )
 
     @classmethod
@@ -662,9 +662,9 @@ class Syntax:
         """
         return (
             cls.EXTENDS,
-            syntax.type_specifier,
+            cls.type_specifier,
             Optional(cls.class_modification),
-            Optional(syntax.annotation),
+            Optional(cls.annotation),
         )
 
     @classmethod
@@ -675,7 +675,7 @@ class Syntax:
         """
         return (
             cls.CONSTRAINEDBY,
-            syntax.type_specifier,
+            cls.type_specifier,
             Optional(cls.class_modification),
         )
 
@@ -688,8 +688,8 @@ class Syntax:
         """
         return (
             cls.type_prefix,
-            syntax.type_specifier,
-            Optional(syntax.array_subscripts),
+            cls.type_specifier,
+            Optional(cls.array_subscripts),
             cls.component_list,
         )
 
@@ -735,7 +735,7 @@ class Syntax:
         return (
             cls.declaration,
             Optional(cls.condition_attribute),
-            syntax.comment,
+            cls.comment,
         )
 
     @classmethod
@@ -744,7 +744,7 @@ class Syntax:
         condition_attribute =
             IF expression
         """
-        return cls.IF, syntax.expression
+        return cls.IF, cls.expression
 
     @classmethod
     def declaration(cls):  # type: ignore
@@ -754,7 +754,7 @@ class Syntax:
         """
         return (
             cls.IDENT,
-            Optional(syntax.array_subscripts),
+            Optional(cls.array_subscripts),
             Optional(cls.modification),
         )
 
@@ -768,9 +768,9 @@ class Syntax:
             / class_modification ("=" expression)?
         """
         return [
-            ("=", syntax.expression),
-            (":=", syntax.expression),
-            (cls.class_modification, Optional("=", syntax.expression)),
+            ("=", cls.expression),
+            (":=", cls.expression),
+            (cls.class_modification, Optional("=", cls.expression)),
         ]
 
     @classmethod
@@ -820,9 +820,9 @@ class Syntax:
             name modification? string_comment
         """
         return (
-            syntax.name,
+            cls.name,
             Optional(cls.modification),
-            syntax.string_comment,
+            cls.string_comment,
         )
 
     @classmethod
@@ -866,7 +866,7 @@ class Syntax:
         """
         return (
             cls.type_prefix,
-            syntax.type_specifier,
+            cls.type_specifier,
             cls.component_declaration1,
         )
 
@@ -876,7 +876,7 @@ class Syntax:
         component_declaration1 =
             declaration comment
         """
-        return cls.declaration, syntax.comment
+        return cls.declaration, cls.comment
 
     @classmethod
     def short_class_definition(cls):  # type: ignore
@@ -931,10 +931,10 @@ class Syntax:
                 cls.for_equation,
                 cls.connect_clause,
                 cls.when_equation,
-                (syntax.simple_expression, "=", syntax.expression),
-                (syntax.component_reference, syntax.function_call_args),
+                (cls.simple_expression, "=", cls.expression),
+                (cls.component_reference, cls.function_call_args),
             ],
-            syntax.comment,
+            cls.comment,
         )
 
     @classmethod
@@ -964,18 +964,18 @@ class Syntax:
                 cls.when_statement,
                 (
                     "(",
-                    syntax.output_expression_list,
+                    cls.output_expression_list,
                     ")",
                     ":=",
-                    syntax.component_reference,
-                    syntax.function_call_args,
+                    cls.component_reference,
+                    cls.function_call_args,
                 ),
                 (
-                    syntax.component_reference,
-                    [(":=", syntax.expression), syntax.function_call_args],
+                    cls.component_reference,
+                    [(":=", cls.expression), cls.function_call_args],
                 ),
             ],
-            syntax.comment,
+            cls.comment,
         )
 
     @classmethod
@@ -989,7 +989,7 @@ class Syntax:
         """
         return (
             cls.IF,
-            syntax.expression,
+            cls.expression,
             cls.THEN,
             ZeroOrMore(
                 cls.equation,
@@ -997,7 +997,7 @@ class Syntax:
             ),
             ZeroOrMore(
                 cls.ELSEIF,
-                syntax.expression,
+                cls.expression,
                 cls.THEN,
                 ZeroOrMore(
                     cls.equation,
@@ -1026,7 +1026,7 @@ class Syntax:
         """
         return (
             cls.IF,
-            syntax.expression,
+            cls.expression,
             cls.THEN,
             ZeroOrMore(
                 cls.statement,
@@ -1034,7 +1034,7 @@ class Syntax:
             ),
             ZeroOrMore(
                 cls.ELSEIF,
-                syntax.expression,
+                cls.expression,
                 cls.THEN,
                 ZeroOrMore(
                     cls.statement,
@@ -1106,7 +1106,7 @@ class Syntax:
         for_index =
             IDENT (IN expression)?
         """
-        return cls.IDENT, Optional(cls.IN, syntax.expression)
+        return cls.IDENT, Optional(cls.IN, cls.expression)
 
     @classmethod
     def while_statement(cls):  # type: ignore
@@ -1118,7 +1118,7 @@ class Syntax:
         """
         return (
             cls.WHILE,
-            syntax.expression,
+            cls.expression,
             cls.LOOP,
             ZeroOrMore(
                 cls.statement,
@@ -1138,7 +1138,7 @@ class Syntax:
         """
         return (
             cls.WHEN,
-            syntax.expression,
+            cls.expression,
             cls.THEN,
             ZeroOrMore(
                 cls.equation,
@@ -1146,7 +1146,7 @@ class Syntax:
             ),
             ZeroOrMore(
                 cls.ELSEWHEN,
-                syntax.expression,
+                cls.expression,
                 cls.THEN,
                 ZeroOrMore(
                     cls.equation,
@@ -1167,7 +1167,7 @@ class Syntax:
         """
         return (
             cls.WHEN,
-            syntax.expression,
+            cls.expression,
             cls.THEN,
             ZeroOrMore(
                 cls.statement,
@@ -1175,7 +1175,7 @@ class Syntax:
             ),
             ZeroOrMore(
                 cls.ELSEWHEN,
-                syntax.expression,
+                cls.expression,
                 cls.THEN,
                 ZeroOrMore(
                     cls.statement,
@@ -1195,8 +1195,385 @@ class Syntax:
         return (
             cls.CONNECT,
             "(",
-            syntax.component_reference,
+            cls.component_reference,
             ",",
-            syntax.component_reference,
+            cls.component_reference,
             ")",
         )
+
+    # §B.2.7 Expressions
+    @classmethod
+    def expression(cls):  # type: ignore
+        """
+        expression =
+            simple_expression
+            / IF expression THEN expression
+            (ELSEIF expression THEN expression)*
+            ELSE expression
+        """
+        return [
+            cls.simple_expression,
+            (
+                (
+                    cls.IF,
+                    cls.expression,
+                    cls.THEN,
+                    cls.expression,
+                ),
+                ZeroOrMore(
+                    cls.ELSEIF,
+                    cls.expression,
+                    cls.THEN,
+                    cls.expression,
+                ),
+                (
+                    cls.ELSE,
+                    cls.expression,
+                ),
+            ),
+        ]
+
+    @classmethod
+    def simple_expression(cls):  # type: ignore
+        """
+        simple_expression =
+            logical_expression (":" logical_expression (":" logical_expression)?)?
+        """  # noqa: E501
+        return (
+            cls.logical_expression,
+            Optional(
+                ":",
+                cls.logical_expression,
+                Optional(":", cls.logical_expression),
+            ),
+        )
+
+    @classmethod
+    def logical_expression(cls):  # type: ignore
+        """
+        logical_expression =
+            logical_term (OR logical_term)*
+        """
+        return cls.logical_term, ZeroOrMore(cls.OR, cls.logical_term)
+
+    @classmethod
+    def logical_term(cls):  # type: ignore
+        """
+        logical_term =
+            logical_factor (AND logical_factor)*
+        """
+        return cls.logical_factor, ZeroOrMore(cls.AND, cls.logical_factor)
+
+    @classmethod
+    def logical_factor(cls):  # type: ignore
+        """
+        logical_factor =
+            NOT? relation
+        """
+        return Optional(cls.NOT), cls.relation
+
+    @classmethod
+    def relation(cls):  # type: ignore
+        """
+        relation =
+            arithmetic_expression (relational_operator arithmetic_expression)?
+        """
+        return (
+            cls.arithmetic_expression,
+            Optional(cls.relational_operator, cls.arithmetic_expression),
+        )
+
+    @classmethod
+    def relational_operator(cls):  # type: ignore
+        """
+        relational_operator =
+            "<>" / "<=" / ">=" / "<" / ">" / "=="
+        """
+        return ["<>", "<=", ">=", "<", ">", "=="]
+
+    @classmethod
+    def arithmetic_expression(cls):  # type: ignore
+        """
+        arithmetic_expression =
+            add_operator? term (add_operator term)*
+        """
+
+        return (
+            Optional(cls.add_operator),
+            cls.term,
+            ZeroOrMore(cls.add_operator, cls.term),
+        )
+
+    @classmethod
+    def add_operator(cls):  # type: ignore
+        """
+        add_operator =
+            "+" / "-" / ".+" / ".-"
+        """
+        return ["+", "-", ".+", ".-"]
+
+    @classmethod
+    def term(cls):  # type: ignore
+        """
+        term =
+            factor (mul_operator factor)*
+        """
+        return cls.factor, ZeroOrMore(cls.mul_operator, cls.factor)
+
+    @classmethod
+    def mul_operator(cls):  # type: ignore
+        """
+        mul_operator =
+            "*" / "/" / ".*" / "./"
+        """
+        return ["*", "/", ".*", "./"]
+
+    @classmethod
+    def factor(cls):  # type: ignore
+        """
+        factor =
+            primary (("^" / ".^") primary)?
+        """
+        return cls.primary, Optional(["^", ".^"], cls.primary)
+
+    @classmethod
+    def primary(cls):  # type: ignore
+        """
+        primary =
+            FALSE
+            / TRUE
+            / END
+            / UNSIGNED_NUMBER
+            / STRING
+            / "(" output_expression_list ")"
+            / "[" expression_list (";" expression_list)* "]"
+            / "{" array_arguments "}"
+            / (component_reference / DER / INITIAL / PURE) function_call_args
+            / component_reference
+        """
+        return [
+            cls.FALSE,
+            cls.TRUE,
+            cls.END,
+            cls.UNSIGNED_NUMBER,
+            cls.STRING,
+            ("(", cls.output_expression_list, ")"),
+            (
+                "[",
+                cls.expression_list,
+                ZeroOrMore(";", cls.expression_list),
+                "]",
+            ),
+            ("{", cls.array_arguments, "}"),
+            (
+                [
+                    cls.component_reference,
+                    cls.DER,
+                    cls.INITIAL,
+                    cls.PURE,
+                ],
+                cls.function_call_args,
+            ),
+            cls.component_reference,
+        ]
+
+    @classmethod
+    def type_specifier(cls):  # type: ignore
+        """
+        type_specifier = "."? name
+        """
+        return Optional("."), cls.name
+
+    @classmethod
+    def name(cls):  # type: ignore
+        """
+        name = IDENT ("." IDENT)*
+        """
+        return cls.IDENT, ZeroOrMore(".", cls.IDENT)
+
+    @classmethod
+    def component_reference(cls):  # type: ignore
+        """
+        component_reference =
+            "."? IDENT array_subscripts? ("." IDENT array_subscripts?)*
+        """
+        return (
+            Optional("."),
+            cls.IDENT,
+            Optional(cls.array_subscripts),
+            ZeroOrMore(".", cls.IDENT, Optional(cls.array_subscripts)),
+        )
+
+    @classmethod
+    def function_call_args(cls):  # type: ignore
+        """
+        function_call_args =
+            "(" function_arguments? ")"
+        """
+        return "(", Optional(cls.function_arguments), ")"
+
+    @classmethod
+    def function_arguments(cls):  # type: ignore
+        """
+        function_arguments =
+            FUNCTION name "(" named_arguments? ")"
+            ("," function_arguments_non_first)?
+            / named_arguments
+            / expression ("," function_arguments_non_first / FOR for_indices)
+        """
+        return [
+            (
+                cls.FUNCTION,
+                cls.name,
+                "(",
+                Optional(cls.named_arguments),
+                ")",
+                Optional(",", cls.function_arguments_non_first),
+            ),
+            cls.named_arguments,
+            (
+                cls.expression,
+                Optional(
+                    [
+                        (
+                            ",",
+                            cls.function_arguments_non_first,
+                        ),  # type: ignore
+                        (cls.FOR, cls.for_indices),  # type: ignore
+                    ]
+                ),
+            ),
+        ]
+
+    @classmethod
+    def function_arguments_non_first(cls):  # type: ignore
+        """
+        function_arguments_non_first =
+            named_arguments
+            / function_argument ("," function_arguments_non_first)?
+        """
+        return [
+            cls.named_arguments,
+            (
+                cls.function_argument,
+                Optional(",", cls.function_arguments_non_first),
+            ),
+        ]
+
+    @classmethod
+    def named_arguments(cls):  # type: ignore
+        """
+        named_arguments = named_argument ("," named_arguments)?
+        """
+        return cls.named_argument, ZeroOrMore(",", cls.named_argument)
+
+    @classmethod
+    def array_arguments(cls):  # type: ignore
+        """
+        array_arguments =
+            expression ("," array_arguments_non_first / FOR for_indices)?
+        """
+        return (
+            cls.expression,
+            Optional(
+                [
+                    (",", cls.array_arguments_non_first),  # type: ignore
+                    (cls.FOR, cls.for_indices),  # type: ignore
+                ]
+            ),
+        )
+
+    @classmethod
+    def array_arguments_non_first(cls):  # type: ignore
+        """
+        array_arguments_non_first =
+            expression ("," array_arguments_non_first)?
+        """
+        return cls.expression, ZeroOrMore(",", cls.expression)
+
+    @classmethod
+    def named_argument(cls):  # type: ignore
+        """
+        named_argument = IDENT "=" function_argument
+        """
+        return cls.IDENT, "=", cls.function_argument
+
+    @classmethod
+    def function_argument(cls):  # type: ignore
+        """
+        function_argument =
+            FUNCTION name "(" named_arguments? ")"
+            / expression
+        """
+        return [
+            (
+                cls.FUNCTION,
+                cls.name,
+                "(",
+                Optional(cls.named_arguments),
+                ")",
+            ),
+            cls.expression,
+        ]
+
+    @classmethod
+    def output_expression_list(cls):  # type: ignore
+        """
+        output_expression_list =
+            expression? ("," expression?)*
+        """
+        return (
+            Optional(cls.expression),
+            ZeroOrMore(",", Optional(cls.expression)),
+        )
+
+    @classmethod
+    def expression_list(cls):  # type: ignore
+        """
+        expression_list =
+            expression ("," expression)*
+        """
+        return cls.expression, ZeroOrMore(",", cls.expression)
+
+    @classmethod
+    def array_subscripts(cls):  # type: ignore
+        """
+        array_subscripts =
+            "[" subscript ("," subscript)* "]"
+        """
+        return "[", cls.subscript, ZeroOrMore(",", cls.subscript), "]"
+
+    @classmethod
+    def subscript(cls):  # type: ignore
+        """
+        subscript =
+            ":" / expression
+        """
+        return [":", cls.expression]
+
+    @classmethod
+    def comment(cls):  # type: ignore
+        """
+        comment =
+            string_comment annotation?
+        """
+        return (
+            cls.string_comment,
+            Optional(cls.annotation),
+        )
+
+    @classmethod
+    def string_comment(cls):  # type: ignore
+        """
+        string_comment =
+            (STRING ("+" STRING)*)?
+        """
+        return Optional(cls.STRING, ZeroOrMore("+", cls.STRING))
+
+    @classmethod
+    def annotation(cls):  # type: ignore
+        """
+        annotation =
+            ANNOTATION class_modification
+        """
+        return cls.ANNOTATION, cls.class_modification
