@@ -142,4 +142,4 @@ def short_class_definition():  # type: ignore
     short_class_definition =
         class_prefixes short_class_specifier
     """
-    return syntax.class_prefixes, syntax.short_class_specifier
+    return Syntax.class_prefixes, Syntax.short_class_specifier

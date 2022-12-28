@@ -1,21 +1,4 @@
 __all__ = (
-    # class_definition,
-    "class_definition",
-    "class_prefixes",
-    "class_specifier",
-    "long_class_specifier",
-    "short_class_specifier",
-    "der_class_specifier",
-    "base_prefix",
-    "enum_list",
-    "enumeration_literal",
-    "composition",
-    "language_specification",
-    "external_function_call",
-    "element_list",
-    "element",
-    "import_clause",
-    "import_list",
     # extends
     "extends_clause",
     "constraining_clause",
@@ -87,24 +70,6 @@ __all__ = (
     "annotation",
 )
 
-from ._class_definition import (
-    base_prefix,
-    class_definition,
-    class_prefixes,
-    class_specifier,
-    composition,
-    der_class_specifier,
-    element,
-    element_list,
-    enum_list,
-    enumeration_literal,
-    external_function_call,
-    import_clause,
-    import_list,
-    language_specification,
-    long_class_specifier,
-    short_class_specifier,
-)
 from ._component_clause import (
     component_clause,
     component_declaration,

@@ -362,5 +362,293 @@ class Syntax:
         """
         return (
             Optional(cls.WITHIN, Optional(syntax.name), ";"),
-            ZeroOrMore(Optional(cls.FINAL), syntax.class_definition, ";"),
+            ZeroOrMore(Optional(cls.FINAL), cls.class_definition, ";"),
         )
+
+    # §B.2.2 Class Definition
+    @classmethod
+    def class_definition(cls):  # type: ignore
+        """
+        class_definition =
+            ENCAPSULATED? class_prefixes class_specifier
+        """
+        return (
+            Optional(cls.ENCAPSULATED),
+            cls.class_prefixes,
+            cls.class_specifier,
+        )
+
+    @classmethod
+    def class_prefixes(cls):  # type: ignore
+        """
+        class_prefixes =
+            PARTIAL?
+            (
+                CLASS / MODEL / OPERATOR? RECORD / BLOCK / EXPANDABLE? CONNECTOR
+                / TYPE / PACKAGE / (PURE / IMPURE)? OPERATOR? FUNCTION / OPERATOR
+            )
+        """  # noqa: E501
+        return (
+            Optional(cls.PARTIAL),
+            [
+                cls.CLASS,
+                cls.MODEL,
+                (Optional(cls.OPERATOR), cls.RECORD),
+                cls.BLOCK,
+                (Optional(cls.EXPANDABLE), cls.CONNECTOR),
+                cls.TYPE,
+                cls.PACKAGE,
+                (
+                    Optional([cls.PURE, cls.IMPURE]),
+                    Optional(cls.OPERATOR),
+                    cls.FUNCTION,
+                ),
+                cls.OPERATOR,
+            ],
+        )
+
+    @classmethod
+    def class_specifier(cls):  # type: ignore
+        """
+        class_specifier =
+            long_class_specifier / short_class_specifier / der_class_specifier
+        """
+        return [
+            cls.long_class_specifier,
+            cls.short_class_specifier,
+            cls.der_class_specifier,
+        ]
+
+    @classmethod
+    def long_class_specifier(cls):  # type: ignore
+        """
+        long_class_specifier =
+            EXTENDS IDENT class_modification? string_comment composition END IDENT
+            / IDENT string_comment composition END IDENT
+        """  # noqa: E501
+        return [
+            (
+                cls.EXTENDS,
+                cls.IDENT,
+                Optional(syntax.class_modification),
+                syntax.string_comment,
+                cls.composition,
+                cls.END,
+                cls.IDENT,
+            ),
+            (
+                cls.IDENT,
+                syntax.string_comment,
+                cls.composition,
+                cls.END,
+                cls.IDENT,
+            ),
+        ]
+
+    @classmethod
+    def short_class_specifier(cls):  # type: ignore
+        """
+        short_class_specifier =
+            IDENT "=" ENUMERATION "(" (":" / enum_list?) ")" comment
+            / IDENT "=" base_prefix type_specifier array_subscripts?
+            class_modification? comment
+        """
+        return [
+            (
+                cls.IDENT,
+                "=",
+                cls.ENUMERATION,
+                "(",
+                [":", Optional(cls.enum_list)],
+                ")",
+                syntax.comment,
+            ),
+            (
+                cls.IDENT,
+                "=",
+                cls.base_prefix,
+                syntax.type_specifier,
+                Optional(syntax.array_subscripts),
+                Optional(syntax.class_modification),
+                syntax.comment,
+            ),
+        ]
+
+    @classmethod
+    def der_class_specifier(cls):  # type: ignore
+        """
+        der_class_specifer =
+            IDENT "=" DER "(" type_specifier "," IDENT ("," IDENT)* ")" comment
+        """
+        return (
+            cls.IDENT,
+            "=",
+            cls.DER,
+            "(",
+            syntax.type_specifier,
+            ",",
+            cls.IDENT,
+            ZeroOrMore(",", cls.IDENT),
+            ")",
+            syntax.comment,
+        )
+
+    @classmethod
+    def base_prefix(cls):  # type: ignore
+        """
+        base_prefix =
+            (INPUT / OUTPUT)?
+        """
+        return Optional([cls.INPUT, cls.OUTPUT])
+
+    @classmethod
+    def enum_list(cls):  # type: ignore
+        """
+        enum_list = enumeration_literal ("," enumeration_literal)*
+        """
+        return cls.enumeration_literal, ZeroOrMore(
+            ",", cls.enumeration_literal
+        )
+
+    @classmethod
+    def enumeration_literal(cls):  # type: ignore
+        """
+        enumeration_literal = IDENT comment
+        """
+        return cls.IDENT, syntax.comment
+
+    @classmethod
+    def composition(cls):  # type: ignore
+        """
+        composition =
+            element_list
+            (
+                PUBLIC element_list
+                / PROTECTED element_list
+                / equation_section
+                / algorithm_section
+            )*
+            (
+                EXTERNAL language_specification?
+                external_function_call? annotation? ";"
+            )?
+            (annotation ";")?
+        """
+        return (
+            cls.element_list,
+            ZeroOrMore(
+                [
+                    (cls.PUBLIC, cls.element_list),  # type: ignore
+                    (cls.PROTECTED, cls.element_list),  # type: ignore
+                    syntax.equation_section,
+                    syntax.algorithm_section,
+                ]
+            ),
+            Optional(
+                cls.EXTERNAL,
+                Optional(cls.language_specification),
+                Optional(cls.external_function_call),
+                Optional(syntax.annotation),
+                ";",
+            ),
+            Optional(syntax.annotation, ";"),
+        )
+
+    @classmethod
+    def language_specification(cls):  # type: ignore
+        """
+        language_specification =
+            STRING
+        """
+        return cls.STRING
+
+    @classmethod
+    def external_function_call(cls):  # type: ignore
+        """
+        external_function_call =
+            (component_reference "=")? IDENT "(" expression_list? ")"
+        """
+        return (
+            Optional(syntax.component_reference, "="),
+            cls.IDENT,
+            "(",
+            Optional(syntax.expression_list),
+            ")",
+        )
+
+    @classmethod
+    def element_list(cls):  # type: ignore
+        """
+        element_list =
+            (element ";")*
+        """
+        return ZeroOrMore(cls.element, ";")
+
+    @classmethod
+    def element(cls):  # type: ignore
+        """
+        element =
+            import_clause
+            extends_clause
+            / REDECLARE? FINAL? INNER? OUTER?
+                (
+                    REPLACEABLE (class_definition / component_clause)
+                    (constraining_clause comment)?
+                    / (class_definition / component_clause)
+                )
+        """
+        return [
+            cls.import_clause,
+            syntax.extends_clause,
+            (
+                Optional(cls.REDECLARE),
+                Optional(cls.FINAL),
+                Optional(cls.INNER),
+                Optional(cls.OUTER),
+                [
+                    (
+                        cls.REPLACEABLE,
+                        [cls.class_definition, syntax.component_clause],
+                        Optional(syntax.constraining_clause, syntax.comment),
+                    ),
+                    [cls.class_definition, syntax.component_clause],
+                ],
+            ),
+        ]
+
+    @classmethod
+    def import_clause(cls):  # type: ignore
+        """
+        import_clause =
+            import
+            (
+                IDENT "=" name
+                / name ("." ("*" / "{" import_list "}") )?
+            )
+            comment
+        """
+        return (
+            cls.IMPORT,
+            [
+                (cls.IDENT, "=", syntax.name),
+                (
+                    syntax.name,
+                    Optional(
+                        ".",
+                        [
+                            "*",
+                            ("{", cls.import_list, "}"),  # type: ignore
+                        ],
+                    ),
+                ),
+            ],
+            syntax.comment,
+        )
+
+    @classmethod
+    def import_list(cls):  # type: ignore
+        """
+        import_list =
+            IDENT ("," IDENT)*
+        """
+        return cls.IDENT, ZeroOrMore(",", cls.IDENT)
