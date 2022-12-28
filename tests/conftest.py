@@ -2,9 +2,9 @@ import enum
 from typing import Any
 
 import pytest
-from arpeggio import EndOfFile, Parser, ParserPython
+from arpeggio import EndOfFile, Parser
 
-from modelica_language import ParserPEG
+from modelica_language import ParserPEG, ParserPython
 from modelica_language.parsers import syntax
 from modelica_language.syntax import v3_4
 
