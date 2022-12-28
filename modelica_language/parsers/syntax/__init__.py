@@ -1,6 +1,4 @@
 __all__ = (
-    # stored_definition
-    "stored_definition",
     # class_definition,
     "class_definition",
     "class_prefixes",
@@ -178,4 +176,3 @@ from ._modification import (
     modification,
     short_class_definition,
 )
-from ._stored_definition import stored_definition

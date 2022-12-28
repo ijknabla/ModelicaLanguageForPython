@@ -1,6 +1,6 @@
-from arpeggio import Not, RegExMatch
+from arpeggio import Not, Optional, RegExMatch, ZeroOrMore
 
-from .. import regex
+from .. import regex, syntax
 
 any_keyword = (
     r"("
@@ -350,3 +350,17 @@ class Syntax:
     CPP_STYLE_COMMENT.__doc__ = (
         f"CPP_STYLE_COMMENT = {regexPEG(regex.cpp_style_comment)}"
     )
+
+    # §B.2 Grammar
+    # §B.2.1 Stored Definition - Within
+    @classmethod
+    def stored_definition(cls):  # type: ignore
+        """
+        stored_definition =
+            (WITHIN name? ";")?
+            (FINAL? class_definition ";")*
+        """
+        return (
+            Optional(cls.WITHIN, Optional(syntax.name), ";"),
+            ZeroOrMore(Optional(cls.FINAL), syntax.class_definition, ";"),
+        )

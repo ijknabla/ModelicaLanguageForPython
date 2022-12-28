@@ -5,7 +5,6 @@ import pytest
 from arpeggio import EndOfFile, Parser
 
 from modelica_language import ParserPEG, ParserPython
-from modelica_language.parsers import syntax
 from modelica_language.parsers.syntax._future import Syntax
 from modelica_language.syntax import v3_4
 
@@ -48,7 +47,7 @@ file: stored-definition $EOF$
 @pytest.fixture(scope="module")
 def py_file_parser() -> ParserPython:
     def file() -> Any:
-        return syntax.stored_definition, EndOfFile()
+        return Syntax.stored_definition, EndOfFile()
 
     return ParserPython(
         file,
