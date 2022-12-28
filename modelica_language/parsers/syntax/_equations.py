@@ -18,6 +18,7 @@ __all__ = (
 from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
+from ._future import Syntax
 
 
 def equation_section():  # type: ignore
@@ -26,8 +27,8 @@ def equation_section():  # type: ignore
         INITIAL? EQUATION (equation ";")*
     """
     return (
-        Optional(syntax.INITIAL),
-        syntax.EQUATION,
+        Optional(Syntax.INITIAL),
+        Syntax.EQUATION,
         ZeroOrMore(syntax.equation, ";"),
     )
 
@@ -38,8 +39,8 @@ def algorithm_section():  # type: ignore
         INITIAL? ALGORITHM (statement ";")*
     """
     return (
-        Optional(syntax.INITIAL),
-        syntax.ALGORITHM,
+        Optional(Syntax.INITIAL),
+        Syntax.ALGORITHM,
         ZeroOrMore(syntax.statement, ";"),
     )
 
@@ -88,8 +89,8 @@ def statement():  # type: ignore
     """
     return (
         [
-            syntax.BREAK,
-            syntax.RETURN,
+            Syntax.BREAK,
+            Syntax.RETURN,
             syntax.if_statement,
             syntax.for_statement,
             syntax.while_statement,
@@ -120,31 +121,31 @@ def if_equation():  # type: ignore
         END IF
     """
     return (
-        syntax.IF,
+        Syntax.IF,
         syntax.expression,
-        syntax.THEN,
+        Syntax.THEN,
         ZeroOrMore(
             syntax.equation,
             ";",
         ),
         ZeroOrMore(
-            syntax.ELSEIF,
+            Syntax.ELSEIF,
             syntax.expression,
-            syntax.THEN,
+            Syntax.THEN,
             ZeroOrMore(
                 syntax.equation,
                 ";",
             ),
         ),
         Optional(
-            syntax.ELSE,
+            Syntax.ELSE,
             ZeroOrMore(
                 syntax.equation,
                 ";",
             ),
         ),
-        syntax.END,
-        syntax.IF,
+        Syntax.END,
+        Syntax.IF,
     )
 
 
@@ -157,31 +158,31 @@ def if_statement():  # type: ignore
         END IF
     """
     return (
-        syntax.IF,
+        Syntax.IF,
         syntax.expression,
-        syntax.THEN,
+        Syntax.THEN,
         ZeroOrMore(
             syntax.statement,
             ";",
         ),
         ZeroOrMore(
-            syntax.ELSEIF,
+            Syntax.ELSEIF,
             syntax.expression,
-            syntax.THEN,
+            Syntax.THEN,
             ZeroOrMore(
                 syntax.statement,
                 ";",
             ),
         ),
         Optional(
-            syntax.ELSE,
+            Syntax.ELSE,
             ZeroOrMore(
                 syntax.statement,
                 ";",
             ),
         ),
-        syntax.END,
-        syntax.IF,
+        Syntax.END,
+        Syntax.IF,
     )
 
 
@@ -193,15 +194,15 @@ def for_equation():  # type: ignore
         END FOR
     """
     return (
-        syntax.FOR,
+        Syntax.FOR,
         syntax.for_indices,
-        syntax.LOOP,
+        Syntax.LOOP,
         ZeroOrMore(
             syntax.equation,
             ";",
         ),
-        syntax.END,
-        syntax.FOR,
+        Syntax.END,
+        Syntax.FOR,
     )
 
 
@@ -213,15 +214,15 @@ def for_statement():  # type: ignore
         END FOR
     """
     return (
-        syntax.FOR,
+        Syntax.FOR,
         syntax.for_indices,
-        syntax.LOOP,
+        Syntax.LOOP,
         ZeroOrMore(
             syntax.statement,
             ";",
         ),
-        syntax.END,
-        syntax.FOR,
+        Syntax.END,
+        Syntax.FOR,
     )
 
 
@@ -238,7 +239,7 @@ def for_index():  # type: ignore
     for_index =
         IDENT (IN expression)?
     """
-    return syntax.IDENT, Optional(syntax.IN, syntax.expression)
+    return syntax.IDENT, Optional(Syntax.IN, syntax.expression)
 
 
 def while_statement():  # type: ignore
@@ -249,15 +250,15 @@ def while_statement():  # type: ignore
         END WHILE
     """
     return (
-        syntax.WHILE,
+        Syntax.WHILE,
         syntax.expression,
-        syntax.LOOP,
+        Syntax.LOOP,
         ZeroOrMore(
             syntax.statement,
             ";",
         ),
-        syntax.END,
-        syntax.WHILE,
+        Syntax.END,
+        Syntax.WHILE,
     )
 
 
@@ -269,24 +270,24 @@ def when_equation():  # type: ignore
         END WHEN
     """
     return (
-        syntax.WHEN,
+        Syntax.WHEN,
         syntax.expression,
-        syntax.THEN,
+        Syntax.THEN,
         ZeroOrMore(
             syntax.equation,
             ";",
         ),
         ZeroOrMore(
-            syntax.ELSEWHEN,
+            Syntax.ELSEWHEN,
             syntax.expression,
-            syntax.THEN,
+            Syntax.THEN,
             ZeroOrMore(
                 syntax.equation,
                 ";",
             ),
         ),
-        syntax.END,
-        syntax.WHEN,
+        Syntax.END,
+        Syntax.WHEN,
     )
 
 
@@ -298,24 +299,24 @@ def when_statement():  # type: ignore
         END WHEN
     """
     return (
-        syntax.WHEN,
+        Syntax.WHEN,
         syntax.expression,
-        syntax.THEN,
+        Syntax.THEN,
         ZeroOrMore(
             syntax.statement,
             ";",
         ),
         ZeroOrMore(
-            syntax.ELSEWHEN,
+            Syntax.ELSEWHEN,
             syntax.expression,
-            syntax.THEN,
+            Syntax.THEN,
             ZeroOrMore(
                 syntax.statement,
                 ";",
             ),
         ),
-        syntax.END,
-        syntax.WHEN,
+        Syntax.END,
+        Syntax.WHEN,
     )
 
 
@@ -325,7 +326,7 @@ def connect_clause():  # type: ignore
         CONNECT "(" component_reference "," component_reference ")"
     """
     return (
-        syntax.CONNECT,
+        Syntax.CONNECT,
         "(",
         syntax.component_reference,
         ",",

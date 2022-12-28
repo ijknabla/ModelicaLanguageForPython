@@ -6,6 +6,7 @@ __all__ = (
 from arpeggio import Optional
 
 from .. import syntax
+from ._future import Syntax
 
 
 def extends_clause():  # type: ignore
@@ -14,7 +15,7 @@ def extends_clause():  # type: ignore
         EXTENDS type_specifier class_modification? annotation?
     """
     return (
-        syntax.EXTENDS,
+        Syntax.EXTENDS,
         syntax.type_specifier,
         Optional(syntax.class_modification),
         Optional(syntax.annotation),
@@ -27,7 +28,7 @@ def constraining_clause():  # type: ignore
         CONSTRAINEDBY type_specifier class_modification?
     """
     return (
-        syntax.CONSTRAINEDBY,
+        Syntax.CONSTRAINEDBY,
         syntax.type_specifier,
         Optional(syntax.class_modification),
     )

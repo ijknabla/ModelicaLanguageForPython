@@ -7,11 +7,12 @@ __all__ = (
 
 from arpeggio import Not, RegExMatch
 
-from .. import regex, syntax
+from .. import regex
+from ._future import Syntax
 
 
 def IDENT():  # type: ignore
-    return Not(syntax.ANY_KEYWORD), RegExMatch(regex.ident)
+    return Not(Syntax.ANY_KEYWORD), RegExMatch(regex.ident)
 
 
 def STRING():  # type: ignore

@@ -15,6 +15,7 @@ __all__ = (
 from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
+from ._future import Syntax
 
 
 def modification():  # type: ignore
@@ -65,8 +66,8 @@ def element_modification_or_replaceable():  # type: ignore
         EACH? FINAL? (element_modification / element_replaceable)
     """
     return (
-        Optional(syntax.EACH),
-        Optional(syntax.FINAL),
+        Optional(Syntax.EACH),
+        Optional(Syntax.FINAL),
         [syntax.element_modification, syntax.element_replaceable],
     )
 
@@ -90,9 +91,9 @@ def element_redeclaration():  # type: ignore
         ((short_class_definition / component_clause1) / element_replaceable)
     """
     return (
-        syntax.REDECLARE,
-        Optional(syntax.EACH),
-        Optional(syntax.FINAL),
+        Syntax.REDECLARE,
+        Optional(Syntax.EACH),
+        Optional(Syntax.FINAL),
         [
             [
                 syntax.short_class_definition,
@@ -110,7 +111,7 @@ def element_replaceable():  # type: ignore
         constraining_clause?
     """
     return (
-        syntax.REPLACEABLE,
+        Syntax.REPLACEABLE,
         [syntax.short_class_definition, syntax.component_clause1],
         Optional(syntax.constraining_clause),
     )

@@ -3,6 +3,7 @@ __all__ = ("stored_definition",)
 from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
+from ._future import Syntax
 
 
 def stored_definition():  # type: ignore
@@ -12,6 +13,6 @@ def stored_definition():  # type: ignore
         (FINAL? class_definition ";")*
     """
     return (
-        Optional(syntax.WITHIN, Optional(syntax.name), ";"),
-        ZeroOrMore(Optional(syntax.FINAL), syntax.class_definition, ";"),
+        Optional(Syntax.WITHIN, Optional(syntax.name), ";"),
+        ZeroOrMore(Optional(Syntax.FINAL), syntax.class_definition, ";"),
     )

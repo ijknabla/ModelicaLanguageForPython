@@ -35,6 +35,7 @@ __all__ = (
 from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
+from ._future import Syntax
 
 
 def expression():  # type: ignore
@@ -49,19 +50,19 @@ def expression():  # type: ignore
         syntax.simple_expression,
         (
             (
-                syntax.IF,
+                Syntax.IF,
                 syntax.expression,
-                syntax.THEN,
+                Syntax.THEN,
                 syntax.expression,
             ),
             ZeroOrMore(
-                syntax.ELSEIF,
+                Syntax.ELSEIF,
                 syntax.expression,
-                syntax.THEN,
+                Syntax.THEN,
                 syntax.expression,
             ),
             (
-                syntax.ELSE,
+                Syntax.ELSE,
                 syntax.expression,
             ),
         ),
@@ -88,7 +89,7 @@ def logical_expression():  # type: ignore
     logical_expression =
         logical_term (OR logical_term)*
     """
-    return syntax.logical_term, ZeroOrMore(syntax.OR, syntax.logical_term)
+    return syntax.logical_term, ZeroOrMore(Syntax.OR, syntax.logical_term)
 
 
 def logical_term():  # type: ignore
@@ -96,7 +97,7 @@ def logical_term():  # type: ignore
     logical_term =
         logical_factor (AND logical_factor)*
     """
-    return syntax.logical_factor, ZeroOrMore(syntax.AND, syntax.logical_factor)
+    return syntax.logical_factor, ZeroOrMore(Syntax.AND, syntax.logical_factor)
 
 
 def logical_factor():  # type: ignore
@@ -104,7 +105,7 @@ def logical_factor():  # type: ignore
     logical_factor =
         NOT? relation
     """
-    return Optional(syntax.NOT), syntax.relation
+    return Optional(Syntax.NOT), syntax.relation
 
 
 def relation():  # type: ignore
@@ -186,9 +187,9 @@ def primary():  # type: ignore
         / component_reference
     """
     return [
-        syntax.FALSE,
-        syntax.TRUE,
-        syntax.END,
+        Syntax.FALSE,
+        Syntax.TRUE,
+        Syntax.END,
         syntax.UNSIGNED_NUMBER,
         syntax.STRING,
         ("(", syntax.output_expression_list, ")"),
@@ -202,9 +203,9 @@ def primary():  # type: ignore
         (
             [
                 syntax.component_reference,
-                syntax.DER,
-                syntax.INITIAL,
-                syntax.PURE,
+                Syntax.DER,
+                Syntax.INITIAL,
+                Syntax.PURE,
             ],
             syntax.function_call_args,
         ),
@@ -257,7 +258,7 @@ def function_arguments():  # type: ignore
     """
     return [
         (
-            syntax.FUNCTION,
+            Syntax.FUNCTION,
             syntax.name,
             "(",
             Optional(syntax.named_arguments),
@@ -270,7 +271,7 @@ def function_arguments():  # type: ignore
             Optional(
                 [
                     (",", syntax.function_arguments_non_first),  # type: ignore
-                    (syntax.FOR, syntax.for_indices),  # type: ignore
+                    (Syntax.FOR, syntax.for_indices),  # type: ignore
                 ]
             ),
         ),
@@ -309,7 +310,7 @@ def array_arguments():  # type: ignore
         Optional(
             [
                 (",", syntax.array_arguments_non_first),  # type: ignore
-                (syntax.FOR, syntax.for_indices),  # type: ignore
+                (Syntax.FOR, syntax.for_indices),  # type: ignore
             ]
         ),
     )
@@ -338,7 +339,7 @@ def function_argument():  # type: ignore
     """
     return [
         (
-            syntax.FUNCTION,
+            Syntax.FUNCTION,
             syntax.name,
             "(",
             Optional(syntax.named_arguments),
@@ -407,4 +408,4 @@ def annotation():  # type: ignore
     annotation =
         ANNOTATION class_modification
     """
-    return syntax.ANNOTATION, syntax.class_modification
+    return Syntax.ANNOTATION, syntax.class_modification

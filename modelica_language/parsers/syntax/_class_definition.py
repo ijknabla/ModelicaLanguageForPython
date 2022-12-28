@@ -20,6 +20,7 @@ __all__ = (
 from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
+from ._future import Syntax
 
 
 def class_definition():  # type: ignore
@@ -28,7 +29,7 @@ def class_definition():  # type: ignore
         ENCAPSULATED? class_prefixes class_specifier
     """
     return (
-        Optional(syntax.ENCAPSULATED),
+        Optional(Syntax.ENCAPSULATED),
         class_prefixes,
         class_specifier,
     )
@@ -44,21 +45,21 @@ def class_prefixes():  # type: ignore
         )
     """
     return (
-        Optional(syntax.PARTIAL),
+        Optional(Syntax.PARTIAL),
         [
-            syntax.CLASS,
-            syntax.MODEL,
-            (Optional(syntax.OPERATOR), syntax.RECORD),
-            syntax.BLOCK,
-            (Optional(syntax.EXPANDABLE), syntax.CONNECTOR),
-            syntax.TYPE,
-            syntax.PACKAGE,
+            Syntax.CLASS,
+            Syntax.MODEL,
+            (Optional(Syntax.OPERATOR), Syntax.RECORD),
+            Syntax.BLOCK,
+            (Optional(Syntax.EXPANDABLE), Syntax.CONNECTOR),
+            Syntax.TYPE,
+            Syntax.PACKAGE,
             (
-                Optional([syntax.PURE, syntax.IMPURE]),
-                Optional(syntax.OPERATOR),
-                syntax.FUNCTION,
+                Optional([Syntax.PURE, Syntax.IMPURE]),
+                Optional(Syntax.OPERATOR),
+                Syntax.FUNCTION,
             ),
-            syntax.OPERATOR,
+            Syntax.OPERATOR,
         ],
     )
 
@@ -83,19 +84,19 @@ def long_class_specifier():  # type: ignore
     """
     return [
         (
-            syntax.EXTENDS,
+            Syntax.EXTENDS,
             syntax.IDENT,
             Optional(syntax.class_modification),
             syntax.string_comment,
             syntax.composition,
-            syntax.END,
+            Syntax.END,
             syntax.IDENT,
         ),
         (
             syntax.IDENT,
             syntax.string_comment,
             syntax.composition,
-            syntax.END,
+            Syntax.END,
             syntax.IDENT,
         ),
     ]
@@ -112,7 +113,7 @@ def short_class_specifier():  # type: ignore
         (
             syntax.IDENT,
             "=",
-            syntax.ENUMERATION,
+            Syntax.ENUMERATION,
             "(",
             [":", Optional(syntax.enum_list)],
             ")",
@@ -138,7 +139,7 @@ def der_class_specifier():  # type: ignore
     return (
         syntax.IDENT,
         "=",
-        syntax.DER,
+        Syntax.DER,
         "(",
         syntax.type_specifier,
         ",",
@@ -154,7 +155,7 @@ def base_prefix():  # type: ignore
     base_prefix =
         (INPUT / OUTPUT)?
     """
-    return Optional([syntax.INPUT, syntax.OUTPUT])
+    return Optional([Syntax.INPUT, Syntax.OUTPUT])
 
 
 def enum_list():  # type: ignore
@@ -193,14 +194,14 @@ def composition():  # type: ignore
         syntax.element_list,
         ZeroOrMore(
             [
-                (syntax.PUBLIC, syntax.element_list),  # type: ignore
-                (syntax.PROTECTED, syntax.element_list),  # type: ignore
+                (Syntax.PUBLIC, syntax.element_list),  # type: ignore
+                (Syntax.PROTECTED, syntax.element_list),  # type: ignore
                 syntax.equation_section,
                 syntax.algorithm_section,
             ]
         ),
         Optional(
-            syntax.EXTERNAL,
+            Syntax.EXTERNAL,
             Optional(syntax.language_specification),
             Optional(syntax.external_function_call),
             Optional(syntax.annotation),
@@ -256,13 +257,13 @@ def element():  # type: ignore
         syntax.import_clause,
         syntax.extends_clause,
         (
-            Optional(syntax.REDECLARE),
-            Optional(syntax.FINAL),
-            Optional(syntax.INNER),
-            Optional(syntax.OUTER),
+            Optional(Syntax.REDECLARE),
+            Optional(Syntax.FINAL),
+            Optional(Syntax.INNER),
+            Optional(Syntax.OUTER),
             [
                 (
-                    syntax.REPLACEABLE,
+                    Syntax.REPLACEABLE,
                     [syntax.class_definition, syntax.component_clause],
                     Optional(syntax.constraining_clause, syntax.comment),
                 ),
@@ -283,7 +284,7 @@ def import_clause():  # type: ignore
         comment
     """
     return (
-        syntax.IMPORT,
+        Syntax.IMPORT,
         [
             (syntax.IDENT, "=", syntax.name),
             (

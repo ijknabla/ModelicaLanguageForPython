@@ -10,6 +10,7 @@ __all__ = (
 from arpeggio import Optional, ZeroOrMore
 
 from .. import syntax
+from ._future import Syntax
 
 
 def component_clause():  # type: ignore
@@ -31,18 +32,18 @@ def type_prefix():  # type: ignore
         (FLOW/STREAM)? (DISCRETE/PARAMETER/CONSTANT)? (INPUT/OUTPUT)?
     """
     return (
-        Optional([syntax.FLOW, syntax.STREAM]),
+        Optional([Syntax.FLOW, Syntax.STREAM]),
         Optional(
             [
-                syntax.DISCRETE,
-                syntax.PARAMETER,
-                syntax.CONSTANT,
+                Syntax.DISCRETE,
+                Syntax.PARAMETER,
+                Syntax.CONSTANT,
             ]
         ),
         Optional(
             [
-                syntax.INPUT,
-                syntax.OUTPUT,
+                Syntax.INPUT,
+                Syntax.OUTPUT,
             ]
         ),
     )
@@ -75,7 +76,7 @@ def condition_attribute():  # type: ignore
     condition_attribute =
         IF expression
     """
-    return syntax.IF, syntax.expression
+    return Syntax.IF, syntax.expression
 
 
 def declaration():  # type: ignore
