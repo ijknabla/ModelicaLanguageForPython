@@ -113,7 +113,7 @@ def element_replaceable():  # type: ignore
     return (
         Syntax.REPLACEABLE,
         [syntax.short_class_definition, syntax.component_clause1],
-        Optional(syntax.constraining_clause),
+        Optional(Syntax.constraining_clause),
     )
 
 

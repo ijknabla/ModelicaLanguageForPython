@@ -1,7 +1,4 @@
 __all__ = (
-    # extends
-    "extends_clause",
-    "constraining_clause",
     # component_clause
     "component_clause",
     "type_prefix",
@@ -127,7 +124,6 @@ from ._expressions import (
     term,
     type_specifier,
 )
-from ._extends import constraining_clause, extends_clause
 from ._modification import (
     argument,
     argument_list,

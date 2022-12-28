@@ -599,7 +599,7 @@ class Syntax:
         """
         return [
             cls.import_clause,
-            syntax.extends_clause,
+            cls.extends_clause,
             (
                 Optional(cls.REDECLARE),
                 Optional(cls.FINAL),
@@ -609,7 +609,7 @@ class Syntax:
                     (
                         cls.REPLACEABLE,
                         [cls.class_definition, syntax.component_clause],
-                        Optional(syntax.constraining_clause, syntax.comment),
+                        Optional(cls.constraining_clause, syntax.comment),
                     ),
                     [cls.class_definition, syntax.component_clause],
                 ],
@@ -652,3 +652,29 @@ class Syntax:
             IDENT ("," IDENT)*
         """
         return cls.IDENT, ZeroOrMore(",", cls.IDENT)
+
+    # §B.2.3 Extends
+    @classmethod
+    def extends_clause(cls):  # type: ignore
+        """
+        extends_clause =
+            EXTENDS type_specifier class_modification? annotation?
+        """
+        return (
+            cls.EXTENDS,
+            syntax.type_specifier,
+            Optional(syntax.class_modification),
+            Optional(syntax.annotation),
+        )
+
+    @classmethod
+    def constraining_clause(cls):  # type: ignore
+        """
+        constraining_clause =
+            CONSTRAINEDBY type_specifier class_modification?
+        """
+        return (
+            cls.CONSTRAINEDBY,
+            syntax.type_specifier,
+            Optional(syntax.class_modification),
+        )
