@@ -1,6 +1,59 @@
 from arpeggio import Not, Optional, RegExMatch, ZeroOrMore
 
-from .. import regex
+# # regex for quote character
+
+single_quote = "'"
+double_quote = '"'
+
+
+# # regex for lexical unit STRING
+
+s_char = rf"[^\\{double_quote}]"
+# any member of the Unicode character set
+# except double-quote """, and backslash "\"
+
+s_escape = (
+    rf"\\{single_quote}|\\{double_quote}|"
+    r"\\\?|\\\\|\\a|\\b|\\f|\\n|\\r|\\t|\\v"
+)
+
+string = rf"{double_quote}" rf"({s_char}|{s_escape})*" rf"{double_quote}"
+
+
+# # regex for lexical unit UNSIGNED_NUMBER
+
+digit = r"[0-9]"
+nondigit = r"_|[a-z]|[A-Z]"
+
+unsigned_integer = rf"({digit})+"
+unsigned_number = (
+    rf"{unsigned_integer}(\.({unsigned_integer})?)?"
+    rf"([eE][+-]?{unsigned_integer})?"
+)
+
+
+# # regex for lexical unit IDENT
+
+q_char = (
+    rf"{nondigit}|{digit}"
+    r"|!|#|\$|%|&|\(|\)|\*|\+|,|-|\.|/|"
+    r":|;|<|>|=|\?|@|\[|\]|\^|{|}|\||~| "
+)
+q_ident = (
+    rf"{single_quote}"
+    rf"({q_char}|{s_escape})"
+    rf"({q_char}|{s_escape}|{double_quote})*"
+    rf"{single_quote}"
+)
+ident = rf"(({nondigit})({digit}|{nondigit})*)|({q_ident})"
+
+
+# # regex for lexical unit C++ style comment
+
+single_line_comment = r"//.*"
+multi_line_comment = r"/\*([^*]|\*(?!/))*\*/"
+cpp_style_comment = rf"({single_line_comment})|({multi_line_comment})"
+
 
 any_keyword = (
     r"("
@@ -325,30 +378,28 @@ class Syntax:
     # §B.1 Lexical conventions
     @classmethod
     def IDENT(cls):  # type: ignore
-        return Not(cls.ANY_KEYWORD), RegExMatch(regex.ident)
+        return Not(cls.ANY_KEYWORD), RegExMatch(ident)
 
-    IDENT.__doc__ = f"IDENT = !ANY_KEYWORD {regexPEG(regex.ident)}"
+    IDENT.__doc__ = f"IDENT = !ANY_KEYWORD {regexPEG(ident)}"
 
     @staticmethod
     def STRING() -> RegExMatch:
-        return RegExMatch(regex.string)
+        return RegExMatch(string)
 
-    STRING.__doc__ = f"STRING = {regexPEG(regex.string)}"
+    STRING.__doc__ = f"STRING = {regexPEG(string)}"
 
     @staticmethod
     def UNSIGNED_NUMBER() -> RegExMatch:
-        return RegExMatch(regex.unsigned_number)
+        return RegExMatch(unsigned_number)
 
-    UNSIGNED_NUMBER.__doc__ = (
-        f"UNSIGNED_NUMBER = {regexPEG(regex.unsigned_number)}"
-    )
+    UNSIGNED_NUMBER.__doc__ = f"UNSIGNED_NUMBER = {regexPEG(unsigned_number)}"
 
     @staticmethod
     def CPP_STYLE_COMMENT() -> RegExMatch:
-        return RegExMatch(regex.cpp_style_comment)
+        return RegExMatch(cpp_style_comment)
 
     CPP_STYLE_COMMENT.__doc__ = (
-        f"CPP_STYLE_COMMENT = {regexPEG(regex.cpp_style_comment)}"
+        f"CPP_STYLE_COMMENT = {regexPEG(cpp_style_comment)}"
     )
 
     # §B.2 Grammar
