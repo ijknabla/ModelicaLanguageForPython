@@ -123,7 +123,7 @@ def component_clause1():  # type: ignore
         type_prefix type_specifier component_declaration1
     """
     return (
-        syntax.type_prefix,
+        Syntax.type_prefix,
         syntax.type_specifier,
         syntax.component_declaration1,
     )
@@ -134,7 +134,7 @@ def component_declaration1():  # type: ignore
     component_declaration1 =
         declaration comment
     """
-    return syntax.declaration, syntax.comment
+    return Syntax.declaration, syntax.comment
 
 
 def short_class_definition():  # type: ignore

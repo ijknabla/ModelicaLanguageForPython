@@ -608,10 +608,10 @@ class Syntax:
                 [
                     (
                         cls.REPLACEABLE,
-                        [cls.class_definition, syntax.component_clause],
+                        [cls.class_definition, Syntax.component_clause],
                         Optional(cls.constraining_clause, syntax.comment),
                     ),
-                    [cls.class_definition, syntax.component_clause],
+                    [cls.class_definition, Syntax.component_clause],
                 ],
             ),
         ]
@@ -677,4 +677,83 @@ class Syntax:
             cls.CONSTRAINEDBY,
             syntax.type_specifier,
             Optional(syntax.class_modification),
+        )
+
+    # §B.2.4 Component Clause
+    @classmethod
+    def component_clause(cls):  # type: ignore
+        """
+        component_clause =
+            type_prefix type_specifier array_subscripts? component_list
+        """
+        return (
+            Syntax.type_prefix,
+            syntax.type_specifier,
+            Optional(syntax.array_subscripts),
+            Syntax.component_list,
+        )
+
+    @classmethod
+    def type_prefix(cls):  # type: ignore
+        """
+        type_prefix =
+            (FLOW/STREAM)? (DISCRETE/PARAMETER/CONSTANT)? (INPUT/OUTPUT)?
+        """
+        return (
+            Optional([cls.FLOW, cls.STREAM]),
+            Optional(
+                [
+                    cls.DISCRETE,
+                    cls.PARAMETER,
+                    cls.CONSTANT,
+                ]
+            ),
+            Optional(
+                [
+                    cls.INPUT,
+                    cls.OUTPUT,
+                ]
+            ),
+        )
+
+    @classmethod
+    def component_list(cls):  # type: ignore
+        """
+        component_list =
+            component_declaration ("," component_declaration)*
+        """
+        return Syntax.component_declaration, ZeroOrMore(
+            ",", Syntax.component_declaration
+        )
+
+    @classmethod
+    def component_declaration(cls):  # type: ignore
+        """
+        component_declaration =
+            declaration condition_attribute? comment
+        """
+        return (
+            Syntax.declaration,
+            Optional(Syntax.condition_attribute),
+            syntax.comment,
+        )
+
+    @classmethod
+    def condition_attribute(cls):  # type: ignore
+        """
+        condition_attribute =
+            IF expression
+        """
+        return cls.IF, syntax.expression
+
+    @classmethod
+    def declaration(cls):  # type: ignore
+        """
+        declaration =
+            IDENT array_subscripts? modification?
+        """
+        return (
+            cls.IDENT,
+            Optional(syntax.array_subscripts),
+            Optional(syntax.modification),
         )

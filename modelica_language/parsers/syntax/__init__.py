@@ -1,11 +1,4 @@
 __all__ = (
-    # component_clause
-    "component_clause",
-    "type_prefix",
-    "component_list",
-    "component_declaration",
-    "condition_attribute",
-    "declaration",
     # modification
     "modification",
     "class_modification",
@@ -67,14 +60,6 @@ __all__ = (
     "annotation",
 )
 
-from ._component_clause import (
-    component_clause,
-    component_declaration,
-    component_list,
-    condition_attribute,
-    declaration,
-    type_prefix,
-)
 from ._equations import (
     algorithm_section,
     connect_clause,
