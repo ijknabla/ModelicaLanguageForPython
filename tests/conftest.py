@@ -5,15 +5,15 @@ import pytest
 from arpeggio import EndOfFile, Parser
 
 from modelica_language import ParserPEG, ParserPython
-from modelica_language.parsers.syntax._future import Syntax
-from modelica_language.syntax import v3_4
+from modelica_language.syntax import v3_4_peg
+from modelica_language.syntax.v3_4 import Syntax
 
 
 @pytest.fixture(scope="module")
 def ident_parser() -> ParserPEG:
     return ParserPEG(
         f"""
-{v3_4()}
+{v3_4_peg()}
 file: IDENT $EOF$
         """,
         "file",
@@ -24,7 +24,7 @@ file: IDENT $EOF$
 def ident_dialect_parser() -> ParserPEG:
     return ParserPEG(
         f"""
-{v3_4()}
+{v3_4_peg()}
 IDENT |= r'\\$\\w*'
 file: IDENT $EOF$
         """,
@@ -36,7 +36,7 @@ file: IDENT $EOF$
 def peg_file_parser() -> ParserPEG:
     return ParserPEG(
         f"""
-{v3_4()}
+{v3_4_peg()}
 file: stored-definition $EOF$
         """,
         "file",

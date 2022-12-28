@@ -1,3 +1,5 @@
+__all__ = ("Syntax",)
+
 from arpeggio import Not, Optional, RegExMatch, ZeroOrMore
 
 # # regex for quote character
