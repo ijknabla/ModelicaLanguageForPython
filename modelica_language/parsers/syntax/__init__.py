@@ -1,16 +1,4 @@
 __all__ = (
-    # modification
-    "modification",
-    "class_modification",
-    "argument_list",
-    "argument",
-    "element_modification_or_replaceable",
-    "element_modification",
-    "element_redeclaration",
-    "element_replaceable",
-    "component_clause1",
-    "component_declaration1",
-    "short_class_definition",
     # equations
     "equation_section",
     "algorithm_section",
@@ -108,17 +96,4 @@ from ._expressions import (
     subscript,
     term,
     type_specifier,
-)
-from ._modification import (
-    argument,
-    argument_list,
-    class_modification,
-    component_clause1,
-    component_declaration1,
-    element_modification,
-    element_modification_or_replaceable,
-    element_redeclaration,
-    element_replaceable,
-    modification,
-    short_class_definition,
 )

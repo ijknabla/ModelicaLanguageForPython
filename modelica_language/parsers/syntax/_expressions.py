@@ -408,4 +408,4 @@ def annotation():  # type: ignore
     annotation =
         ANNOTATION class_modification
     """
-    return Syntax.ANNOTATION, syntax.class_modification
+    return Syntax.ANNOTATION, Syntax.class_modification

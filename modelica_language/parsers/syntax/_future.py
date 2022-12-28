@@ -430,7 +430,7 @@ class Syntax:
             (
                 cls.EXTENDS,
                 cls.IDENT,
-                Optional(syntax.class_modification),
+                Optional(cls.class_modification),
                 syntax.string_comment,
                 cls.composition,
                 cls.END,
@@ -469,7 +469,7 @@ class Syntax:
                 cls.base_prefix,
                 syntax.type_specifier,
                 Optional(syntax.array_subscripts),
-                Optional(syntax.class_modification),
+                Optional(cls.class_modification),
                 syntax.comment,
             ),
         ]
@@ -608,10 +608,10 @@ class Syntax:
                 [
                     (
                         cls.REPLACEABLE,
-                        [cls.class_definition, Syntax.component_clause],
+                        [cls.class_definition, cls.component_clause],
                         Optional(cls.constraining_clause, syntax.comment),
                     ),
-                    [cls.class_definition, Syntax.component_clause],
+                    [cls.class_definition, cls.component_clause],
                 ],
             ),
         ]
@@ -663,7 +663,7 @@ class Syntax:
         return (
             cls.EXTENDS,
             syntax.type_specifier,
-            Optional(syntax.class_modification),
+            Optional(cls.class_modification),
             Optional(syntax.annotation),
         )
 
@@ -676,7 +676,7 @@ class Syntax:
         return (
             cls.CONSTRAINEDBY,
             syntax.type_specifier,
-            Optional(syntax.class_modification),
+            Optional(cls.class_modification),
         )
 
     # §B.2.4 Component Clause
@@ -687,10 +687,10 @@ class Syntax:
             type_prefix type_specifier array_subscripts? component_list
         """
         return (
-            Syntax.type_prefix,
+            cls.type_prefix,
             syntax.type_specifier,
             Optional(syntax.array_subscripts),
-            Syntax.component_list,
+            cls.component_list,
         )
 
     @classmethod
@@ -722,8 +722,8 @@ class Syntax:
         component_list =
             component_declaration ("," component_declaration)*
         """
-        return Syntax.component_declaration, ZeroOrMore(
-            ",", Syntax.component_declaration
+        return cls.component_declaration, ZeroOrMore(
+            ",", cls.component_declaration
         )
 
     @classmethod
@@ -733,8 +733,8 @@ class Syntax:
             declaration condition_attribute? comment
         """
         return (
-            Syntax.declaration,
-            Optional(Syntax.condition_attribute),
+            cls.declaration,
+            Optional(cls.condition_attribute),
             syntax.comment,
         )
 
@@ -755,5 +755,133 @@ class Syntax:
         return (
             cls.IDENT,
             Optional(syntax.array_subscripts),
-            Optional(syntax.modification),
+            Optional(cls.modification),
         )
+
+    # §B.2.5 Modification
+    @classmethod
+    def modification(cls):  # type: ignore
+        """
+        modification =
+            "=" expression
+            / ":=" expression
+            / class_modification ("=" expression)?
+        """
+        return [
+            ("=", syntax.expression),
+            (":=", syntax.expression),
+            (cls.class_modification, Optional("=", syntax.expression)),
+        ]
+
+    @classmethod
+    def class_modification(cls):  # type: ignore
+        """
+        class_modification =
+            "(" argument_list? ")"
+        """
+        return "(", Optional(cls.argument_list), ")"
+
+    @classmethod
+    def argument_list(cls):  # type: ignore
+        """
+        argument_list =
+            argument ("," argument)*
+        """
+        return cls.argument, ZeroOrMore(",", cls.argument)
+
+    @classmethod
+    def argument(cls):  # type: ignore
+        """
+        argument =
+            element_redeclaration
+            / element_modification_or_replaceable
+        """
+        return [
+            cls.element_redeclaration,
+            cls.element_modification_or_replaceable,
+        ]
+
+    @classmethod
+    def element_modification_or_replaceable(cls):  # type: ignore
+        """
+        element_modification_or_replaceable =
+            EACH? FINAL? (element_modification / element_replaceable)
+        """
+        return (
+            Optional(cls.EACH),
+            Optional(cls.FINAL),
+            [cls.element_modification, cls.element_replaceable],
+        )
+
+    @classmethod
+    def element_modification(cls):  # type: ignore
+        """
+        element_modification =
+            name modification? string_comment
+        """
+        return (
+            syntax.name,
+            Optional(cls.modification),
+            syntax.string_comment,
+        )
+
+    @classmethod
+    def element_redeclaration(cls):  # type: ignore
+        """
+        element_redeclaration =
+            REDECLARE EACH? FINAL?
+            ((short_class_definition / component_clause1) / element_replaceable)
+        """  # noqa: E501
+        return (
+            cls.REDECLARE,
+            Optional(cls.EACH),
+            Optional(cls.FINAL),
+            [
+                [
+                    cls.short_class_definition,
+                    cls.component_clause1,
+                ],
+                cls.element_replaceable,
+            ],
+        )
+
+    @classmethod
+    def element_replaceable(cls):  # type: ignore
+        """
+        element_replaceable =
+            REPLACEABLE (short_class_definition / component_clause1)
+            constraining_clause?
+        """
+        return (
+            cls.REPLACEABLE,
+            [cls.short_class_definition, cls.component_clause1],
+            Optional(cls.constraining_clause),
+        )
+
+    @classmethod
+    def component_clause1(cls):  # type: ignore
+        """
+        component_clause1 =
+            type_prefix type_specifier component_declaration1
+        """
+        return (
+            cls.type_prefix,
+            syntax.type_specifier,
+            cls.component_declaration1,
+        )
+
+    @classmethod
+    def component_declaration1(cls):  # type: ignore
+        """
+        component_declaration1 =
+            declaration comment
+        """
+        return cls.declaration, syntax.comment
+
+    @classmethod
+    def short_class_definition(cls):  # type: ignore
+        """
+        short_class_definition =
+            class_prefixes short_class_specifier
+        """
+        return cls.class_prefixes, cls.short_class_specifier
