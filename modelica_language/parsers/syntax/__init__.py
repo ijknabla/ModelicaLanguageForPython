@@ -1,19 +1,4 @@
 __all__ = (
-    # equations
-    "equation_section",
-    "algorithm_section",
-    "equation",
-    "statement",
-    "if_equation",
-    "if_statement",
-    "for_equation",
-    "for_statement",
-    "for_indices",
-    "for_index",
-    "while_statement",
-    "when_equation",
-    "when_statement",
-    "connect_clause",
     # expressions
     "expression",
     "simple_expression",
@@ -48,22 +33,6 @@ __all__ = (
     "annotation",
 )
 
-from ._equations import (
-    algorithm_section,
-    connect_clause,
-    equation,
-    equation_section,
-    for_equation,
-    for_index,
-    for_indices,
-    for_statement,
-    if_equation,
-    if_statement,
-    statement,
-    when_equation,
-    when_statement,
-    while_statement,
-)
 from ._expressions import (
     add_operator,
     annotation,

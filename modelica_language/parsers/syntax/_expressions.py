@@ -271,7 +271,7 @@ def function_arguments():  # type: ignore
             Optional(
                 [
                     (",", syntax.function_arguments_non_first),  # type: ignore
-                    (Syntax.FOR, syntax.for_indices),  # type: ignore
+                    (Syntax.FOR, Syntax.for_indices),  # type: ignore
                 ]
             ),
         ),
@@ -310,7 +310,7 @@ def array_arguments():  # type: ignore
         Optional(
             [
                 (",", syntax.array_arguments_non_first),  # type: ignore
-                (Syntax.FOR, syntax.for_indices),  # type: ignore
+                (Syntax.FOR, Syntax.for_indices),  # type: ignore
             ]
         ),
     )

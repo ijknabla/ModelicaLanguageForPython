@@ -540,8 +540,8 @@ class Syntax:
                 [
                     (cls.PUBLIC, cls.element_list),  # type: ignore
                     (cls.PROTECTED, cls.element_list),  # type: ignore
-                    syntax.equation_section,
-                    syntax.algorithm_section,
+                    cls.equation_section,
+                    cls.algorithm_section,
                 ]
             ),
             Optional(
@@ -885,3 +885,318 @@ class Syntax:
             class_prefixes short_class_specifier
         """
         return cls.class_prefixes, cls.short_class_specifier
+
+    # §B.2.6 Equations
+    @classmethod
+    def equation_section(cls):  # type: ignore
+        """
+        equation_section =
+            INITIAL? EQUATION (equation ";")*
+        """
+        return (
+            Optional(cls.INITIAL),
+            cls.EQUATION,
+            ZeroOrMore(cls.equation, ";"),
+        )
+
+    @classmethod
+    def algorithm_section(cls):  # type: ignore
+        """
+        algorithm_section =
+            INITIAL? ALGORITHM (statement ";")*
+        """
+        return (
+            Optional(cls.INITIAL),
+            cls.ALGORITHM,
+            ZeroOrMore(cls.statement, ";"),
+        )
+
+    @classmethod
+    def equation(cls):  # type: ignore
+        """
+        equation =
+            (
+                if_equation
+                / for_equation
+                / connect_clause
+                / when_equation
+                / simple_expression "=" expression
+                / component_reference function_call_args
+            )
+            comment
+        """
+        return (
+            [
+                cls.if_equation,
+                cls.for_equation,
+                cls.connect_clause,
+                cls.when_equation,
+                (syntax.simple_expression, "=", syntax.expression),
+                (syntax.component_reference, syntax.function_call_args),
+            ],
+            syntax.comment,
+        )
+
+    @classmethod
+    def statement(cls):  # type: ignore
+        """
+        statement =
+            (
+                BREAK
+                / RETURN
+                / if_statement
+                / for_statement
+                / while_statement
+                / when_statement
+                / "(" output_expression_list ")" ":="
+                component_reference function_call_args
+                / component_reference (":=" expression / function_call_args)
+            )
+            comment
+        """
+        return (
+            [
+                cls.BREAK,
+                cls.RETURN,
+                cls.if_statement,
+                cls.for_statement,
+                cls.while_statement,
+                cls.when_statement,
+                (
+                    "(",
+                    syntax.output_expression_list,
+                    ")",
+                    ":=",
+                    syntax.component_reference,
+                    syntax.function_call_args,
+                ),
+                (
+                    syntax.component_reference,
+                    [(":=", syntax.expression), syntax.function_call_args],
+                ),
+            ],
+            syntax.comment,
+        )
+
+    @classmethod
+    def if_equation(cls):  # type: ignore
+        """
+        if_equation =
+            IF     expression THEN (equation ";")*
+        ( ELSEIF expression THEN (equation ";")* )*
+        ( ELSE                   (equation ";")* )?
+            END IF
+        """
+        return (
+            cls.IF,
+            syntax.expression,
+            cls.THEN,
+            ZeroOrMore(
+                cls.equation,
+                ";",
+            ),
+            ZeroOrMore(
+                cls.ELSEIF,
+                syntax.expression,
+                cls.THEN,
+                ZeroOrMore(
+                    cls.equation,
+                    ";",
+                ),
+            ),
+            Optional(
+                cls.ELSE,
+                ZeroOrMore(
+                    cls.equation,
+                    ";",
+                ),
+            ),
+            cls.END,
+            cls.IF,
+        )
+
+    @classmethod
+    def if_statement(cls):  # type: ignore
+        """
+        if_statement =
+            IF     expression THEN (statement ";")*
+        ( ELSEIF expression THEN (statement ";")* )*
+        ( ELSE                   (statement ";")* )?
+            END IF
+        """
+        return (
+            cls.IF,
+            syntax.expression,
+            cls.THEN,
+            ZeroOrMore(
+                cls.statement,
+                ";",
+            ),
+            ZeroOrMore(
+                cls.ELSEIF,
+                syntax.expression,
+                cls.THEN,
+                ZeroOrMore(
+                    cls.statement,
+                    ";",
+                ),
+            ),
+            Optional(
+                cls.ELSE,
+                ZeroOrMore(
+                    cls.statement,
+                    ";",
+                ),
+            ),
+            cls.END,
+            cls.IF,
+        )
+
+    @classmethod
+    def for_equation(cls):  # type: ignore
+        """
+        for_equation =
+            FOR for_indices LOOP
+                (equation ";")*
+            END FOR
+        """
+        return (
+            cls.FOR,
+            cls.for_indices,
+            cls.LOOP,
+            ZeroOrMore(
+                cls.equation,
+                ";",
+            ),
+            cls.END,
+            cls.FOR,
+        )
+
+    @classmethod
+    def for_statement(cls):  # type: ignore
+        """
+        for_statement =
+            FOR for_indices LOOP
+                (statement ";")*
+            END FOR
+        """
+        return (
+            cls.FOR,
+            cls.for_indices,
+            cls.LOOP,
+            ZeroOrMore(
+                cls.statement,
+                ";",
+            ),
+            cls.END,
+            cls.FOR,
+        )
+
+    @classmethod
+    def for_indices(cls):  # type: ignore
+        """
+        for_indices =
+            for_index ("," for_index)*
+        """
+        return cls.for_index, ZeroOrMore(",", cls.for_index)
+
+    @classmethod
+    def for_index(cls):  # type: ignore
+        """
+        for_index =
+            IDENT (IN expression)?
+        """
+        return cls.IDENT, Optional(cls.IN, syntax.expression)
+
+    @classmethod
+    def while_statement(cls):  # type: ignore
+        """
+        while_statement =
+            WHILE expression LOOP
+                (statement ";")*
+            END WHILE
+        """
+        return (
+            cls.WHILE,
+            syntax.expression,
+            cls.LOOP,
+            ZeroOrMore(
+                cls.statement,
+                ";",
+            ),
+            cls.END,
+            cls.WHILE,
+        )
+
+    @classmethod
+    def when_equation(cls):  # type: ignore
+        """
+        when_equation =
+            WHEN     expression THEN (equation ";")*
+        ( ELSEWHEN expression THEN (equation ";")* )*
+            END WHEN
+        """
+        return (
+            cls.WHEN,
+            syntax.expression,
+            cls.THEN,
+            ZeroOrMore(
+                cls.equation,
+                ";",
+            ),
+            ZeroOrMore(
+                cls.ELSEWHEN,
+                syntax.expression,
+                cls.THEN,
+                ZeroOrMore(
+                    cls.equation,
+                    ";",
+                ),
+            ),
+            cls.END,
+            cls.WHEN,
+        )
+
+    @classmethod
+    def when_statement(cls):  # type: ignore
+        """
+        when_statement =
+            WHEN     expression THEN (statement ";")*
+        ( ELSEWHEN expression THEN (statement ";")* )*
+            END WHEN
+        """
+        return (
+            cls.WHEN,
+            syntax.expression,
+            cls.THEN,
+            ZeroOrMore(
+                cls.statement,
+                ";",
+            ),
+            ZeroOrMore(
+                cls.ELSEWHEN,
+                syntax.expression,
+                cls.THEN,
+                ZeroOrMore(
+                    cls.statement,
+                    ";",
+                ),
+            ),
+            cls.END,
+            cls.WHEN,
+        )
+
+    @classmethod
+    def connect_clause(cls):  # type: ignore
+        """
+        connect_clause =
+            CONNECT "(" component_reference "," component_reference ")"
+        """
+        return (
+            cls.CONNECT,
+            "(",
+            syntax.component_reference,
+            ",",
+            syntax.component_reference,
+            ")",
+        )
