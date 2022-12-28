@@ -85,7 +85,7 @@ def declaration():  # type: ignore
         IDENT array_subscripts? modification?
     """
     return (
-        syntax.IDENT,
+        Syntax.IDENT,
         Optional(syntax.array_subscripts),
         Optional(syntax.modification),
     )

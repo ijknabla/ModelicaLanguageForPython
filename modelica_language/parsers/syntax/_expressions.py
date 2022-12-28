@@ -190,8 +190,8 @@ def primary():  # type: ignore
         Syntax.FALSE,
         Syntax.TRUE,
         Syntax.END,
-        syntax.UNSIGNED_NUMBER,
-        syntax.STRING,
+        Syntax.UNSIGNED_NUMBER,
+        Syntax.STRING,
         ("(", syntax.output_expression_list, ")"),
         (
             "[",
@@ -224,7 +224,7 @@ def name():  # type: ignore
     """
     name = IDENT ("." IDENT)*
     """
-    return syntax.IDENT, ZeroOrMore(".", syntax.IDENT)
+    return Syntax.IDENT, ZeroOrMore(".", Syntax.IDENT)
 
 
 def component_reference():  # type: ignore
@@ -234,9 +234,9 @@ def component_reference():  # type: ignore
     """
     return (
         Optional("."),
-        syntax.IDENT,
+        Syntax.IDENT,
         Optional(syntax.array_subscripts),
-        ZeroOrMore(".", syntax.IDENT, Optional(syntax.array_subscripts)),
+        ZeroOrMore(".", Syntax.IDENT, Optional(syntax.array_subscripts)),
     )
 
 
@@ -328,7 +328,7 @@ def named_argument():  # type: ignore
     """
     named_argument = IDENT "=" function_argument
     """
-    return syntax.IDENT, "=", syntax.function_argument
+    return Syntax.IDENT, "=", syntax.function_argument
 
 
 def function_argument():  # type: ignore
@@ -400,7 +400,7 @@ def string_comment():  # type: ignore
     string_comment =
         (STRING ("+" STRING)*)?
     """
-    return Optional(syntax.STRING, ZeroOrMore("+", syntax.STRING))
+    return Optional(Syntax.STRING, ZeroOrMore("+", Syntax.STRING))
 
 
 def annotation():  # type: ignore

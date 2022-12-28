@@ -1,4 +1,6 @@
-from arpeggio import RegExMatch
+from arpeggio import Not, RegExMatch
+
+from .. import regex
 
 any_keyword = (
     r"("
@@ -11,6 +13,10 @@ any_keyword = (
     r"stream|then|true|type|when|while|within"
     r")(?!\w)"
 )
+
+
+def regexPEG(regex: str) -> str:
+    return "r'{}'".format(regex.replace("'", r"\'"))
 
 
 class Syntax:
@@ -315,3 +321,32 @@ class Syntax:
     def WITHIN() -> RegExMatch:
         r"WITHIN = r'within(?!\w)'"
         return RegExMatch(r"within(?!\w)")
+
+    # §B.1 Lexical conventions
+    @classmethod
+    def IDENT(cls):  # type: ignore
+        return Not(cls.ANY_KEYWORD), RegExMatch(regex.ident)
+
+    IDENT.__doc__ = f"IDENT = !ANY_KEYWORD {regexPEG(regex.ident)}"
+
+    @staticmethod
+    def STRING() -> RegExMatch:
+        return RegExMatch(regex.string)
+
+    STRING.__doc__ = f"STRING = {regexPEG(regex.string)}"
+
+    @staticmethod
+    def UNSIGNED_NUMBER() -> RegExMatch:
+        return RegExMatch(regex.unsigned_number)
+
+    UNSIGNED_NUMBER.__doc__ = (
+        f"UNSIGNED_NUMBER = {regexPEG(regex.unsigned_number)}"
+    )
+
+    @staticmethod
+    def CPP_STYLE_COMMENT() -> RegExMatch:
+        return RegExMatch(regex.cpp_style_comment)
+
+    CPP_STYLE_COMMENT.__doc__ = (
+        f"CPP_STYLE_COMMENT = {regexPEG(regex.cpp_style_comment)}"
+    )

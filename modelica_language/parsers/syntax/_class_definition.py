@@ -85,19 +85,19 @@ def long_class_specifier():  # type: ignore
     return [
         (
             Syntax.EXTENDS,
-            syntax.IDENT,
+            Syntax.IDENT,
             Optional(syntax.class_modification),
             syntax.string_comment,
             syntax.composition,
             Syntax.END,
-            syntax.IDENT,
+            Syntax.IDENT,
         ),
         (
-            syntax.IDENT,
+            Syntax.IDENT,
             syntax.string_comment,
             syntax.composition,
             Syntax.END,
-            syntax.IDENT,
+            Syntax.IDENT,
         ),
     ]
 
@@ -111,7 +111,7 @@ def short_class_specifier():  # type: ignore
     """
     return [
         (
-            syntax.IDENT,
+            Syntax.IDENT,
             "=",
             Syntax.ENUMERATION,
             "(",
@@ -120,7 +120,7 @@ def short_class_specifier():  # type: ignore
             syntax.comment,
         ),
         (
-            syntax.IDENT,
+            Syntax.IDENT,
             "=",
             syntax.base_prefix,
             syntax.type_specifier,
@@ -137,14 +137,14 @@ def der_class_specifier():  # type: ignore
         IDENT "=" DER "(" type_specifier "," IDENT ("," IDENT)* ")" comment
     """
     return (
-        syntax.IDENT,
+        Syntax.IDENT,
         "=",
         Syntax.DER,
         "(",
         syntax.type_specifier,
         ",",
-        syntax.IDENT,
-        ZeroOrMore(",", syntax.IDENT),
+        Syntax.IDENT,
+        ZeroOrMore(",", Syntax.IDENT),
         ")",
         syntax.comment,
     )
@@ -171,7 +171,7 @@ def enumeration_literal():  # type: ignore
     """
     enumeration_literal = IDENT comment
     """
-    return syntax.IDENT, syntax.comment
+    return Syntax.IDENT, syntax.comment
 
 
 def composition():  # type: ignore
@@ -216,7 +216,7 @@ def language_specification():  # type: ignore
     language_specification =
         STRING
     """
-    return syntax.STRING
+    return Syntax.STRING
 
 
 def external_function_call():  # type: ignore
@@ -226,7 +226,7 @@ def external_function_call():  # type: ignore
     """
     return (
         Optional(syntax.component_reference, "="),
-        syntax.IDENT,
+        Syntax.IDENT,
         "(",
         Optional(syntax.expression_list),
         ")",
@@ -286,7 +286,7 @@ def import_clause():  # type: ignore
     return (
         Syntax.IMPORT,
         [
-            (syntax.IDENT, "=", syntax.name),
+            (Syntax.IDENT, "=", syntax.name),
             (
                 syntax.name,
                 Optional(
@@ -307,4 +307,4 @@ def import_list():  # type: ignore
     import_list =
         IDENT ("," IDENT)*
     """
-    return syntax.IDENT, ZeroOrMore(",", syntax.IDENT)
+    return Syntax.IDENT, ZeroOrMore(",", Syntax.IDENT)

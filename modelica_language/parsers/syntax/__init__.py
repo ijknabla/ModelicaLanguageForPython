@@ -1,9 +1,4 @@
 __all__ = (
-    # lexical,
-    "IDENT",
-    "STRING",
-    "UNSIGNED_NUMBER",
-    "CPP_STYLE_COMMENT",
     # stored_definition
     "stored_definition",
     # class_definition,
@@ -170,7 +165,6 @@ from ._expressions import (
     type_specifier,
 )
 from ._extends import constraining_clause, extends_clause
-from ._lexical import CPP_STYLE_COMMENT, IDENT, STRING, UNSIGNED_NUMBER
 from ._modification import (
     argument,
     argument_list,

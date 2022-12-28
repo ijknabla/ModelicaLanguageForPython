@@ -239,7 +239,7 @@ def for_index():  # type: ignore
     for_index =
         IDENT (IN expression)?
     """
-    return syntax.IDENT, Optional(Syntax.IN, syntax.expression)
+    return Syntax.IDENT, Optional(Syntax.IN, syntax.expression)
 
 
 def while_statement():  # type: ignore
