@@ -1,17 +1,18 @@
-from typing import Any, Callable, Iterable, MutableSequence
-from typing import Sequence as _Sequence
-from typing import Union
+import typing as _typing
 
-_AtomicParsingExpressionArgument = Union[
+_ParsingExpressionLike__0 = _typing.Union[
     str,
     ParsingExpression,
-    Callable[[], ParsingExpression],
+    _typing.Callable[[], ParsingExpression],
+]
+_ParsingExpressionLike__1 = _typing.Union[
+    _ParsingExpressionLike__0, _typing.Sequence[_ParsingExpressionLike__0]
+]
+_ParsingExpressionLike__2 = _typing.Union[
+    _ParsingExpressionLike__1, _typing.Sequence[_ParsingExpressionLike__1]
 ]
 
-_ParsingExpressionArgument = Union[
-    _AtomicParsingExpressionArgument,
-    _Sequence[_AtomicParsingExpressionArgument],
-]
+_ParsingExpressionLike = _ParsingExpressionLike__2
 
 class NoMatch(Exception): ...
 
@@ -27,15 +28,15 @@ class DebugPrinter:
 class ParsingExpression:
     def __init__(
         self,
-        *elements: _ParsingExpressionArgument,
+        *elements: _ParsingExpressionLike,
         rule_name: str = ...,
         root: bool = ...,
-        nodes: Iterable[ParsingExpression] = ...,
+        nodes: _typing.Iterable[ParsingExpression] = ...,
         suppress: bool = ...,
     ) -> None: ...
     root: bool
     rule_name: str
-    nodes: MutableSequence[ParsingExpression]
+    nodes: _typing.MutableSequence[ParsingExpression]
     @property
     def name(self) -> str: ...
     def parse(self, parser: Parser) -> ParseTreeNode: ...
@@ -45,18 +46,18 @@ class OrderedChoice(Sequence): ...
 
 class Repetition(ParsingExpression):
     """
-    eolterm: Any
-    sep: Any
+    eolterm: _typing.Any
+    sep: _typing.Any
     """
 
     def __init__(
         self,
-        *elements: _ParsingExpressionArgument,
+        *elements: _ParsingExpressionLike,
         rule_name: str = ...,
         root: bool = ...,
-        nodes: Iterable[_ParsingExpressionArgument] = ...,
+        nodes: _typing.Iterable[_ParsingExpressionLike] = ...,
         suppress: bool = ...,
-        sep: _ParsingExpressionArgument = ...,
+        sep: _ParsingExpressionLike = ...,
     ) -> None: ...
     sep: ParsingExpression | None
 
@@ -109,7 +110,7 @@ class PTNodeVisitor(DebugPrinter):
 
 def visit_parse_tree(
     parse_tree: ParseTreeNode, visitor: PTNodeVisitor
-) -> Any: ...
+) -> _typing.Any: ...
 
 class Parser(DebugPrinter):
     ignore_case: bool
@@ -126,7 +127,9 @@ class Parser(DebugPrinter):
         *,
         debug: bool = ...,
     ) -> None: ...
-    def parse(self, _input: Any, file_name: Any = ...) -> ParseTreeNode: ...
+    def parse(
+        self, _input: _typing.Any, file_name: _typing.Any = ...
+    ) -> ParseTreeNode: ...
 
 class CrossRef:
     target_rule_name: str
@@ -139,12 +142,12 @@ class CrossRef:
 class ParserPython(Parser):
     def __init__(
         self,
-        language_def: _ParsingExpressionArgument,
-        comment_def: _ParsingExpressionArgument = ...,
+        language_def: _ParsingExpressionLike,
+        comment_def: _ParsingExpressionLike = ...,
         *,
         debug: bool = ...,
         reduce_tree: bool = ...,
         ignore_case: bool = ...,
         memoization: bool = ...,
     ) -> None: ...
-    def _from_python(self, expression: Any) -> ParsingExpression: ...
+    def _from_python(self, expression: _typing.Any) -> ParsingExpression: ...

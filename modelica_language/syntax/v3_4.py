@@ -591,8 +591,8 @@ class Syntax:
             cls.element_list,
             ZeroOrMore(
                 [
-                    (cls.PUBLIC, cls.element_list),  # type: ignore
-                    (cls.PROTECTED, cls.element_list),  # type: ignore
+                    (cls.PUBLIC, cls.element_list),
+                    (cls.PROTECTED, cls.element_list),
                     cls.equation_section,
                     cls.algorithm_section,
                 ]
@@ -690,7 +690,7 @@ class Syntax:
                         ".",
                         [
                             "*",
-                            ("{", cls.import_list, "}"),  # type: ignore
+                            ("{", cls.import_list, "}"),
                         ],
                     ),
                 ),
@@ -1491,8 +1491,8 @@ class Syntax:
                         (
                             ",",
                             cls.function_arguments_non_first,
-                        ),  # type: ignore
-                        (cls.FOR, cls.for_indices),  # type: ignore
+                        ),
+                        (cls.FOR, cls.for_indices),
                     ]
                 ),
             ),
@@ -1530,8 +1530,8 @@ class Syntax:
             cls.expression,
             Optional(
                 [
-                    (",", cls.array_arguments_non_first),  # type: ignore
-                    (cls.FOR, cls.for_indices),  # type: ignore
+                    (",", cls.array_arguments_non_first),
+                    (cls.FOR, cls.for_indices),
                 ]
             ),
         )
