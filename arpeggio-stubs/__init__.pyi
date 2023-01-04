@@ -1,15 +1,18 @@
 import typing as _typing
 
-_AtomicParsingExpressionArgument = _typing.Union[
+_ParsingExpressionLike__0 = _typing.Union[
     str,
     ParsingExpression,
     _typing.Callable[[], ParsingExpression],
 ]
-
-_ParsingExpressionArgument = _typing.Union[
-    _AtomicParsingExpressionArgument,
-    _typing.Sequence[_AtomicParsingExpressionArgument],
+_ParsingExpressionLike__1 = _typing.Union[
+    _ParsingExpressionLike__0, _typing.Sequence[_ParsingExpressionLike__0]
 ]
+_ParsingExpressionLike__2 = _typing.Union[
+    _ParsingExpressionLike__1, _typing.Sequence[_ParsingExpressionLike__1]
+]
+
+_ParsingExpressionLike = _ParsingExpressionLike__2
 
 class NoMatch(Exception): ...
 
@@ -25,7 +28,7 @@ class DebugPrinter:
 class ParsingExpression:
     def __init__(
         self,
-        *elements: _ParsingExpressionArgument,
+        *elements: _ParsingExpressionLike,
         rule_name: str = ...,
         root: bool = ...,
         nodes: _typing.Iterable[ParsingExpression] = ...,
@@ -49,12 +52,12 @@ class Repetition(ParsingExpression):
 
     def __init__(
         self,
-        *elements: _ParsingExpressionArgument,
+        *elements: _ParsingExpressionLike,
         rule_name: str = ...,
         root: bool = ...,
-        nodes: _typing.Iterable[_ParsingExpressionArgument] = ...,
+        nodes: _typing.Iterable[_ParsingExpressionLike] = ...,
         suppress: bool = ...,
-        sep: _ParsingExpressionArgument = ...,
+        sep: _ParsingExpressionLike = ...,
     ) -> None: ...
     sep: ParsingExpression | None
 
@@ -139,8 +142,8 @@ class CrossRef:
 class ParserPython(Parser):
     def __init__(
         self,
-        language_def: _ParsingExpressionArgument,
-        comment_def: _ParsingExpressionArgument = ...,
+        language_def: _ParsingExpressionLike,
+        comment_def: _ParsingExpressionLike = ...,
         *,
         debug: bool = ...,
         reduce_tree: bool = ...,
