@@ -1,12 +1,10 @@
 import os as _os
 
-from . import ParsingExpression
-
-Node = ParsingExpression
+from . import ParsingExpression as _ParsingExpression
 
 class Exporter:
     def exportFile(
-        self, obj: Node, file_name: str | _os.PathLike[str]
+        self, obj: _ParsingExpression, file_name: str | _os.PathLike[str]
     ) -> None: ...
 
 class DOTExporter(Exporter): ...
