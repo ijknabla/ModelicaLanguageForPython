@@ -100,6 +100,12 @@ class EndOfFile(Match):
 
 class ParseTreeNode: ...
 
+class Terminal(ParseTreeNode):
+    value: str
+    def __eq__(self, other: _typing.Any) -> bool: ...
+
+class NonTerminal(ParseTreeNode, _typing.List[ParseTreeNode]): ...
+
 class PTNodeVisitor(DebugPrinter):
     def __init__(
         self,
