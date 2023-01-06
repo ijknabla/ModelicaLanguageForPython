@@ -153,6 +153,7 @@ class ParserPython(Parser):
         *,
         debug: bool = ...,
         reduce_tree: bool = ...,
+        skipws: bool = ...,
         ignore_case: bool = ...,
         memoization: bool = ...,
     ) -> None: ...
