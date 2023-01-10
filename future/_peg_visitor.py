@@ -1,7 +1,9 @@
+from ast import Ellipsis, Expr, Module
 from typing import Any, Protocol, Set
 
 from arpeggio import NonTerminal, PTNodeVisitor, Terminal
 
+from ._ast_generator import create_module_with_class
 from ._types import Keyword, Regex, Rule, Text
 
 
@@ -38,3 +40,12 @@ class ModuleVisitor(PTNodeVisitor):
 
     visit_LEXICAL_RULE = __visit_RULE
     visit_SYNTAX_RULE = __visit_RULE
+
+    def visit_grammar(self, _1: PTNodeVisitor, _2: SupportsChildren) -> Module:
+        return create_module_with_class(
+            imports=[],
+            import_froms=[],
+            class_name=self.class_name,
+            class_bases=[],
+            class_body=[Expr(value=Ellipsis())],
+        )
