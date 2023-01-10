@@ -1,8 +1,10 @@
+from arpeggio import visit_parse_tree
 from pkg_resources import resource_string
 
 from modelica_language import ParserPython
 
 from ._peg_syntax import PEGSyntax
+from ._peg_visitor import ModuleVisitor
 
 
 def get_peg_parser() -> ParserPython:
@@ -14,4 +16,7 @@ def get_peg_parser() -> ParserPython:
 
 def test_peg_syntax() -> None:
     parser = get_peg_parser()
-    parser.parse(resource_string(__name__, "v3-4.peg").decode("ASCII"))
+    parse_tree = parser.parse(
+        resource_string(__name__, "v3-4.peg").decode("ASCII")
+    )
+    visit_parse_tree(parse_tree=parse_tree, visitor=ModuleVisitor())
