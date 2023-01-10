@@ -19,4 +19,6 @@ def test_peg_syntax() -> None:
     parse_tree = parser.parse(
         resource_string(__name__, "v3-4.peg").decode("ASCII")
     )
-    visit_parse_tree(parse_tree=parse_tree, visitor=ModuleVisitor())
+    visit_parse_tree(
+        parse_tree=parse_tree, visitor=ModuleVisitor(class_name="Syntax")
+    )

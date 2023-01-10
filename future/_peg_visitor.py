@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Any, Protocol, Set
 
 from arpeggio import NonTerminal, PTNodeVisitor, Terminal
 
@@ -10,8 +10,17 @@ class SupportsChildren(Protocol):
 
 
 class ModuleVisitor(PTNodeVisitor):
+    class_name: str
+    keywords: Set[Keyword]
+
+    def __init__(self, class_name: str, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.class_name = class_name
+        self.keywords = set()
+
     def visit_KEYWORD(self, node: Terminal, _: SupportsChildren) -> Keyword:
         keyword = Keyword(node.value[1:-1])
+        self.keywords.add(keyword)
         return keyword
 
     def visit_REGEX(self, node: NonTerminal, _: SupportsChildren) -> Regex:
