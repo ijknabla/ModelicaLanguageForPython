@@ -1,7 +1,7 @@
 from ast import Module, unparse
-from typing import ClassVar, Protocol, Tuple, Type
+from typing import Callable, ClassVar, Protocol, Tuple, Type
 
-from arpeggio import visit_parse_tree
+from arpeggio import RegExMatch, visit_parse_tree
 from pkg_resources import resource_string
 
 from modelica_language import ParserPython
@@ -41,4 +41,8 @@ def test_peg_syntax() -> None:
     exec(source, globals())
     syntax = Syntax()  # noqa: F821
     for keyword in syntax._keywords_:
-        ...
+        keyword_method: Callable[[], RegExMatch] = getattr(
+            syntax, keyword.upper()
+        )
+        regex_match = keyword_method()
+        assert isinstance(regex_match, RegExMatch)
