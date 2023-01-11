@@ -1,11 +1,13 @@
-from ast import AnnAssign, Constant, Ellipsis, Module
-from typing import Any, Iterable, Protocol, Set
+from ast import AnnAssign, Constant, Ellipsis, FunctionDef, Module
+from typing import Any, Iterable, Iterator, Protocol, Set
 
 from arpeggio import NonTerminal, PTNodeVisitor, Terminal
 
 from ._ast_generator import (
     create_ann_assign,
     create_attribute,
+    create_call,
+    create_function_def,
     create_module_with_class,
     create_subscript,
     create_tuple,
@@ -48,13 +50,21 @@ class ModuleVisitor(PTNodeVisitor):
     visit_SYNTAX_RULE = __visit_RULE
 
     def visit_grammar(self, _1: PTNodeVisitor, _2: SupportsChildren) -> Module:
+        sorted_keywords = sorted(self.keywords)
+
         return create_module_with_class(
-            imports=["typing"],
-            import_froms=[],
+            imports=["arpeggio", "typing"],
+            import_froms=[
+                (
+                    "future._types",
+                    ["ParsingExpressionLike", "returns_parsing_expression"],
+                ),
+            ],
             class_name=self.class_name,
             class_bases=[],
             class_body=[
-                self.__create_keywords_classvar(sorted(self.keywords)),
+                self.__create_keywords_classvar(sorted_keywords),
+                *self.__create_keyword_staticmethods(sorted_keywords),
             ],
         )
 
@@ -75,3 +85,19 @@ class ModuleVisitor(PTNodeVisitor):
                 elts=[Constant(value=keyword) for keyword in sorted(keywords)]
             ),
         )
+
+    @staticmethod
+    def __create_keyword_staticmethods(
+        keywords: Iterable[Keyword],
+    ) -> Iterator[FunctionDef]:
+        for keyword in keywords:
+            yield create_function_def(
+                name=keyword.upper(),
+                args=[],
+                value=create_call(
+                    "arpeggio.RegExMatch",
+                    args=[Constant(value=rf"{keyword}(?![0-9A-Z_a-z])")],
+                ),
+                decorator_list=["staticmethod", "returns_parsing_expression"],
+                returns="ParsingExpressionLike",
+            )
