@@ -178,44 +178,52 @@ CharacterCode = NewType("CharacterCode", int)
 CharacterCodeSet = Set[CharacterCode]
 
 
-class ResolvablePattern:
+@typing.runtime_checkable
+class SupportsResolve(Protocol):
     def resolve(self) -> "Pattern":
-        raise NotImplementedError()
+        ...
+
+
+Pattern = Union[
+    CharacterCodeSet,
+    Regex,
+    SupportsResolve,
+]
 
 
 @dataclass
-class PatternReference(ResolvablePattern):
-    target: Optional["Pattern"] = field(default=None)
+class PatternReference:
+    target: Optional[Pattern] = field(default=None)
 
-    def resolve(self) -> "Pattern":
+    def resolve(self) -> Pattern:
         assert self.target is not None
         return resolve_pattern(self.target)
 
 
 @dataclass(frozen=True)
-class RepetitionPatternBase(ResolvablePattern):
-    pattern: "Pattern"
+class RepetitionPatternBase:
+    pattern: Pattern
 
 
 class OptionalPattern(RepetitionPatternBase):
-    def resolve(self) -> "Pattern":
+    def resolve(self) -> Pattern:
         return self.__class__(resolve_pattern(self.pattern))
 
 
 class ZeroOrMorePattern(RepetitionPatternBase):
-    def resolve(self) -> "Pattern":
+    def resolve(self) -> Pattern:
         return self.__class__(resolve_pattern(self.pattern))
 
 
 @dataclass(frozen=True)
-class SequencePatternBase(ResolvablePattern):
-    patterns: Sequence["Pattern"]
+class SequencePatternBase:
+    patterns: Sequence[Pattern]
 
-    def __iter__(self) -> Iterator["Pattern"]:
+    def __iter__(self) -> Iterator[Pattern]:
         yield from self.patterns
 
     @classmethod
-    def _flatten(cls, *patterns: "Pattern") -> Iterator["Pattern"]:
+    def _flatten(cls, *patterns: Pattern) -> Iterator[Pattern]:
         if not patterns:
             return
 
@@ -230,7 +238,7 @@ class SequencePatternBase(ResolvablePattern):
 
 
 class SequencePattern(SequencePatternBase):
-    def resolve(self) -> "Pattern":
+    def resolve(self) -> Pattern:
         head, *tail = self._flatten(*self)
         if tail:
             return SequencePattern((head, *tail))
@@ -239,7 +247,7 @@ class SequencePattern(SequencePatternBase):
 
 
 class OrderedChoicePattern(SequencePatternBase):
-    def resolve(self) -> "Pattern":
+    def resolve(self) -> Pattern:
         character_code_set: CharacterCodeSet = set()
         patterns: List[Pattern] = []
 
@@ -256,27 +264,6 @@ class OrderedChoicePattern(SequencePatternBase):
             return patterns[0]
         else:
             return OrderedChoicePattern(tuple(patterns))
-
-
-Pattern = Union[
-    CharacterCodeSet,
-    Regex,
-    PatternReference,
-    OptionalPattern,
-    ZeroOrMorePattern,
-    SequencePattern,
-    OrderedChoicePattern,
-]
-
-NotOrderedChoicePattern = Union[
-    CharacterCodeSet,
-    Regex,
-    PatternReference,
-    OptionalPattern,
-    ZeroOrMorePattern,
-    SequencePattern,
-    # OrderedChoicePattern,
-]
 
 
 def lexical_text(text: Text) -> Union[CharacterCodeSet, Regex]:
@@ -307,7 +294,7 @@ def check_recursion(pattern: Pattern) -> None:
 
 
 def resolve_pattern(pattern: Pattern) -> Pattern:
-    if isinstance(pattern, ResolvablePattern):
+    if isinstance(pattern, SupportsResolve):
         return pattern.resolve()
     else:
         return pattern
