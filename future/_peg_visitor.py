@@ -25,8 +25,8 @@ from ._ast_generator import (
     create_module_with_class,
     create_subscript,
     create_tuple,
-    lexical_regex,
-    lexical_text,
+    regex2pattern,
+    text2pattern,
 )
 from ._types import Keyword, Regex, Rule, Text
 
@@ -86,10 +86,10 @@ class ModuleVisitor(PTNodeVisitor):
             return expression
         elif children.REGEX:
             (regex,) = children.REGEX
-            return lexical_regex(regex)
+            return regex2pattern(regex)
         elif children.TEXT:
             (text,) = children.TEXT
-            return lexical_text(text)
+            return text2pattern(text)
         elif children.LEXICAL_REFERENCE:
             (rule,) = children.LEXICAL_REFERENCE
             return self.pattern_references[rule]

@@ -191,6 +191,23 @@ Pattern = Union[
 ]
 
 
+def regex2pattern(regex: Regex) -> Pattern:
+    try:
+        character_code_set: CharacterCodeSet = visit_parse_tree(
+            character_set_parser.parse(regex), CharacterSetVisitor()
+        )
+        return character_code_set
+    except NoMatch:
+        return Regex(regex)
+
+
+def text2pattern(text: Text) -> Pattern:
+    if len(text) == 1:
+        return {CharacterCode(ord(text))}
+    else:
+        return Regex(re.escape(text))
+
+
 @dataclass
 class PatternReference:
     target: Optional[Pattern] = field(default=None)
@@ -264,23 +281,6 @@ class OrderedChoicePattern(SequencePatternBase):
             return patterns[0]
         else:
             return OrderedChoicePattern(tuple(patterns))
-
-
-def lexical_text(text: Text) -> Union[CharacterCodeSet, Regex]:
-    if len(text) == 1:
-        return {CharacterCode(ord(text))}
-    else:
-        return Regex(re.escape(text))
-
-
-def lexical_regex(regex: Regex) -> Union[CharacterCodeSet, Regex]:
-    try:
-        character_code_set: CharacterCodeSet = visit_parse_tree(
-            character_set_parser.parse(regex), CharacterSetVisitor()
-        )
-        return character_code_set
-    except NoMatch:
-        return Regex(regex)
 
 
 def to_regex(pattern: Pattern) -> str:
