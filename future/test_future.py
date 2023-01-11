@@ -1,5 +1,5 @@
 from ast import Module, unparse
-from typing import Protocol, Type
+from typing import ClassVar, Protocol, Tuple, Type
 
 from arpeggio import visit_parse_tree
 from pkg_resources import resource_string
@@ -11,6 +11,8 @@ from ._peg_visitor import ModuleVisitor
 
 
 class SupportsSyntax(Protocol):
+    _keywords_: ClassVar[Tuple[str, ...]]
+
     def __init__(self) -> None:
         ...
 
@@ -33,5 +35,10 @@ def test_peg_syntax() -> None:
     module: Module = visit_parse_tree(
         parse_tree=parse_tree, visitor=ModuleVisitor(class_name="Syntax")
     )
-    exec(unparse(module), globals())
-    Syntax()  # noqa: F821
+    source = unparse(module)
+    print()
+    print(source)
+    exec(source, globals())
+    syntax = Syntax()  # noqa: F821
+    for keyword in syntax._keywords_:
+        ...
