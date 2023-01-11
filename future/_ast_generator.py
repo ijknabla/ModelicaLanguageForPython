@@ -193,12 +193,12 @@ Pattern = Union[
 
 def regex2pattern(regex: Regex) -> Pattern:
     try:
-        character_code_set: CharacterCodeSet = visit_parse_tree(
-            character_set_parser.parse(regex), CharacterSetVisitor()
+        return visit_parse_tree(  # type: ignore
+            ParserPython(_character_code_set, skipws=False).parse(regex),
+            _CharacterCodeSetVisitor(),
         )
-        return character_code_set
     except NoMatch:
-        return Regex(regex)
+        return regex
 
 
 def text2pattern(text: Text) -> Pattern:
@@ -344,50 +344,42 @@ def _to_regex(pattern: Pattern, root: bool = False) -> str:
 
 
 @returns_parsing_expression
-def grammar() -> ParsingExpressionLike:
-    return "[", OneOrMore(character_set), "]", EndOfFile()
+def _character_code_set() -> ParsingExpressionLike:
+    return (
+        "[",
+        OneOrMore([_character_code_range, _character_code]),
+        "]",
+        EndOfFile(),
+    )
 
 
 @returns_parsing_expression
-def character_set() -> ParsingExpressionLike:
-    return [character_range, character]
+def _character_code_range() -> ParsingExpressionLike:
+    return _character_code, "-", _character_code
 
 
 @returns_parsing_expression
-def character() -> ParsingExpressionLike:
+def _character_code() -> ParsingExpressionLike:
     return RegExMatch(r"\\.|[^\^\[\]\\]")
 
 
-@returns_parsing_expression
-def character_range() -> ParsingExpressionLike:
-    return character, "-", character
-
-
-character_set_parser = ParserPython(grammar, skipws=False)
-
-
-class SupportsChildren(Protocol):
-    character: Sequence[CharacterCodeSet]
-    character_set: Sequence[CharacterCodeSet]
-
-
-class CharacterSetVisitor(PTNodeVisitor):
-    def visit_character(
-        self, node: Terminal, _: SupportsChildren
+class _CharacterCodeSetVisitor(PTNodeVisitor):
+    def visit__character_code(
+        self, node: Terminal, _: Sequence[CharacterCodeSet]
     ) -> CharacterCodeSet:
         char = re.sub(r"^\\", "", node.value)
         return {CharacterCode(ord(char))}
 
-    def visit_character_range(
-        self, _: ParseTreeNode, children: SupportsChildren
+    def visit__character_code_range(
+        self, _: ParseTreeNode, children: Sequence[CharacterCodeSet]
     ) -> CharacterCodeSet:
-        (begin,), (end,) = children.character
+        (begin,), (end,) = children
         return set(map(CharacterCode, range(begin, end + 1)))
 
-    def visit_grammar(
-        self, _: ParseTreeNode, children: SupportsChildren
+    def visit__character_code_set(
+        self, _: ParseTreeNode, children: Sequence[CharacterCodeSet]
     ) -> CharacterCodeSet:
-        return reduce(or_, children.character_set)
+        return reduce(or_, children)
 
 
 def categorize(items: Collection[int]) -> Iterator[List[int]]:
