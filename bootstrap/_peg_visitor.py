@@ -1,5 +1,14 @@
 from ast import AnnAssign, Constant, Ellipsis, FunctionDef, Module
-from typing import Any, DefaultDict, Iterable, Iterator, List, Sequence, Set
+from typing import (
+    Any,
+    DefaultDict,
+    Iterable,
+    Iterator,
+    List,
+    Mapping,
+    Sequence,
+    Set,
+)
 
 from arpeggio import NonTerminal, ParseTreeNode, PTNodeVisitor, Terminal
 from typing_extensions import Protocol
@@ -18,7 +27,9 @@ from ._ast_generator import (
     create_module_with_class,
     create_subscript,
     create_tuple,
+    pattern2regex,
     regex2pattern,
+    resolve_pattern,
     text2pattern,
 )
 from ._types import Keyword, Regex, Rule, Text
@@ -141,13 +152,19 @@ class ModuleVisitor(PTNodeVisitor):
             import_froms=[
                 ("typing", ["ClassVar", "Tuple"]),
                 ("arpeggio", ["RegExMatch"]),
-                ("modelica_language._backend", ["returns_parsing_expression"]),
+                (
+                    "modelica_language._backend",
+                    ["not_start_with_keyword", "returns_parsing_expression"],
+                ),
             ],
             class_name=self.class_name,
             class_bases=[],
             class_body=[
                 self.__create_keywords_classvar(sorted_keywords),
                 *self.__create_keyword_methods(sorted_keywords),
+                *self.__create_lexical_methods(
+                    self.lexical_rule_order, self.pattern_references
+                ),
             ],
         )
 
@@ -185,5 +202,36 @@ class ModuleVisitor(PTNodeVisitor):
                     args=[Constant(value=regex)],
                 ),
                 decorator_list=["staticmethod", "returns_parsing_expression"],
+                returns="RegExMatch",
+            )
+
+    @staticmethod
+    def __create_lexical_methods(
+        order: Iterable[Rule],
+        patterns: Mapping[Rule, Pattern],
+    ) -> Iterator[FunctionDef]:
+        for rule in order:
+            name = rule.replace("-", "_")
+            regex = pattern2regex(resolve_pattern(patterns[rule]))
+
+            if name == "IDENT":
+                args = ["cls"]
+                decorator_list = [
+                    "classmethod",
+                    "not_start_with_keyword",
+                    "returns_parsing_expression",
+                ]
+            else:
+                args = []
+                decorator_list = ["staticmethod", "returns_parsing_expression"]
+
+            yield create_function_def(
+                name=name,
+                args=args,
+                value=create_call(
+                    "RegExMatch",
+                    args=[Constant(value=regex)],
+                ),
+                decorator_list=decorator_list,
                 returns="RegExMatch",
             )
