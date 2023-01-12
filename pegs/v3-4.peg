@@ -351,7 +351,8 @@ relation :
    arithmetic-expression [ relational-operator arithmetic-expression ]
 
 relational-operator :
-   "<" | "<=" | ">" | ">=" | "==" | "<>"
+   "==" | "<>" | "<=" | ">=" |  // 2-letter operators
+   "<" | ">"                    // 1-letter operators
 
 arithmetic-expression :
    [ add-operator ] term { add-operator term }
@@ -391,13 +392,13 @@ function-call-args :
    "(" [ function-arguments ] ")"
 
 function-arguments :
-   expression [ "," function-arguments-non-first | `for` for-indices ]
-   | `function` type-specifier "(" [ named-arguments ] ")" [ "," function-arguments-non-first ]
+   `function` type-specifier "(" [ named-arguments ] ")" [ "," function-arguments-non-first ]
    | named-arguments
+   | expression [ "," function-arguments-non-first | `for` for-indices ]
 
 function-arguments-non-first :
-   function-argument [ "," function-arguments-non-first ]
-   | named-arguments
+   named-arguments
+   | function-argument [ "," function-arguments-non-first ]
 
 array-arguments :
    expression [ "," array-arguments-non-first | `for` for-indices ]
