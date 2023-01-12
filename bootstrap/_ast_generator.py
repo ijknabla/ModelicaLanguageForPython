@@ -1,3 +1,4 @@
+import re
 from ast import (
     AnnAssign,
     Attribute,
@@ -20,7 +21,39 @@ from ast import (
     expr_context,
     stmt,
 )
-from typing import Optional, Sequence, Union
+from dataclasses import dataclass, field
+from functools import reduce
+from operator import or_
+from typing import (
+    ClassVar,
+    Collection,
+    Iterator,
+    NewType,
+    Optional,
+    Sequence,
+    Set,
+    Union,
+)
+
+from arpeggio import (
+    EndOfFile,
+    NoMatch,
+    OneOrMore,
+    ParseTreeNode,
+    PTNodeVisitor,
+    RegExMatch,
+    Terminal,
+    visit_parse_tree,
+)
+from typing_extensions import Protocol, runtime_checkable
+
+from modelica_language import ParserPython
+from modelica_language._backend import (
+    ParsingExpressionLike,
+    returns_parsing_expression,
+)
+
+from ._types import Regex, Text
 
 
 def create_ann_assign(
@@ -137,3 +170,246 @@ def create_tuple(
     if ctx is None:
         ctx = Load()
     return Tuple(elts=elts, ctx=ctx)
+
+
+Pattern = Union[
+    Regex,
+    "CharacterCodeSet",
+    "SupportsPattern",
+]
+
+CharacterCode = NewType("CharacterCode", int)
+CharacterCodeSet = Set[CharacterCode]
+
+
+@runtime_checkable
+class SupportsPattern(Protocol):
+    def resolve(self) -> Pattern:
+        ...
+
+    def to_regex(self) -> Regex:
+        ...
+
+
+def resolve_pattern(pattern: Pattern) -> Pattern:
+    if isinstance(pattern, (str, set)):
+        return pattern
+    else:
+        return pattern.resolve()
+
+
+def pattern2regex(pattern: Pattern) -> Regex:
+    if isinstance(pattern, str):
+        return pattern
+    elif isinstance(pattern, set):
+        return _character_code_set_to_regex(pattern)
+    else:
+        return pattern.to_regex()
+
+
+def regex2pattern(regex: Regex) -> Pattern:
+    try:
+        return visit_parse_tree(  # type: ignore
+            ParserPython(_character_code_set, skipws=False).parse(regex),
+            _CharacterCodeSetVisitor(),
+        )
+
+    except NoMatch:
+        return regex
+
+
+def text2pattern(text: Text) -> Pattern:
+    if len(text) == 1:
+        return {CharacterCode(ord(text))}
+    else:
+        return Regex(re.escape(text))
+
+
+def _character_code_set_to_regex(
+    character_code_set: CharacterCodeSet,
+) -> Regex:
+    regexs = _character_codes_to_groups(character_code_set)
+    if len(character_code_set) == 1:
+        (regex,) = regexs
+        return regex
+    else:
+        return Regex(f"[{''.join(regexs)}]")
+
+
+def _code2regex(code: CharacterCode) -> Regex:
+    return Regex(re.escape(chr(code)))
+
+
+def _character_codes_to_groups(
+    items: Collection[CharacterCode],
+) -> Iterator[Regex]:
+    items = sorted(items)
+    partition = [
+        i
+        for i, (j, k) in enumerate(zip(items[:-1], items[1:]), start=1)
+        if j + 1 < k
+    ]
+
+    for start, stop in zip(
+        [0, *partition],
+        [*partition, len(items)],
+    ):
+        regexs = map(_code2regex, items[start:stop])
+        if (stop - start) <= 2:
+            yield from regexs
+        else:
+            begin, *_, end = regexs
+            yield Regex(f"{begin}-{end}")
+
+
+@returns_parsing_expression
+def _character_code_set() -> ParsingExpressionLike:
+    return (
+        "[",
+        OneOrMore([_character_code_range, _character_code]),
+        "]",
+        EndOfFile(),
+    )
+
+
+@returns_parsing_expression
+def _character_code_range() -> ParsingExpressionLike:
+    return _character_code, "-", _character_code
+
+
+@returns_parsing_expression
+def _character_code() -> ParsingExpressionLike:
+    return RegExMatch(r"\\.|[^\^\[\]\\]")
+
+
+class _CharacterCodeSetVisitor(PTNodeVisitor):
+    def visit__character_code(
+        self, node: Terminal, _: Sequence[CharacterCodeSet]
+    ) -> CharacterCodeSet:
+        char = re.sub(r"^\\", "", node.value)
+        return {CharacterCode(ord(char))}
+
+    def visit__character_code_range(
+        self, _: ParseTreeNode, children: Sequence[CharacterCodeSet]
+    ) -> CharacterCodeSet:
+        (begin,), (end,) = children
+        return set(map(CharacterCode, range(begin, end + 1)))
+
+    def visit__character_code_set(
+        self, _: ParseTreeNode, children: Sequence[CharacterCodeSet]
+    ) -> CharacterCodeSet:
+        return reduce(or_, children)
+
+
+@dataclass
+class PatternReference:
+    target: Optional[Pattern] = field(default=None)
+
+    @property
+    def __target(self) -> Pattern:
+        assert self.target is not None
+        return self.target
+
+    def resolve(self) -> Pattern:
+        return resolve_pattern(self.__target)
+
+    def to_regex(self) -> Regex:
+        return pattern2regex(self.__target)
+
+
+@dataclass(frozen=True)
+class RepetitionPatternBase:
+    pattern: Pattern
+    operator: ClassVar[str]
+
+    def resolve(self) -> Pattern:
+        return self.__class__(resolve_pattern(self.pattern))
+
+    def to_regex(self) -> Regex:
+        return Regex(
+            _put_bracket_if(
+                pattern2regex(self.pattern),
+                isinstance(self.pattern, SequencePatternBase),
+            )
+            + self.operator
+        )
+
+
+class OptionalPattern(RepetitionPatternBase):
+    operator = "?"
+
+
+class ZeroOrMorePattern(RepetitionPatternBase):
+    operator = "*"
+
+
+@dataclass(frozen=True)
+class SequencePatternBase:
+    patterns: Sequence[Pattern]
+
+    def __iter__(self) -> Iterator[Pattern]:
+        yield from self.patterns
+
+    @classmethod
+    def _flatten(cls, *patterns: Pattern) -> Iterator[Pattern]:
+        if not patterns:
+            return
+
+        head, *tail = patterns
+        head = resolve_pattern(head)
+        if isinstance(head, cls):
+            yield from head
+        else:
+            yield head
+
+        yield from cls._flatten(*tail)
+
+
+class SequencePattern(SequencePatternBase):
+    def resolve(self) -> Pattern:
+        head, *tail = self._flatten(*self)
+        if tail:
+            return SequencePattern((head, *tail))
+        else:
+            return head
+
+    def to_regex(self) -> Regex:
+        return Regex(
+            "".join(
+                _put_bracket_if(
+                    pattern2regex(pattern),
+                    isinstance(pattern, OrderedChoicePattern),
+                )
+                for pattern in self
+            )
+        )
+
+
+class OrderedChoicePattern(SequencePatternBase):
+    def resolve(self) -> Pattern:
+        character_code_set: CharacterCodeSet = set()
+        patterns: "list[Pattern]" = []
+
+        for pattern in self._flatten(*self):
+            if isinstance(pattern, set):
+                character_code_set.update(pattern)
+            else:
+                patterns.append(pattern)
+
+        if character_code_set:
+            patterns.insert(0, character_code_set)
+
+        if len(patterns) == 1:
+            return patterns[0]
+        else:
+            return OrderedChoicePattern(tuple(patterns))
+
+    def to_regex(self) -> Regex:
+        return Regex("|".join(map(pattern2regex, self)))
+
+
+def _put_bracket_if(regex: Regex, condition: bool) -> Regex:
+    if condition:
+        return Regex(rf"({regex})")
+    else:
+        return regex
