@@ -1,10 +1,16 @@
-from ast import Ellipsis, Expr, Module
-from typing import Any, Set
+from ast import AnnAssign, Constant, Ellipsis, Module
+from typing import Any, Iterable, Set
 
 from arpeggio import NonTerminal, PTNodeVisitor, Terminal
 from typing_extensions import Protocol
 
-from ._ast_generator import create_module_with_class
+from ._ast_generator import (
+    create_ann_assign,
+    create_attribute,
+    create_module_with_class,
+    create_subscript,
+    create_tuple,
+)
 from ._types import Keyword, Regex, Rule, Text
 
 
@@ -45,10 +51,34 @@ class ModuleVisitor(PTNodeVisitor):
     def visit_grammar(
         self, _: PTNodeVisitor, children: SupportsChildren
     ) -> Module:
+        sorted_keywords = sorted(self.keywords)
+
         return create_module_with_class(
             imports=[],
-            import_froms=[],
+            import_froms=[
+                ("typing", ["ClassVar", "Tuple"]),
+            ],
             class_name=self.class_name,
             class_bases=[],
-            class_body=[Expr(value=Ellipsis())],
+            class_body=[
+                self.__create_keywords_classvar(sorted_keywords),
+            ],
+        )
+
+    @staticmethod
+    def __create_keywords_classvar(keywords: Iterable[Keyword]) -> AnnAssign:
+        return create_ann_assign(
+            target="_keywords_",
+            annotation=create_subscript(
+                value=create_attribute("ClassVar"),
+                slice=create_subscript(
+                    value=create_attribute("Tuple"),
+                    slice=create_tuple(
+                        elts=[create_attribute("str"), Ellipsis()]
+                    ),
+                ),
+            ),
+            value=create_tuple(
+                elts=[Constant(value=keyword) for keyword in sorted(keywords)]
+            ),
         )
