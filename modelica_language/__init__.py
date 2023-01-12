@@ -1,7 +1,7 @@
 __all__ = (
     "ParserPython",
-    "syntax",
+    "v3_4",
 )
 
-from . import syntax
+from . import v3_4
 from ._parser import ParserPython

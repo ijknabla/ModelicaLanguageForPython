@@ -1,4 +1,4 @@
-__all__ = ("ParserPEG",)
+__all__ = ("ParserPython",)
 
 import builtins
 import functools
