@@ -7,6 +7,7 @@ from ast import (
     FunctionDef,
     Import,
     ImportFrom,
+    List,
     Load,
     Module,
     Name,
@@ -113,6 +114,14 @@ def create_function_def(
         returns=create_attribute(returns),
         lineno=None,
     )
+
+
+def create_list(
+    elts: Sequence[expr], ctx: Optional[expr_context] = None
+) -> List:
+    if ctx is None:
+        ctx = Load()
+    return List(elts=elts, ctx=ctx)
 
 
 def create_module_with_class(
