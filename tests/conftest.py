@@ -6,7 +6,7 @@ from modelica_language._backend import (
     ParsingExpressionLike,
     returns_parsing_expression,
 )
-from modelica_language.syntax.v3_4 import Syntax
+from modelica_language.v3_4 import Syntax
 
 
 @returns_parsing_expression
