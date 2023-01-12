@@ -1,4 +1,5 @@
 from ast import (
+    AnnAssign,
     Attribute,
     ClassDef,
     Import,
@@ -6,11 +7,28 @@ from ast import (
     Load,
     Module,
     Name,
+    Store,
+    Subscript,
+    Tuple,
     alias,
+    expr,
     expr_context,
     stmt,
 )
 from typing import Optional, Sequence, Union
+
+
+def create_ann_assign(
+    target: str,
+    annotation: expr,
+    value: expr,
+) -> AnnAssign:
+    return AnnAssign(
+        target=create_attribute(target, ctx=Store()),
+        annotation=annotation,
+        value=value,
+        simple=1,
+    )
 
 
 def create_attribute(
@@ -62,3 +80,21 @@ def create_module_with_class(
         body=body,
         type_ignores=[],
     )
+
+
+def create_subscript(
+    value: expr,
+    slice: expr,
+    ctx: Optional[expr_context] = None,
+) -> Subscript:
+    if ctx is None:
+        ctx = Load()
+    return Subscript(value=value, slice=slice, ctx=ctx)
+
+
+def create_tuple(
+    elts: Sequence[expr], ctx: Optional[expr_context] = None
+) -> Tuple:
+    if ctx is None:
+        ctx = Load()
+    return Tuple(elts=elts, ctx=ctx)
