@@ -1,4 +1,4 @@
-from ast import AnnAssign, Constant, Ellipsis, FunctionDef, Module
+from ast import AnnAssign, Constant, Ellipsis, FunctionDef, Module, Tuple, expr
 from typing import (
     Any,
     DefaultDict,
@@ -24,6 +24,7 @@ from ._ast_generator import (
     create_attribute,
     create_call,
     create_function_def,
+    create_list,
     create_module_with_class,
     create_subscript,
     create_tuple,
@@ -36,15 +37,24 @@ from ._types import Keyword, Regex, Rule, Text
 
 
 class SupportsChildren(Protocol):
+    KEYWORD: Sequence[Keyword]
     LEXICAL_REFERENCE: Sequence[Rule]
     LEXICAL_RULE: Sequence[Rule]
     REGEX: Sequence[Regex]
+    SYNTAX_REFERENCE: Sequence[Rule]
+    SYNTAX_RULE: Sequence[Rule]
     TEXT: Sequence[Text]
     lexical_expression: Sequence[Pattern]
     lexical_ordered_choice: Sequence[Pattern]
     lexical_primary: Sequence[Pattern]
     lexical_quantity: Sequence[Pattern]
     lexical_sequence: Sequence[Pattern]
+    syntax_expression: Sequence[expr]
+    syntax_ordered_choice: Sequence[expr]
+    syntax_primary: Sequence[expr]
+    syntax_quantity: Sequence[expr]
+    syntax_rule_statement: Sequence[FunctionDef]
+    syntax_sequence: Sequence[expr]
 
 
 class ModuleVisitor(PTNodeVisitor):
@@ -142,6 +152,89 @@ class ModuleVisitor(PTNodeVisitor):
             self.lexical_rule_order.append(rule)
         self.pattern_references[rule].target = expression
 
+    def visit_syntax_primary(
+        self, _: ParseTreeNode, children: SupportsChildren
+    ) -> expr:
+        if children.syntax_expression:
+            (expression,) = children.syntax_expression
+            return expression
+        elif children.KEYWORD:
+            (keyword,) = children.KEYWORD
+            return create_attribute(f"cls.{keyword.upper()}")
+        elif children.TEXT:
+            (text,) = children.TEXT
+            return Constant(value=text)
+        elif children.SYNTAX_REFERENCE:
+            (rule,) = children.SYNTAX_REFERENCE
+            return create_attribute(f"cls.{rule}")
+        raise NotImplementedError()
+
+    def visit_syntax_quantity(
+        self, node: NonTerminal, children: SupportsChildren
+    ) -> expr:
+        if children.syntax_expression:
+            head, *tail = children.syntax_expression
+            if not tail and isinstance(head, Tuple):
+                args = head.elts
+            else:
+                args = [head, *tail]
+
+            L, _, R = node
+            assert isinstance(L, Terminal)
+            assert isinstance(R, Terminal)
+            if L == "[" and R == "]":
+                return create_call(
+                    func="Optional",
+                    args=args,
+                )
+            elif L == "{" and R == "}":
+                return create_call(
+                    func="ZeroOrMore",
+                    args=args,
+                )
+        elif children.syntax_primary:
+            (primary,) = children.syntax_primary
+            return primary
+        raise NotImplementedError()
+
+    def visit_syntax_sequence(
+        self, _: ParseTreeNode, children: SupportsChildren
+    ) -> expr:
+        head, *tail = children.syntax_quantity
+        if tail:
+            return create_tuple(elts=[head, *tail])
+        else:
+            return head
+
+    def visit_syntax_ordered_choice(
+        self, _: ParseTreeNode, children: SupportsChildren
+    ) -> expr:
+        head, *tail = children.syntax_sequence
+        if tail:
+            return create_list(elts=[head, *tail])
+        else:
+            return head
+
+    def visit_syntax_expression(
+        self, _: ParseTreeNode, children: SupportsChildren
+    ) -> expr:
+        (child,) = children.syntax_ordered_choice
+        return child
+
+    def visit_syntax_rule_statement(
+        self, _: ParseTreeNode, children: SupportsChildren
+    ) -> FunctionDef:
+        (name,) = children.SYNTAX_RULE
+        (value,) = children.syntax_expression
+
+        return create_function_def(
+            name=name,
+            args=["cls"],
+            value=value,
+            decorator_list=["classmethod", "returns_parsing_expression"],
+            returns="ParsingExpressionLike",
+        )
+
     def visit_grammar(
         self, _: PTNodeVisitor, children: SupportsChildren
     ) -> Module:
@@ -151,10 +244,14 @@ class ModuleVisitor(PTNodeVisitor):
             imports=[],
             import_froms=[
                 ("typing", ["ClassVar", "Tuple"]),
-                ("arpeggio", ["RegExMatch"]),
+                ("arpeggio", ["Optional", "RegExMatch", "ZeroOrMore"]),
                 (
                     "modelica_language._backend",
-                    ["not_start_with_keyword", "returns_parsing_expression"],
+                    [
+                        "ParsingExpressionLike",
+                        "not_start_with_keyword",
+                        "returns_parsing_expression",
+                    ],
                 ),
             ],
             class_name=self.class_name,
@@ -165,6 +262,7 @@ class ModuleVisitor(PTNodeVisitor):
                 *self.__create_lexical_methods(
                     self.lexical_rule_order, self.pattern_references
                 ),
+                *children.syntax_rule_statement,
             ],
         )
 
