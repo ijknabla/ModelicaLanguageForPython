@@ -1,16 +1,21 @@
 from ast import (
     AnnAssign,
     Attribute,
+    Call,
     ClassDef,
+    FunctionDef,
     Import,
     ImportFrom,
     Load,
     Module,
     Name,
+    Return,
     Store,
     Subscript,
     Tuple,
     alias,
+    arg,
+    arguments,
     expr,
     expr_context,
     stmt,
@@ -41,6 +46,40 @@ def create_attribute(
     for attr in attrs:
         attribute = Attribute(value=attribute, attr=attr, ctx=ctx)
     return attribute
+
+
+def create_call(
+    func: str,
+    args: Sequence[expr],
+) -> Call:
+    return Call(
+        func=create_attribute(func),
+        args=args,
+        keywords=[],
+    )
+
+
+def create_function_def(
+    name: str,
+    args: Sequence[str],
+    value: expr,
+    decorator_list: Sequence[str],
+    returns: str,
+) -> FunctionDef:
+    return FunctionDef(
+        name=name,
+        args=arguments(
+            posonlyargs=[],
+            args=[arg(arg=arg_) for arg_ in args],
+            kwonlyargs=[],
+            kw_defaults=[],
+            defaults=[],
+        ),
+        body=[Return(value=value)],
+        decorator_list=list(map(create_attribute, decorator_list)),
+        returns=create_attribute(returns),
+        lineno=None,
+    )
 
 
 def create_module_with_class(
