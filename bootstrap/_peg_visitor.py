@@ -1,5 +1,5 @@
-from ast import AnnAssign, Constant, Ellipsis, Module
-from typing import Any, Iterable, Set
+from ast import AnnAssign, Constant, Ellipsis, FunctionDef, Module
+from typing import Any, Iterable, Iterator, Set
 
 from arpeggio import NonTerminal, PTNodeVisitor, Terminal
 from typing_extensions import Protocol
@@ -7,6 +7,8 @@ from typing_extensions import Protocol
 from ._ast_generator import (
     create_ann_assign,
     create_attribute,
+    create_call,
+    create_function_def,
     create_module_with_class,
     create_subscript,
     create_tuple,
@@ -57,11 +59,14 @@ class ModuleVisitor(PTNodeVisitor):
             imports=[],
             import_froms=[
                 ("typing", ["ClassVar", "Tuple"]),
+                ("arpeggio", ["RegExMatch"]),
+                ("modelica_language._backend", ["returns_parsing_expression"]),
             ],
             class_name=self.class_name,
             class_bases=[],
             class_body=[
                 self.__create_keywords_classvar(sorted_keywords),
+                *self.__create_keyword_methods(sorted_keywords),
             ],
         )
 
@@ -82,3 +87,22 @@ class ModuleVisitor(PTNodeVisitor):
                 elts=[Constant(value=keyword) for keyword in sorted(keywords)]
             ),
         )
+
+    @staticmethod
+    def __create_keyword_methods(
+        keywords: Iterable[Keyword],
+    ) -> Iterator[FunctionDef]:
+        for keyword in keywords:
+            name = keyword.upper()
+            regex = Regex(rf"{keyword}(?![0-9A-Z_a-z])")
+
+            yield create_function_def(
+                name=name,
+                args=[],
+                value=create_call(
+                    "RegExMatch",
+                    args=[Constant(value=regex)],
+                ),
+                decorator_list=["staticmethod", "returns_parsing_expression"],
+                returns="RegExMatch",
+            )
