@@ -1,18 +1,19 @@
 import typing as _typing
 
-_ParsingExpressionLike__0 = _typing.Union[
-    str,
-    ParsingExpression,
-    _typing.Callable[[], ParsingExpression],
-]
-_ParsingExpressionLike__1 = _typing.Union[
-    _ParsingExpressionLike__0, _typing.Sequence[_ParsingExpressionLike__0]
-]
-_ParsingExpressionLike__2 = _typing.Union[
-    _ParsingExpressionLike__1, _typing.Sequence[_ParsingExpressionLike__1]
-]
+_ParsingExpressionLike__0 = (
+    str | ParsingExpression | _typing.Callable[[], ParsingExpression]
+)
 
-_ParsingExpressionLike = _ParsingExpressionLike__2
+_ParsingExpressionLike__1 = (
+    _ParsingExpressionLike__0
+    | _typing.Sequence[_ParsingExpressionLike__0]
+    | _typing.Sequence[
+        _ParsingExpressionLike__0
+        | _typing.Sequence[_ParsingExpressionLike__0 | object]
+    ]
+)
+
+_ParsingExpressionLike = _ParsingExpressionLike__1
 
 class NoMatch(Exception): ...
 
