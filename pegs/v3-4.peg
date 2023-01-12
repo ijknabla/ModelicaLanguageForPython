@@ -112,7 +112,7 @@ long-class-specifier :
 short-class-specifier :
    IDENT "=" base-prefix type-specifier [ array-subscripts ]
    [ class-modification ] comment
-   | IDENT "=" enumeration "(" ( [enum-list] | ":" ) ")" comment
+   | IDENT "=" `enumeration` "(" ( [enum-list] | ":" ) ")" comment
 
 der-class-specifier :
    IDENT "=" `der` "(" type-specifier "," IDENT { "," IDENT } ")" comment
@@ -324,7 +324,7 @@ when-statement :
    `end` `when`
 
 connect-clause :
-   connect "(" component-reference "," component-reference ")"
+   `connect` "(" component-reference "," component-reference ")"
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#expressions1
