@@ -10,16 +10,6 @@ from modelica_language._backend import (
 from modelica_language.v3_4 import Syntax
 
 
-@returns_parsing_expression
-def ident() -> ParsingExpressionLike:
-    return Syntax.IDENT, EOF
-
-
-@returns_parsing_expression
-def ident_dialect() -> ParsingExpressionLike:
-    return [Syntax.IDENT, RegExMatch(r"\$\w+")], EOF
-
-
 @pytest.fixture(scope="module")
 def file_parser() -> ParserPython:
     return get_file_parser(ModelicaVersion.v3_4)
@@ -28,10 +18,18 @@ def file_parser() -> ParserPython:
 @pytest.fixture(scope="module")
 @enable_method_in_parser_python
 def ident_parser() -> ParserPython:
-    return ParserPython(ident, Syntax.COMMENT)
+    @returns_parsing_expression
+    def file() -> ParsingExpressionLike:
+        return Syntax.IDENT, EOF
+
+    return ParserPython(file, Syntax.COMMENT)
 
 
 @pytest.fixture(scope="module")
 @enable_method_in_parser_python
 def ident_dialect_parser() -> ParserPython:
-    return ParserPython(ident_dialect, Syntax.COMMENT)
+    @returns_parsing_expression
+    def file() -> ParsingExpressionLike:
+        return [Syntax.IDENT, RegExMatch(r"\$\w+")], EOF
+
+    return ParserPython(file, Syntax.COMMENT)
