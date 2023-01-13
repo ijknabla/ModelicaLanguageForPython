@@ -29,7 +29,6 @@ class ModelicaVersion(enum.Enum):
 _SYNTAXES = {ModelicaVersion.v3_4: v3_4.Syntax}
 
 
-@enable_method_in_parser_python
 def get_file_parser(version: Optional[ModelicaVersion] = None) -> ParserPython:
     syntax_type = get_syntax_type(version)
 
@@ -37,7 +36,8 @@ def get_file_parser(version: Optional[ModelicaVersion] = None) -> ParserPython:
     def file() -> ParsingExpressionLike:
         return syntax_type.stored_definition, EOF
 
-    return ParserPython(file, syntax_type.COMMENT)
+    with enable_method_in_parser_python:
+        return ParserPython(file, syntax_type.COMMENT)
 
 
 def get_syntax_type(
