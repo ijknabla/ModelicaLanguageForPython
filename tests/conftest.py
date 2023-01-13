@@ -28,15 +28,15 @@ def ident_dialect() -> ParsingExpressionLike:
 def file_parser() -> ParserPython:
     return ParserPython(
         file,
-        Syntax.CPP_STYLE_COMMENT,
+        Syntax.COMMENT,
     )
 
 
 @pytest.fixture(scope="module")
 def ident_parser() -> ParserPython:
-    return ParserPython(ident, Syntax.CPP_STYLE_COMMENT)
+    return ParserPython(ident, Syntax.COMMENT)
 
 
 @pytest.fixture(scope="module")
 def ident_dialect_parser() -> ParserPython:
-    return ParserPython(ident_dialect, Syntax.CPP_STYLE_COMMENT)
+    return ParserPython(ident_dialect, Syntax.COMMENT)

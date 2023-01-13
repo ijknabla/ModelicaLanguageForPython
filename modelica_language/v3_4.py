@@ -397,12 +397,10 @@ class Syntax:
     UNSIGNED_NUMBER.__doc__ = f"UNSIGNED_NUMBER = {regexPEG(unsigned_number)}"
 
     @staticmethod
-    def CPP_STYLE_COMMENT() -> RegExMatch:
+    def COMMENT() -> RegExMatch:
         return RegExMatch(cpp_style_comment)
 
-    CPP_STYLE_COMMENT.__doc__ = (
-        f"CPP_STYLE_COMMENT = {regexPEG(cpp_style_comment)}"
-    )
+    COMMENT.__doc__ = f"COMMENT = {regexPEG(cpp_style_comment)}"
 
     # §B.2 Grammar
     # §B.2.1 Stored Definition - Within
