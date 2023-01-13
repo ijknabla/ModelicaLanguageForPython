@@ -36,7 +36,6 @@ def main() -> None:
         visitor=ModuleVisitor(class_name=class_name, source=peg_source),
     )
 
-    print("# flake8: noqa", file=output)
     print(unparse(module), file=output)
 
 

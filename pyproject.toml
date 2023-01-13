@@ -37,6 +37,9 @@ line-length = 79
 
 [tool.flake8]
 exclude = ".venv"
+per-file-ignores = [
+    "modelica_language/v?_?.py:E501"
+]
 
 [tool.isort]
 profile = "black"

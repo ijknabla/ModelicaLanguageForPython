@@ -1,4 +1,3 @@
-# flake8: noqa
 from typing import ClassVar, Tuple
 
 from arpeggio import Optional, RegExMatch, ZeroOrMore
