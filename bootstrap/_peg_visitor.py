@@ -6,8 +6,6 @@ from typing import (
     Dict,
     Iterable,
     Iterator,
-    List,
-    Mapping,
     Sequence,
     Set,
 )
@@ -62,7 +60,6 @@ class SupportsChildren(Protocol):
 class ModuleVisitor(PTNodeVisitor):
     class_name: str
     keywords: Set[Keyword]
-    lexical_rule_order: List[Rule]
     pattern_references: DefaultDict[Rule, PatternReference]
     rule_definitions: Dict[Rule, Callable[[], FunctionDef]]
 
@@ -70,7 +67,6 @@ class ModuleVisitor(PTNodeVisitor):
         super().__init__(*args, **kwargs)
         self.class_name = class_name
         self.keywords = set()
-        self.lexical_rule_order = []
         self.pattern_references = DefaultDict[Rule, PatternReference](
             PatternReference
         )
@@ -150,11 +146,39 @@ class ModuleVisitor(PTNodeVisitor):
     def visit_lexical_rule_statement(
         self, _: ParseTreeNode, children: SupportsChildren
     ) -> None:
-        (rule,) = children.LEXICAL_RULE
-        (expression,) = children.lexical_expression
-        if rule not in self.lexical_rule_order:
-            self.lexical_rule_order.append(rule)
-        self.pattern_references[rule].target = expression
+        (name,) = children.LEXICAL_RULE
+        (pattern,) = children.lexical_expression
+
+        self.pattern_references[name].target = pattern
+        if name == "IDENT":
+            decorator_list = [
+                "classmethod",
+                "not_start_with_keyword",
+                "returns_parsing_expression",
+            ]
+            args = ["cls"]
+        else:
+            decorator_list = [
+                "staticmethod",
+                "returns_parsing_expression",
+            ]
+            args = []
+
+        def rule_definition() -> FunctionDef:
+            value = pattern2regex(resolve_pattern(pattern))
+
+            return create_function_def(
+                name=name,
+                args=args,
+                value=create_call(
+                    "RegExMatch",
+                    args=[create_constant(value=value)],
+                ),
+                decorator_list=decorator_list,
+                returns="RegExMatch",
+            )
+
+        self.rule_definitions[name] = rule_definition
 
     def visit_syntax_primary(
         self, _: ParseTreeNode, children: SupportsChildren
@@ -266,9 +290,6 @@ class ModuleVisitor(PTNodeVisitor):
             class_body=[
                 self.__create_keywords_classvar(sorted_keywords),
                 *self.__create_keyword_methods(sorted_keywords),
-                *self.__create_lexical_methods(
-                    self.lexical_rule_order, self.pattern_references
-                ),
                 *map(lambda f: f(), self.rule_definitions.values()),
             ],
         )
@@ -310,36 +331,5 @@ class ModuleVisitor(PTNodeVisitor):
                     args=[create_constant(value=regex)],
                 ),
                 decorator_list=["staticmethod", "returns_parsing_expression"],
-                returns="RegExMatch",
-            )
-
-    @staticmethod
-    def __create_lexical_methods(
-        order: Iterable[Rule],
-        patterns: Mapping[Rule, Pattern],
-    ) -> Iterator[FunctionDef]:
-        for rule in order:
-            name = rule.replace("-", "_")
-            regex = pattern2regex(resolve_pattern(patterns[rule]))
-
-            if name == "IDENT":
-                args = ["cls"]
-                decorator_list = [
-                    "classmethod",
-                    "not_start_with_keyword",
-                    "returns_parsing_expression",
-                ]
-            else:
-                args = []
-                decorator_list = ["staticmethod", "returns_parsing_expression"]
-
-            yield create_function_def(
-                name=name,
-                args=args,
-                value=create_call(
-                    "RegExMatch",
-                    args=[create_constant(value=regex)],
-                ),
-                decorator_list=decorator_list,
                 returns="RegExMatch",
             )
