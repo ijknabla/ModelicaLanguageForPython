@@ -3,7 +3,7 @@ import sys
 from ast import Module
 from typing import TextIO
 
-from arpeggio import ParserPython, visit_parse_tree
+from arpeggio import visit_parse_tree
 
 from modelica_language import enable_method_in_parser_python
 
@@ -12,7 +12,6 @@ from ._peg_syntax import PEGSyntax
 from ._peg_visitor import ModuleVisitor
 
 
-@enable_method_in_parser_python  # TODO: update by contextmanager
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("peg", type=argparse.FileType("r"))
@@ -26,11 +25,13 @@ def main() -> None:
     class_name: str = args.class_name
     output: TextIO = args.output
 
+    with enable_method_in_parser_python as ParserPython:
+        peg_parser = ParserPython(
+            language_def=PEGSyntax.grammar,
+            comment_def=PEGSyntax.COMMENT,
+        )
+
     peg_source = peg.read()
-    peg_parser = ParserPython(
-        language_def=PEGSyntax.grammar,
-        comment_def=PEGSyntax.COMMENT,
-    )
     parse_tree = peg_parser.parse(peg_source)
     module: Module = visit_parse_tree(
         parse_tree=parse_tree,
