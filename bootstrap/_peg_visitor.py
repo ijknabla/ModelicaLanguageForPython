@@ -1,14 +1,5 @@
-from ast import AnnAssign, Ellipsis, FunctionDef, Module, Tuple, expr
-from typing import (
-    Any,
-    Callable,
-    DefaultDict,
-    Dict,
-    Iterator,
-    Sequence,
-    Set,
-    Union,
-)
+from ast import Ellipsis, FunctionDef, Module, Tuple, expr, stmt
+from typing import Any, Callable, DefaultDict, Dict, Iterator, Sequence, Set
 
 from arpeggio import NonTerminal, ParseTreeNode, PTNodeVisitor, Terminal
 from typing_extensions import Protocol
@@ -96,12 +87,11 @@ class ModuleVisitor(PTNodeVisitor):
             class_name=self.class_name,
             class_bases=[],
             class_body=[
-                *self.__keyword_definitions(),
-                *map(lambda f: f(), self.rule_definitions.values()),
+                *self.__class_body(),
             ],
         )
 
-    def __keyword_definitions(self) -> Iterator[Union[AnnAssign, FunctionDef]]:
+    def __class_body(self) -> Iterator[stmt]:
         sorted_keywords = sorted(self.keywords)
         yield create_ann_assign(
             target="_keywords_",
@@ -136,6 +126,8 @@ class ModuleVisitor(PTNodeVisitor):
                     args=[create_constant(value=regex)],
                 ),
             )
+
+        yield from map(lambda f: f(), self.rule_definitions.values())
 
     def visit_lexical_rule_statement(
         self, node: ParseTreeNode, children: SupportsChildren
