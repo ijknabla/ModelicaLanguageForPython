@@ -99,6 +99,8 @@ class StrMatch(Match):
 class EndOfFile(Match):
     def __init__(self) -> None: ...
 
+def EOF() -> EndOfFile: ...
+
 class ParseTreeNode:
     position: int
     position_end: int
