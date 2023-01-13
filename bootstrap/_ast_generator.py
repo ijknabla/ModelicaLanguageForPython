@@ -4,6 +4,7 @@ from ast import (
     Attribute,
     Call,
     ClassDef,
+    Constant,
     FunctionDef,
     Import,
     ImportFrom,
@@ -93,6 +94,12 @@ def create_call(
     )
 
 
+def create_constant(
+    value: str,
+) -> Constant:
+    return Constant(value=value, kind=None)
+
+
 def create_function_def(
     name: str,
     args: Sequence[str],
@@ -139,7 +146,9 @@ def create_module_with_class(
     body: "list[stmt]" = []
 
     if imports:
-        body.append(Import(names=[alias(name=name, asname=None) for name in imports]))
+        body.append(
+            Import(names=[alias(name=name, asname=None) for name in imports])
+        )
     if import_froms:
         body.extend(
             [
