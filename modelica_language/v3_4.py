@@ -1,427 +1,678 @@
-__all__ = ("Syntax",)
+# flake8: noqa
+from typing import ClassVar, Tuple
 
-from arpeggio import Not, Optional, RegExMatch, ZeroOrMore
+from arpeggio import Optional, RegExMatch, ZeroOrMore
 
-# # regex for quote character
-
-single_quote = "'"
-double_quote = '"'
-
-
-# # regex for lexical unit STRING
-
-s_char = rf"[^\\{double_quote}]"
-# any member of the Unicode character set
-# except double-quote """, and backslash "\"
-
-s_escape = (
-    rf"\\{single_quote}|\\{double_quote}|"
-    r"\\\?|\\\\|\\a|\\b|\\f|\\n|\\r|\\t|\\v"
+from modelica_language._backend import (
+    ParsingExpressionLike,
+    not_start_with_keyword,
+    returns_parsing_expression,
 )
-
-string = rf"{double_quote}" rf"({s_char}|{s_escape})*" rf"{double_quote}"
-
-
-# # regex for lexical unit UNSIGNED_NUMBER
-
-digit = r"[0-9]"
-nondigit = r"_|[a-z]|[A-Z]"
-
-unsigned_integer = rf"({digit})+"
-unsigned_number = (
-    rf"{unsigned_integer}(\.({unsigned_integer})?)?"
-    rf"([eE][+-]?{unsigned_integer})?"
-)
-
-
-# # regex for lexical unit IDENT
-
-q_char = (
-    rf"{nondigit}|{digit}"
-    r"|!|#|\$|%|&|\(|\)|\*|\+|,|-|\.|/|"
-    r":|;|<|>|=|\?|@|\[|\]|\^|{|}|\||~| "
-)
-q_ident = (
-    rf"{single_quote}"
-    rf"({q_char}|{s_escape})"
-    rf"({q_char}|{s_escape}|{double_quote})*"
-    rf"{single_quote}"
-)
-ident = rf"(({nondigit})({digit}|{nondigit})*)|({q_ident})"
-
-
-# # regex for lexical unit C++ style comment
-
-single_line_comment = r"//.*"
-multi_line_comment = r"/\*([^*]|\*(?!/))*\*/"
-cpp_style_comment = rf"({single_line_comment})|({multi_line_comment})"
-
-
-any_keyword = (
-    r"("
-    r"algorithm|and|annotation|block|break|class|connect|connector|"
-    r"constant|constrainedby|der|discrete|each|else|elseif|elsewhen|"
-    r"encapsulated|end|enumeration|equation|expandable|extends|external|"
-    r"false|final|flow|for|function|if|import|impure|in|initial|inner|"
-    r"input|loop|model|not|operator|or|outer|output|package|parameter|"
-    r"partial|protected|public|pure|record|redeclare|replaceable|return|"
-    r"stream|then|true|type|when|while|within"
-    r")(?!\w)"
-)
-
-
-def regexPEG(regex: str) -> str:
-    return "r'{}'".format(regex.replace("'", r"\'"))
 
 
 class Syntax:
-    # §2.3.3 Modelica Keywords
-    @staticmethod
-    def ANY_KEYWORD() -> RegExMatch:
-        return RegExMatch(any_keyword)
+    _keywords_: ClassVar[Tuple[str, ...]] = (
+        "algorithm",
+        "and",
+        "annotation",
+        "block",
+        "break",
+        "class",
+        "connect",
+        "connector",
+        "constant",
+        "constrainedby",
+        "der",
+        "discrete",
+        "each",
+        "else",
+        "elseif",
+        "elsewhen",
+        "encapsulated",
+        "end",
+        "enumeration",
+        "equation",
+        "expandable",
+        "extends",
+        "external",
+        "false",
+        "final",
+        "flow",
+        "for",
+        "function",
+        "if",
+        "import",
+        "impure",
+        "in",
+        "initial",
+        "inner",
+        "input",
+        "loop",
+        "model",
+        "not",
+        "operator",
+        "or",
+        "outer",
+        "output",
+        "package",
+        "parameter",
+        "partial",
+        "protected",
+        "public",
+        "pure",
+        "record",
+        "redeclare",
+        "replaceable",
+        "return",
+        "stream",
+        "then",
+        "true",
+        "type",
+        "when",
+        "while",
+        "within",
+    )
 
-    ANY_KEYWORD.__doc__ = f"ANY_KEYWORD = r'{any_keyword}'"
-
     @staticmethod
+    @returns_parsing_expression
     def ALGORITHM() -> RegExMatch:
-        r"ALGORITHM = r'algorithm(?!\w)'"
-        return RegExMatch(r"algorithm(?!\w)")
-
-    @staticmethod
-    def AND() -> RegExMatch:
-        r"AND = r'and(?!\w)'"
-        return RegExMatch(r"and(?!\w)")
-
-    @staticmethod
-    def ANNOTATION() -> RegExMatch:
-        r"ANNOTATION = r'annotation(?!\w)'"
-        return RegExMatch(r"annotation(?!\w)")
-
-    @staticmethod
-    def BLOCK() -> RegExMatch:
-        r"BLOCK = r'block(?!\w)'"
-        return RegExMatch(r"block(?!\w)")
-
-    @staticmethod
-    def BREAK() -> RegExMatch:
-        r"BREAK = r'break(?!\w)'"
-        return RegExMatch(r"break(?!\w)")
-
-    @staticmethod
-    def CLASS() -> RegExMatch:
-        r"CLASS = r'class(?!\w)'"
-        return RegExMatch(r"class(?!\w)")
-
-    @staticmethod
-    def CONNECT() -> RegExMatch:
-        r"CONNECT = r'connect(?!\w)'"
-        return RegExMatch(r"connect(?!\w)")
-
-    @staticmethod
-    def CONNECTOR() -> RegExMatch:
-        r"CONNECTOR = r'connector(?!\w)'"
-        return RegExMatch(r"connector(?!\w)")
-
-    @staticmethod
-    def CONSTANT() -> RegExMatch:
-        r"CONSTANT = r'constant(?!\w)'"
-        return RegExMatch(r"constant(?!\w)")
-
-    @staticmethod
-    def CONSTRAINEDBY() -> RegExMatch:
-        r"CONSTRAINEDBY = r'constrainedby(?!\w)'"
-        return RegExMatch(r"constrainedby(?!\w)")
-
-    @staticmethod
-    def DER() -> RegExMatch:
-        r"DER = r'der(?!\w)'"
-        return RegExMatch(r"der(?!\w)")
-
-    @staticmethod
-    def DISCRETE() -> RegExMatch:
-        r"DISCRETE = r'discrete(?!\w)'"
-        return RegExMatch(r"discrete(?!\w)")
-
-    @staticmethod
-    def EACH() -> RegExMatch:
-        r"EACH = r'each(?!\w)'"
-        return RegExMatch(r"each(?!\w)")
-
-    @staticmethod
-    def ELSE() -> RegExMatch:
-        r"ELSE = r'else(?!\w)'"
-        return RegExMatch(r"else(?!\w)")
-
-    @staticmethod
-    def ELSEIF() -> RegExMatch:
-        r"ELSEIF = r'elseif(?!\w)'"
-        return RegExMatch(r"elseif(?!\w)")
-
-    @staticmethod
-    def ELSEWHEN() -> RegExMatch:
-        r"ELSEWHEN = r'elsewhen(?!\w)'"
-        return RegExMatch(r"elsewhen(?!\w)")
-
-    @staticmethod
-    def ENCAPSULATED() -> RegExMatch:
-        r"ENCAPSULATED = r'encapsulated(?!\w)'"
-        return RegExMatch(r"encapsulated(?!\w)")
-
-    @staticmethod
-    def END() -> RegExMatch:
-        r"END = r'end(?!\w)'"
-        return RegExMatch(r"end(?!\w)")
-
-    @staticmethod
-    def ENUMERATION() -> RegExMatch:
-        r"ENUMERATION = r'enumeration(?!\w)'"
-        return RegExMatch(r"enumeration(?!\w)")
-
-    @staticmethod
-    def EQUATION() -> RegExMatch:
-        r"EQUATION = r'equation(?!\w)'"
-        return RegExMatch(r"equation(?!\w)")
-
-    @staticmethod
-    def EXPANDABLE() -> RegExMatch:
-        r"EXPANDABLE = r'expandable(?!\w)'"
-        return RegExMatch(r"expandable(?!\w)")
-
-    @staticmethod
-    def EXTENDS() -> RegExMatch:
-        r"EXTENDS = r'extends(?!\w)'"
-        return RegExMatch(r"extends(?!\w)")
-
-    @staticmethod
-    def EXTERNAL() -> RegExMatch:
-        r"EXTERNAL = r'external(?!\w)'"
-        return RegExMatch(r"external(?!\w)")
-
-    @staticmethod
-    def FALSE() -> RegExMatch:
-        r"FALSE = r'false(?!\w)'"
-        return RegExMatch(r"false(?!\w)")
-
-    @staticmethod
-    def FINAL() -> RegExMatch:
-        r"FINAL = r'final(?!\w)'"
-        return RegExMatch(r"final(?!\w)")
-
-    @staticmethod
-    def FLOW() -> RegExMatch:
-        r"FLOW = r'flow(?!\w)'"
-        return RegExMatch(r"flow(?!\w)")
-
-    @staticmethod
-    def FOR() -> RegExMatch:
-        r"FOR = r'for(?!\w)'"
-        return RegExMatch(r"for(?!\w)")
-
-    @staticmethod
-    def FUNCTION() -> RegExMatch:
-        r"FUNCTION = r'function(?!\w)'"
-        return RegExMatch(r"function(?!\w)")
-
-    @staticmethod
-    def IF() -> RegExMatch:
-        r"IF = r'if(?!\w)'"
-        return RegExMatch(r"if(?!\w)")
-
-    @staticmethod
-    def IMPORT() -> RegExMatch:
-        r"IMPORT = r'import(?!\w)'"
-        return RegExMatch(r"import(?!\w)")
-
-    @staticmethod
-    def IMPURE() -> RegExMatch:
-        r"IMPURE = r'impure(?!\w)'"
-        return RegExMatch(r"impure(?!\w)")
-
-    @staticmethod
-    def IN() -> RegExMatch:
-        r"IN = r'in(?!\w)'"
-        return RegExMatch(r"in(?!\w)")
-
-    @staticmethod
-    def INITIAL() -> RegExMatch:
-        r"INITIAL = r'initial(?!\w)'"
-        return RegExMatch(r"initial(?!\w)")
-
-    @staticmethod
-    def INNER() -> RegExMatch:
-        r"INNER = r'inner(?!\w)'"
-        return RegExMatch(r"inner(?!\w)")
-
-    @staticmethod
-    def INPUT() -> RegExMatch:
-        r"INPUT = r'input(?!\w)'"
-        return RegExMatch(r"input(?!\w)")
-
-    @staticmethod
-    def LOOP() -> RegExMatch:
-        r"LOOP = r'loop(?!\w)'"
-        return RegExMatch(r"loop(?!\w)")
-
-    @staticmethod
-    def MODEL() -> RegExMatch:
-        r"MODEL = r'model(?!\w)'"
-        return RegExMatch(r"model(?!\w)")
-
-    @staticmethod
-    def NOT() -> RegExMatch:
-        r"NOT = r'not(?!\w)'"
-        return RegExMatch(r"not(?!\w)")
-
-    @staticmethod
-    def OPERATOR() -> RegExMatch:
-        r"OPERATOR = r'operator(?!\w)'"
-        return RegExMatch(r"operator(?!\w)")
-
-    @staticmethod
-    def OR() -> RegExMatch:
-        r"OR = r'or(?!\w)'"
-        return RegExMatch(r"or(?!\w)")
-
-    @staticmethod
-    def OUTER() -> RegExMatch:
-        r"OUTER = r'outer(?!\w)'"
-        return RegExMatch(r"outer(?!\w)")
-
-    @staticmethod
-    def OUTPUT() -> RegExMatch:
-        r"OUTPUT = r'output(?!\w)'"
-        return RegExMatch(r"output(?!\w)")
-
-    @staticmethod
-    def PACKAGE() -> RegExMatch:
-        r"PACKAGE = r'package(?!\w)'"
-        return RegExMatch(r"package(?!\w)")
-
-    @staticmethod
-    def PARAMETER() -> RegExMatch:
-        r"PARAMETER = r'parameter(?!\w)'"
-        return RegExMatch(r"parameter(?!\w)")
-
-    @staticmethod
-    def PARTIAL() -> RegExMatch:
-        r"PARTIAL = r'partial(?!\w)'"
-        return RegExMatch(r"partial(?!\w)")
-
-    @staticmethod
-    def PROTECTED() -> RegExMatch:
-        r"PROTECTED = r'protected(?!\w)'"
-        return RegExMatch(r"protected(?!\w)")
-
-    @staticmethod
-    def PUBLIC() -> RegExMatch:
-        r"PUBLIC = r'public(?!\w)'"
-        return RegExMatch(r"public(?!\w)")
-
-    @staticmethod
-    def PURE() -> RegExMatch:
-        r"PURE = r'pure(?!\w)'"
-        return RegExMatch(r"pure(?!\w)")
-
-    @staticmethod
-    def RECORD() -> RegExMatch:
-        r"RECORD = r'record(?!\w)'"
-        return RegExMatch(r"record(?!\w)")
-
-    @staticmethod
-    def REDECLARE() -> RegExMatch:
-        r"REDECLARE = r'redeclare(?!\w)'"
-        return RegExMatch(r"redeclare(?!\w)")
-
-    @staticmethod
-    def REPLACEABLE() -> RegExMatch:
-        r"REPLACEABLE = r'replaceable(?!\w)'"
-        return RegExMatch(r"replaceable(?!\w)")
-
-    @staticmethod
-    def RETURN() -> RegExMatch:
-        r"RETURN = r'return(?!\w)'"
-        return RegExMatch(r"return(?!\w)")
-
-    @staticmethod
-    def STREAM() -> RegExMatch:
-        r"STREAM = r'stream(?!\w)'"
-        return RegExMatch(r"stream(?!\w)")
-
-    @staticmethod
-    def THEN() -> RegExMatch:
-        r"THEN = r'then(?!\w)'"
-        return RegExMatch(r"then(?!\w)")
-
-    @staticmethod
-    def TRUE() -> RegExMatch:
-        r"TRUE = r'true(?!\w)'"
-        return RegExMatch(r"true(?!\w)")
-
-    @staticmethod
-    def TYPE() -> RegExMatch:
-        r"TYPE = r'type(?!\w)'"
-        return RegExMatch(r"type(?!\w)")
-
-    @staticmethod
-    def WHEN() -> RegExMatch:
-        r"WHEN = r'when(?!\w)'"
-        return RegExMatch(r"when(?!\w)")
-
-    @staticmethod
-    def WHILE() -> RegExMatch:
-        r"WHILE = r'while(?!\w)'"
-        return RegExMatch(r"while(?!\w)")
-
-    @staticmethod
-    def WITHIN() -> RegExMatch:
-        r"WITHIN = r'within(?!\w)'"
-        return RegExMatch(r"within(?!\w)")
-
-    # §B.1 Lexical conventions
-    @classmethod
-    def IDENT(cls):  # type: ignore
-        return Not(cls.ANY_KEYWORD), RegExMatch(ident)
-
-    IDENT.__doc__ = f"IDENT = !ANY_KEYWORD {regexPEG(ident)}"
-
-    @staticmethod
-    def STRING() -> RegExMatch:
-        return RegExMatch(string)
-
-    STRING.__doc__ = f"STRING = {regexPEG(string)}"
-
-    @staticmethod
-    def UNSIGNED_NUMBER() -> RegExMatch:
-        return RegExMatch(unsigned_number)
-
-    UNSIGNED_NUMBER.__doc__ = f"UNSIGNED_NUMBER = {regexPEG(unsigned_number)}"
-
-    @staticmethod
-    def COMMENT() -> RegExMatch:
-        return RegExMatch(cpp_style_comment)
-
-    COMMENT.__doc__ = f"COMMENT = {regexPEG(cpp_style_comment)}"
-
-    # §B.2 Grammar
-    # §B.2.1 Stored Definition - Within
-    @classmethod
-    def stored_definition(cls):  # type: ignore
         """
-        stored_definition =
-            (WITHIN name? ";")?
-            (FINAL? class_definition ";")*
+        `algorithm`
+        """
+        return RegExMatch("algorithm(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def AND() -> RegExMatch:
+        """
+        `and`
+        """
+        return RegExMatch("and(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def ANNOTATION() -> RegExMatch:
+        """
+        `annotation`
+        """
+        return RegExMatch("annotation(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def BLOCK() -> RegExMatch:
+        """
+        `block`
+        """
+        return RegExMatch("block(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def BREAK() -> RegExMatch:
+        """
+        `break`
+        """
+        return RegExMatch("break(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def CLASS() -> RegExMatch:
+        """
+        `class`
+        """
+        return RegExMatch("class(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def CONNECT() -> RegExMatch:
+        """
+        `connect`
+        """
+        return RegExMatch("connect(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def CONNECTOR() -> RegExMatch:
+        """
+        `connector`
+        """
+        return RegExMatch("connector(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def CONSTANT() -> RegExMatch:
+        """
+        `constant`
+        """
+        return RegExMatch("constant(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def CONSTRAINEDBY() -> RegExMatch:
+        """
+        `constrainedby`
+        """
+        return RegExMatch("constrainedby(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def DER() -> RegExMatch:
+        """
+        `der`
+        """
+        return RegExMatch("der(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def DISCRETE() -> RegExMatch:
+        """
+        `discrete`
+        """
+        return RegExMatch("discrete(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def EACH() -> RegExMatch:
+        """
+        `each`
+        """
+        return RegExMatch("each(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def ELSE() -> RegExMatch:
+        """
+        `else`
+        """
+        return RegExMatch("else(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def ELSEIF() -> RegExMatch:
+        """
+        `elseif`
+        """
+        return RegExMatch("elseif(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def ELSEWHEN() -> RegExMatch:
+        """
+        `elsewhen`
+        """
+        return RegExMatch("elsewhen(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def ENCAPSULATED() -> RegExMatch:
+        """
+        `encapsulated`
+        """
+        return RegExMatch("encapsulated(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def END() -> RegExMatch:
+        """
+        `end`
+        """
+        return RegExMatch("end(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def ENUMERATION() -> RegExMatch:
+        """
+        `enumeration`
+        """
+        return RegExMatch("enumeration(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def EQUATION() -> RegExMatch:
+        """
+        `equation`
+        """
+        return RegExMatch("equation(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def EXPANDABLE() -> RegExMatch:
+        """
+        `expandable`
+        """
+        return RegExMatch("expandable(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def EXTENDS() -> RegExMatch:
+        """
+        `extends`
+        """
+        return RegExMatch("extends(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def EXTERNAL() -> RegExMatch:
+        """
+        `external`
+        """
+        return RegExMatch("external(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def FALSE() -> RegExMatch:
+        """
+        `false`
+        """
+        return RegExMatch("false(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def FINAL() -> RegExMatch:
+        """
+        `final`
+        """
+        return RegExMatch("final(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def FLOW() -> RegExMatch:
+        """
+        `flow`
+        """
+        return RegExMatch("flow(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def FOR() -> RegExMatch:
+        """
+        `for`
+        """
+        return RegExMatch("for(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def FUNCTION() -> RegExMatch:
+        """
+        `function`
+        """
+        return RegExMatch("function(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def IF() -> RegExMatch:
+        """
+        `if`
+        """
+        return RegExMatch("if(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def IMPORT() -> RegExMatch:
+        """
+        `import`
+        """
+        return RegExMatch("import(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def IMPURE() -> RegExMatch:
+        """
+        `impure`
+        """
+        return RegExMatch("impure(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def IN() -> RegExMatch:
+        """
+        `in`
+        """
+        return RegExMatch("in(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def INITIAL() -> RegExMatch:
+        """
+        `initial`
+        """
+        return RegExMatch("initial(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def INNER() -> RegExMatch:
+        """
+        `inner`
+        """
+        return RegExMatch("inner(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def INPUT() -> RegExMatch:
+        """
+        `input`
+        """
+        return RegExMatch("input(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def LOOP() -> RegExMatch:
+        """
+        `loop`
+        """
+        return RegExMatch("loop(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def MODEL() -> RegExMatch:
+        """
+        `model`
+        """
+        return RegExMatch("model(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def NOT() -> RegExMatch:
+        """
+        `not`
+        """
+        return RegExMatch("not(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def OPERATOR() -> RegExMatch:
+        """
+        `operator`
+        """
+        return RegExMatch("operator(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def OR() -> RegExMatch:
+        """
+        `or`
+        """
+        return RegExMatch("or(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def OUTER() -> RegExMatch:
+        """
+        `outer`
+        """
+        return RegExMatch("outer(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def OUTPUT() -> RegExMatch:
+        """
+        `output`
+        """
+        return RegExMatch("output(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def PACKAGE() -> RegExMatch:
+        """
+        `package`
+        """
+        return RegExMatch("package(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def PARAMETER() -> RegExMatch:
+        """
+        `parameter`
+        """
+        return RegExMatch("parameter(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def PARTIAL() -> RegExMatch:
+        """
+        `partial`
+        """
+        return RegExMatch("partial(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def PROTECTED() -> RegExMatch:
+        """
+        `protected`
+        """
+        return RegExMatch("protected(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def PUBLIC() -> RegExMatch:
+        """
+        `public`
+        """
+        return RegExMatch("public(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def PURE() -> RegExMatch:
+        """
+        `pure`
+        """
+        return RegExMatch("pure(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def RECORD() -> RegExMatch:
+        """
+        `record`
+        """
+        return RegExMatch("record(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def REDECLARE() -> RegExMatch:
+        """
+        `redeclare`
+        """
+        return RegExMatch("redeclare(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def REPLACEABLE() -> RegExMatch:
+        """
+        `replaceable`
+        """
+        return RegExMatch("replaceable(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def RETURN() -> RegExMatch:
+        """
+        `return`
+        """
+        return RegExMatch("return(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def STREAM() -> RegExMatch:
+        """
+        `stream`
+        """
+        return RegExMatch("stream(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def THEN() -> RegExMatch:
+        """
+        `then`
+        """
+        return RegExMatch("then(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def TRUE() -> RegExMatch:
+        """
+        `true`
+        """
+        return RegExMatch("true(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def TYPE() -> RegExMatch:
+        """
+        `type`
+        """
+        return RegExMatch("type(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def WHEN() -> RegExMatch:
+        """
+        `when`
+        """
+        return RegExMatch("when(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def WHILE() -> RegExMatch:
+        """
+        `while`
+        """
+        return RegExMatch("while(?![0-9A-Z_a-z])")
+
+    @staticmethod
+    @returns_parsing_expression
+    def WITHIN() -> RegExMatch:
+        """
+        `within`
+        """
+        return RegExMatch("within(?![0-9A-Z_a-z])")
+
+    @classmethod
+    @not_start_with_keyword
+    @returns_parsing_expression
+    def IDENT(cls) -> RegExMatch:
+        """
+        IDENT = NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
+        """
+        return RegExMatch(
+            "[A-Z_a-z][0-9A-Z_a-z]*|'([\\ !\\#-\\&\\(-\\[\\]-_a-\\~]|\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)([\\ -\\&\\(-\\[\\]-_a-\\~]|\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)*'"
+        )
+
+    @classmethod
+    @returns_parsing_expression
+    def Q_IDENT(cls) -> RegExMatch:
+        '''
+        Q-IDENT = "'" ( Q-CHAR | S-ESCAPE ) { Q-CHAR | S-ESCAPE | """ } "'"
+        '''
+        return RegExMatch(
+            "'([\\ !\\#-\\&\\(-\\[\\]-_a-\\~]|\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)([\\ -\\&\\(-\\[\\]-_a-\\~]|\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)*'"
+        )
+
+    @classmethod
+    @returns_parsing_expression
+    def NONDIGIT(cls) -> RegExMatch:
+        """
+        NONDIGIT = "_" | r'[a-z]' | r'[A-Z]'
+        """
+        return RegExMatch("[A-Z_a-z]")
+
+    @classmethod
+    @returns_parsing_expression
+    def STRING(cls) -> RegExMatch:
+        '''
+        STRING = """ { S-CHAR | S-ESCAPE } """
+        '''
+        return RegExMatch(
+            '"([^"\\\\]|\\\\\'|\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)*"'
+        )
+
+    @classmethod
+    @returns_parsing_expression
+    def S_CHAR(cls) -> RegExMatch:
+        """
+        S-CHAR = r'[^"\\\\]'
+        """
+        return RegExMatch('[^"\\\\]')
+
+    @classmethod
+    @returns_parsing_expression
+    def Q_CHAR(cls) -> RegExMatch:
+        """
+        Q-CHAR =
+          NONDIGIT | DIGIT | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," |
+           "-" | "." | "/" | ":" | ";" | "<" | ">" | "=" | "?" | "@" | "[" | "]" | "^" |
+           "{" | "}" | "|" | "~" | " "
+        """
+        return RegExMatch("[\\ !\\#-\\&\\(-\\[\\]-_a-\\~]")
+
+    @classmethod
+    @returns_parsing_expression
+    def S_ESCAPE(cls) -> RegExMatch:
+        """
+        S-ESCAPE =
+           "\\'" | "\\"" | "\\?" | "\\\\" |
+           "\\a" | "\\b" | "\\f" | "\\n" | "\\r" | "\\t" | "\\v"
+        """
+        return RegExMatch(
+            "\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v"
+        )
+
+    @classmethod
+    @returns_parsing_expression
+    def DIGIT(cls) -> RegExMatch:
+        """
+        DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+        """
+        return RegExMatch("[0-9]")
+
+    @classmethod
+    @returns_parsing_expression
+    def UNSIGNED_INTEGER(cls) -> RegExMatch:
+        """
+        UNSIGNED-INTEGER = DIGIT { DIGIT }
+        """
+        return RegExMatch("[0-9][0-9]*")
+
+    @classmethod
+    @returns_parsing_expression
+    def UNSIGNED_NUMBER(cls) -> RegExMatch:
+        """
+        UNSIGNED-NUMBER =
+           UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
+           [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]
+        """
+        return RegExMatch(
+            "[0-9][0-9]*(\\.([0-9][0-9]*)?)?([Ee][\\+\\-]?[0-9][0-9]*)?"
+        )
+
+    @classmethod
+    @returns_parsing_expression
+    def COMMENT(cls) -> RegExMatch:
+        """
+        COMMENT =
+             r'//.*'                   // single-line comment
+           | r'/\\*([^*]|\\*(?!/))*\\*/'
+        """
+        return RegExMatch("//.*|/\\*([^*]|\\*(?!/))*\\*/")
+
+    @classmethod
+    @returns_parsing_expression
+    def stored_definition(cls) -> ParsingExpressionLike:
+        """
+        stored-definition :
+           [ `within` [ name ] ";" ]
+           { [ `final` ] class-definition ";" }
         """
         return (
             Optional(cls.WITHIN, Optional(cls.name), ";"),
             ZeroOrMore(Optional(cls.FINAL), cls.class_definition, ";"),
         )
 
-    # §B.2.2 Class Definition
     @classmethod
-    def class_definition(cls):  # type: ignore
+    @returns_parsing_expression
+    def class_definition(cls) -> ParsingExpressionLike:
         """
-        class_definition =
-            ENCAPSULATED? class_prefixes class_specifier
+        class-definition :
+           [ `encapsulated` ] class-prefixes
+           class-specifier
         """
         return (
             Optional(cls.ENCAPSULATED),
@@ -430,15 +681,14 @@ class Syntax:
         )
 
     @classmethod
-    def class_prefixes(cls):  # type: ignore
+    @returns_parsing_expression
+    def class_prefixes(cls) -> ParsingExpressionLike:
         """
-        class_prefixes =
-            PARTIAL?
-            (
-                CLASS / MODEL / OPERATOR? RECORD / BLOCK / EXPANDABLE? CONNECTOR
-                / TYPE / PACKAGE / (PURE / IMPURE)? OPERATOR? FUNCTION / OPERATOR
-            )
-        """  # noqa: E501
+        class-prefixes :
+           [ `partial` ]
+           ( `class` | `model` | [ `operator` ] `record` | `block` | [ `expandable` ] `connector` | `type` |
+           `package` | [ ( `pure` | `impure` ) ] [ `operator` ] `function` | `operator` )
+        """
         return (
             Optional(cls.PARTIAL),
             [
@@ -459,10 +709,11 @@ class Syntax:
         )
 
     @classmethod
-    def class_specifier(cls):  # type: ignore
+    @returns_parsing_expression
+    def class_specifier(cls) -> ParsingExpressionLike:
         """
-        class_specifier =
-            long_class_specifier / short_class_specifier / der_class_specifier
+        class-specifier :
+           long-class-specifier | short-class-specifier | der-class-specifier
         """
         return [
             cls.long_class_specifier,
@@ -471,13 +722,22 @@ class Syntax:
         ]
 
     @classmethod
-    def long_class_specifier(cls):  # type: ignore
+    @returns_parsing_expression
+    def long_class_specifier(cls) -> ParsingExpressionLike:
         """
-        long_class_specifier =
-            EXTENDS IDENT class_modification? string_comment composition END IDENT
-            / IDENT string_comment composition END IDENT
-        """  # noqa: E501
+        long-class-specifier :
+           IDENT string-comment composition `end` IDENT
+           | `extends` IDENT [ class-modification ] string-comment composition
+           `end` IDENT
+        """
         return [
+            (
+                cls.IDENT,
+                cls.string_comment,
+                cls.composition,
+                cls.END,
+                cls.IDENT,
+            ),
             (
                 cls.EXTENDS,
                 cls.IDENT,
@@ -487,33 +747,18 @@ class Syntax:
                 cls.END,
                 cls.IDENT,
             ),
-            (
-                cls.IDENT,
-                cls.string_comment,
-                cls.composition,
-                cls.END,
-                cls.IDENT,
-            ),
         ]
 
     @classmethod
-    def short_class_specifier(cls):  # type: ignore
+    @returns_parsing_expression
+    def short_class_specifier(cls) -> ParsingExpressionLike:
         """
-        short_class_specifier =
-            IDENT "=" ENUMERATION "(" (":" / enum_list?) ")" comment
-            / IDENT "=" base_prefix type_specifier array_subscripts?
-            class_modification? comment
+        short-class-specifier :
+           IDENT "=" base-prefix type-specifier [ array-subscripts ]
+           [ class-modification ] comment
+           | IDENT "=" `enumeration` "(" ( [enum-list] | ":" ) ")" comment
         """
         return [
-            (
-                cls.IDENT,
-                "=",
-                cls.ENUMERATION,
-                "(",
-                [":", Optional(cls.enum_list)],
-                ")",
-                cls.comment,
-            ),
             (
                 cls.IDENT,
                 "=",
@@ -523,13 +768,23 @@ class Syntax:
                 Optional(cls.class_modification),
                 cls.comment,
             ),
+            (
+                cls.IDENT,
+                "=",
+                cls.ENUMERATION,
+                "(",
+                [Optional(cls.enum_list), ":"],
+                ")",
+                cls.comment,
+            ),
         ]
 
     @classmethod
-    def der_class_specifier(cls):  # type: ignore
+    @returns_parsing_expression
+    def der_class_specifier(cls) -> ParsingExpressionLike:
         """
-        der_class_specifer =
-            IDENT "=" DER "(" type_specifier "," IDENT ("," IDENT)* ")" comment
+        der-class-specifier :
+           IDENT "=" `der` "(" type-specifier "," IDENT { "," IDENT } ")" comment
         """
         return (
             cls.IDENT,
@@ -545,45 +800,47 @@ class Syntax:
         )
 
     @classmethod
-    def base_prefix(cls):  # type: ignore
+    @returns_parsing_expression
+    def base_prefix(cls) -> ParsingExpressionLike:
         """
-        base_prefix =
-            (INPUT / OUTPUT)?
+        base-prefix :
+           [ `input` | `output` ]
         """
         return Optional([cls.INPUT, cls.OUTPUT])
 
     @classmethod
-    def enum_list(cls):  # type: ignore
+    @returns_parsing_expression
+    def enum_list(cls) -> ParsingExpressionLike:
         """
-        enum_list = enumeration_literal ("," enumeration_literal)*
+        enum-list : enumeration-literal { "," enumeration-literal}
         """
-        return cls.enumeration_literal, ZeroOrMore(
-            ",", cls.enumeration_literal
+        return (
+            cls.enumeration_literal,
+            ZeroOrMore(",", cls.enumeration_literal),
         )
 
     @classmethod
-    def enumeration_literal(cls):  # type: ignore
+    @returns_parsing_expression
+    def enumeration_literal(cls) -> ParsingExpressionLike:
         """
-        enumeration_literal = IDENT comment
+        enumeration-literal : IDENT comment
         """
-        return cls.IDENT, cls.comment
+        return (cls.IDENT, cls.comment)
 
     @classmethod
-    def composition(cls):  # type: ignore
+    @returns_parsing_expression
+    def composition(cls) -> ParsingExpressionLike:
         """
-        composition =
-            element_list
-            (
-                PUBLIC element_list
-                / PROTECTED element_list
-                / equation_section
-                / algorithm_section
-            )*
-            (
-                EXTERNAL language_specification?
-                external_function_call? annotation? ";"
-            )?
-            (annotation ";")?
+        composition :
+           element-list
+           { `public` element-list |
+             `protected` element-list |
+             equation-section |
+             algorithm-section
+           }
+           [ `external` [ language-specification ]
+           [ external-function-call ] [ annotation-comment ] ";" ]
+           [ annotation-comment ";" ]
         """
         return (
             cls.element_list,
@@ -599,25 +856,28 @@ class Syntax:
                 cls.EXTERNAL,
                 Optional(cls.language_specification),
                 Optional(cls.external_function_call),
-                Optional(cls.annotation),
+                Optional(cls.annotation_comment),
                 ";",
             ),
-            Optional(cls.annotation, ";"),
+            Optional(cls.annotation_comment, ";"),
         )
 
     @classmethod
-    def language_specification(cls):  # type: ignore
+    @returns_parsing_expression
+    def language_specification(cls) -> ParsingExpressionLike:
         """
-        language_specification =
-            STRING
+        language-specification :
+           STRING
         """
         return cls.STRING
 
     @classmethod
-    def external_function_call(cls):  # type: ignore
+    @returns_parsing_expression
+    def external_function_call(cls) -> ParsingExpressionLike:
         """
-        external_function_call =
-            (component_reference "=")? IDENT "(" expression_list? ")"
+        external-function-call :
+           [ component-reference "=" ]
+           IDENT "(" [ expression-list ] ")"
         """
         return (
             Optional(cls.component_reference, "="),
@@ -628,25 +888,27 @@ class Syntax:
         )
 
     @classmethod
-    def element_list(cls):  # type: ignore
+    @returns_parsing_expression
+    def element_list(cls) -> ParsingExpressionLike:
         """
-        element_list =
-            (element ";")*
+        element-list :
+           { element ";" }
         """
         return ZeroOrMore(cls.element, ";")
 
     @classmethod
-    def element(cls):  # type: ignore
+    @returns_parsing_expression
+    def element(cls) -> ParsingExpressionLike:
         """
-        element =
-            import_clause
-            extends_clause
-            / REDECLARE? FINAL? INNER? OUTER?
-                (
-                    REPLACEABLE (class_definition / component_clause)
-                    (constraining_clause comment)?
-                    / (class_definition / component_clause)
-                )
+        element :
+           import-clause |
+           extends-clause |
+           [ `redeclare` ]
+           [ `final` ]
+           [ `inner` ] [ `outer` ]
+           ( ( class-definition | component-clause ) |
+           `replaceable` ( class-definition | component-clause )
+           [ constraining-clause comment ] )
         """
         return [
             cls.import_clause,
@@ -657,72 +919,61 @@ class Syntax:
                 Optional(cls.INNER),
                 Optional(cls.OUTER),
                 [
+                    [cls.class_definition, cls.component_clause],
                     (
                         cls.REPLACEABLE,
                         [cls.class_definition, cls.component_clause],
                         Optional(cls.constraining_clause, cls.comment),
                     ),
-                    [cls.class_definition, cls.component_clause],
                 ],
             ),
         ]
 
     @classmethod
-    def import_clause(cls):  # type: ignore
+    @returns_parsing_expression
+    def import_clause(cls) -> ParsingExpressionLike:
         """
-        import_clause =
-            import
-            (
-                IDENT "=" name
-                / name ("." ("*" / "{" import_list "}") )?
-            )
-            comment
+        import-clause :
+           `import` ( IDENT "=" name | name ["." ( "*" | "{" import-list "}" ) ] ) comment
         """
         return (
             cls.IMPORT,
             [
                 (cls.IDENT, "=", cls.name),
-                (
-                    cls.name,
-                    Optional(
-                        ".",
-                        [
-                            "*",
-                            ("{", cls.import_list, "}"),
-                        ],
-                    ),
-                ),
+                (cls.name, Optional(".", ["*", ("{", cls.import_list, "}")])),
             ],
             cls.comment,
         )
 
     @classmethod
-    def import_list(cls):  # type: ignore
+    @returns_parsing_expression
+    def import_list(cls) -> ParsingExpressionLike:
         """
-        import_list =
-            IDENT ("," IDENT)*
+        import-list :
+           IDENT { "," IDENT }
         """
-        return cls.IDENT, ZeroOrMore(",", cls.IDENT)
+        return (cls.IDENT, ZeroOrMore(",", cls.IDENT))
 
-    # §B.2.3 Extends
     @classmethod
-    def extends_clause(cls):  # type: ignore
+    @returns_parsing_expression
+    def extends_clause(cls) -> ParsingExpressionLike:
         """
-        extends_clause =
-            EXTENDS type_specifier class_modification? annotation?
+        extends-clause :
+           `extends` type-specifier [ class-modification ] [ annotation-comment ]
         """
         return (
             cls.EXTENDS,
             cls.type_specifier,
             Optional(cls.class_modification),
-            Optional(cls.annotation),
+            Optional(cls.annotation_comment),
         )
 
     @classmethod
-    def constraining_clause(cls):  # type: ignore
+    @returns_parsing_expression
+    def constraining_clause(cls) -> ParsingExpressionLike:
         """
-        constraining_clause =
-            CONSTRAINEDBY type_specifier class_modification?
+        constraining-clause :
+           `constrainedby` type-specifier [ class-modification ]
         """
         return (
             cls.CONSTRAINEDBY,
@@ -730,12 +981,12 @@ class Syntax:
             Optional(cls.class_modification),
         )
 
-    # §B.2.4 Component Clause
     @classmethod
-    def component_clause(cls):  # type: ignore
+    @returns_parsing_expression
+    def component_clause(cls) -> ParsingExpressionLike:
         """
-        component_clause =
-            type_prefix type_specifier array_subscripts? component_list
+        component-clause :
+           type-prefix type-specifier [ array-subscripts ] component-list
         """
         return (
             cls.type_prefix,
@@ -745,43 +996,37 @@ class Syntax:
         )
 
     @classmethod
-    def type_prefix(cls):  # type: ignore
+    @returns_parsing_expression
+    def type_prefix(cls) -> ParsingExpressionLike:
         """
-        type_prefix =
-            (FLOW/STREAM)? (DISCRETE/PARAMETER/CONSTANT)? (INPUT/OUTPUT)?
+        type-prefix :
+           [ `flow` | `stream` ]
+           [ `discrete` | `parameter` | `constant` ] [ `input` | `output` ]
         """
         return (
             Optional([cls.FLOW, cls.STREAM]),
-            Optional(
-                [
-                    cls.DISCRETE,
-                    cls.PARAMETER,
-                    cls.CONSTANT,
-                ]
-            ),
-            Optional(
-                [
-                    cls.INPUT,
-                    cls.OUTPUT,
-                ]
-            ),
+            Optional([cls.DISCRETE, cls.PARAMETER, cls.CONSTANT]),
+            Optional([cls.INPUT, cls.OUTPUT]),
         )
 
     @classmethod
-    def component_list(cls):  # type: ignore
+    @returns_parsing_expression
+    def component_list(cls) -> ParsingExpressionLike:
         """
-        component_list =
-            component_declaration ("," component_declaration)*
+        component-list :
+           component-declaration { "," component-declaration }
         """
-        return cls.component_declaration, ZeroOrMore(
-            ",", cls.component_declaration
+        return (
+            cls.component_declaration,
+            ZeroOrMore(",", cls.component_declaration),
         )
 
     @classmethod
-    def component_declaration(cls):  # type: ignore
+    @returns_parsing_expression
+    def component_declaration(cls) -> ParsingExpressionLike:
         """
-        component_declaration =
-            declaration condition_attribute? comment
+        component-declaration :
+           declaration [ condition-attribute ] comment
         """
         return (
             cls.declaration,
@@ -790,18 +1035,20 @@ class Syntax:
         )
 
     @classmethod
-    def condition_attribute(cls):  # type: ignore
+    @returns_parsing_expression
+    def condition_attribute(cls) -> ParsingExpressionLike:
         """
-        condition_attribute =
-            IF expression
+        condition-attribute :
+           `if` expression
         """
-        return cls.IF, cls.expression
+        return (cls.IF, cls.expression)
 
     @classmethod
-    def declaration(cls):  # type: ignore
+    @returns_parsing_expression
+    def declaration(cls) -> ParsingExpressionLike:
         """
-        declaration =
-            IDENT array_subscripts? modification?
+        declaration :
+           IDENT [ array-subscripts ] [ modification ]
         """
         return (
             cls.IDENT,
@@ -809,54 +1056,58 @@ class Syntax:
             Optional(cls.modification),
         )
 
-    # §B.2.5 Modification
     @classmethod
-    def modification(cls):  # type: ignore
+    @returns_parsing_expression
+    def modification(cls) -> ParsingExpressionLike:
         """
-        modification =
-            "=" expression
-            / ":=" expression
-            / class_modification ("=" expression)?
+        modification :
+           class-modification [ "=" expression ]
+           | "=" expression
+           | ":=" expression
         """
         return [
+            (cls.class_modification, Optional("=", cls.expression)),
             ("=", cls.expression),
             (":=", cls.expression),
-            (cls.class_modification, Optional("=", cls.expression)),
         ]
 
     @classmethod
-    def class_modification(cls):  # type: ignore
+    @returns_parsing_expression
+    def class_modification(cls) -> ParsingExpressionLike:
         """
-        class_modification =
-            "(" argument_list? ")"
+        class-modification :
+           "(" [ argument-list ] ")"
         """
-        return "(", Optional(cls.argument_list), ")"
+        return ("(", Optional(cls.argument_list), ")")
 
     @classmethod
-    def argument_list(cls):  # type: ignore
+    @returns_parsing_expression
+    def argument_list(cls) -> ParsingExpressionLike:
         """
-        argument_list =
-            argument ("," argument)*
+        argument-list :
+           argument { "," argument }
         """
-        return cls.argument, ZeroOrMore(",", cls.argument)
+        return (cls.argument, ZeroOrMore(",", cls.argument))
 
     @classmethod
-    def argument(cls):  # type: ignore
+    @returns_parsing_expression
+    def argument(cls) -> ParsingExpressionLike:
         """
-        argument =
-            element_redeclaration
-            / element_modification_or_replaceable
+        argument :
+           element-modification-or-replaceable
+           | element-redeclaration
         """
         return [
-            cls.element_redeclaration,
             cls.element_modification_or_replaceable,
+            cls.element_redeclaration,
         ]
 
     @classmethod
-    def element_modification_or_replaceable(cls):  # type: ignore
+    @returns_parsing_expression
+    def element_modification_or_replaceable(cls) -> ParsingExpressionLike:
         """
-        element_modification_or_replaceable =
-            EACH? FINAL? (element_modification / element_replaceable)
+        element-modification-or-replaceable :
+           [ `each` ] [ `final` ] ( element-modification | element-replaceable)
         """
         return (
             Optional(cls.EACH),
@@ -865,43 +1116,39 @@ class Syntax:
         )
 
     @classmethod
-    def element_modification(cls):  # type: ignore
+    @returns_parsing_expression
+    def element_modification(cls) -> ParsingExpressionLike:
         """
-        element_modification =
-            name modification? string_comment
+        element-modification :
+           name [ modification ] string-comment
         """
-        return (
-            cls.name,
-            Optional(cls.modification),
-            cls.string_comment,
-        )
+        return (cls.name, Optional(cls.modification), cls.string_comment)
 
     @classmethod
-    def element_redeclaration(cls):  # type: ignore
+    @returns_parsing_expression
+    def element_redeclaration(cls) -> ParsingExpressionLike:
         """
-        element_redeclaration =
-            REDECLARE EACH? FINAL?
-            ((short_class_definition / component_clause1) / element_replaceable)
-        """  # noqa: E501
+        element-redeclaration :
+           `redeclare` [ `each` ] [ `final` ]
+           ( ( short-class-definition | component-clause1) | element-replaceable )
+        """
         return (
             cls.REDECLARE,
             Optional(cls.EACH),
             Optional(cls.FINAL),
             [
-                [
-                    cls.short_class_definition,
-                    cls.component_clause1,
-                ],
+                [cls.short_class_definition, cls.component_clause1],
                 cls.element_replaceable,
             ],
         )
 
     @classmethod
-    def element_replaceable(cls):  # type: ignore
+    @returns_parsing_expression
+    def element_replaceable(cls) -> ParsingExpressionLike:
         """
-        element_replaceable =
-            REPLACEABLE (short_class_definition / component_clause1)
-            constraining_clause?
+        element-replaceable :
+           `replaceable` ( short-class-definition | component-clause1 )
+           [ constraining-clause ]
         """
         return (
             cls.REPLACEABLE,
@@ -910,10 +1157,11 @@ class Syntax:
         )
 
     @classmethod
-    def component_clause1(cls):  # type: ignore
+    @returns_parsing_expression
+    def component_clause1(cls) -> ParsingExpressionLike:
         """
-        component_clause1 =
-            type_prefix type_specifier component_declaration1
+        component-clause1 :
+           type-prefix type-specifier component-declaration1
         """
         return (
             cls.type_prefix,
@@ -922,27 +1170,29 @@ class Syntax:
         )
 
     @classmethod
-    def component_declaration1(cls):  # type: ignore
+    @returns_parsing_expression
+    def component_declaration1(cls) -> ParsingExpressionLike:
         """
-        component_declaration1 =
-            declaration comment
+        component-declaration1 :
+           declaration comment
         """
-        return cls.declaration, cls.comment
+        return (cls.declaration, cls.comment)
 
     @classmethod
-    def short_class_definition(cls):  # type: ignore
+    @returns_parsing_expression
+    def short_class_definition(cls) -> ParsingExpressionLike:
         """
-        short_class_definition =
-            class_prefixes short_class_specifier
+        short-class-definition :
+           class-prefixes short-class-specifier
         """
-        return cls.class_prefixes, cls.short_class_specifier
+        return (cls.class_prefixes, cls.short_class_specifier)
 
-    # §B.2.6 Equations
     @classmethod
-    def equation_section(cls):  # type: ignore
+    @returns_parsing_expression
+    def equation_section(cls) -> ParsingExpressionLike:
         """
-        equation_section =
-            INITIAL? EQUATION (equation ";")*
+        equation-section :
+           [ `initial` ] `equation` { equation ";" }
         """
         return (
             Optional(cls.INITIAL),
@@ -951,10 +1201,11 @@ class Syntax:
         )
 
     @classmethod
-    def algorithm_section(cls):  # type: ignore
+    @returns_parsing_expression
+    def algorithm_section(cls) -> ParsingExpressionLike:
         """
-        algorithm_section =
-            INITIAL? ALGORITHM (statement ";")*
+        algorithm-section :
+           [ `initial` ] `algorithm` { statement ";" }
         """
         return (
             Optional(cls.INITIAL),
@@ -963,56 +1214,51 @@ class Syntax:
         )
 
     @classmethod
-    def equation(cls):  # type: ignore
+    @returns_parsing_expression
+    def equation(cls) -> ParsingExpressionLike:
         """
-        equation =
-            (
-                if_equation
-                / for_equation
-                / connect_clause
-                / when_equation
-                / simple_expression "=" expression
-                / component_reference function_call_args
-            )
-            comment
+        equation :
+           ( simple-expression "=" expression
+             | if-equation
+             | for-equation
+             | connect-clause
+             | when-equation
+             | component-reference function-call-args )
+           comment
         """
         return (
             [
+                (cls.simple_expression, "=", cls.expression),
                 cls.if_equation,
                 cls.for_equation,
                 cls.connect_clause,
                 cls.when_equation,
-                (cls.simple_expression, "=", cls.expression),
                 (cls.component_reference, cls.function_call_args),
             ],
             cls.comment,
         )
 
     @classmethod
-    def statement(cls):  # type: ignore
+    @returns_parsing_expression
+    def statement(cls) -> ParsingExpressionLike:
         """
-        statement =
-            (
-                BREAK
-                / RETURN
-                / if_statement
-                / for_statement
-                / while_statement
-                / when_statement
-                / "(" output_expression_list ")" ":="
-                component_reference function_call_args
-                / component_reference (":=" expression / function_call_args)
-            )
-            comment
+        statement :
+           ( component-reference ( ":=" expression | function-call-args )
+             | "(" output-expression-list ")" ":=" component-reference function-call-args
+             | `break`
+             | `return`
+             | if-statement
+             | for-statement
+             | while-statement
+             | when-statement )
+           comment
         """
         return (
             [
-                cls.BREAK,
-                cls.RETURN,
-                cls.if_statement,
-                cls.for_statement,
-                cls.while_statement,
-                cls.when_statement,
+                (
+                    cls.component_reference,
+                    [(":=", cls.expression), cls.function_call_args],
+                ),
                 (
                     "(",
                     cls.output_expression_list,
@@ -1021,227 +1267,208 @@ class Syntax:
                     cls.component_reference,
                     cls.function_call_args,
                 ),
-                (
-                    cls.component_reference,
-                    [(":=", cls.expression), cls.function_call_args],
-                ),
+                cls.BREAK,
+                cls.RETURN,
+                cls.if_statement,
+                cls.for_statement,
+                cls.while_statement,
+                cls.when_statement,
             ],
             cls.comment,
         )
 
     @classmethod
-    def if_equation(cls):  # type: ignore
+    @returns_parsing_expression
+    def if_equation(cls) -> ParsingExpressionLike:
         """
-        if_equation =
-            IF     expression THEN (equation ";")*
-        ( ELSEIF expression THEN (equation ";")* )*
-        ( ELSE                   (equation ";")* )?
-            END IF
-        """
-        return (
-            cls.IF,
-            cls.expression,
-            cls.THEN,
-            ZeroOrMore(
-                cls.equation,
-                ";",
-            ),
-            ZeroOrMore(
-                cls.ELSEIF,
-                cls.expression,
-                cls.THEN,
-                ZeroOrMore(
-                    cls.equation,
-                    ";",
-                ),
-            ),
-            Optional(
-                cls.ELSE,
-                ZeroOrMore(
-                    cls.equation,
-                    ";",
-                ),
-            ),
-            cls.END,
-            cls.IF,
-        )
-
-    @classmethod
-    def if_statement(cls):  # type: ignore
-        """
-        if_statement =
-            IF     expression THEN (statement ";")*
-        ( ELSEIF expression THEN (statement ";")* )*
-        ( ELSE                   (statement ";")* )?
-            END IF
+        if-equation :
+           `if` expression `then`
+             { equation ";" }
+           { `elseif` expression `then`
+             { equation ";" }
+           }
+           [ `else`
+             { equation ";" }
+           ]
+           `end` `if`
         """
         return (
             cls.IF,
             cls.expression,
             cls.THEN,
-            ZeroOrMore(
-                cls.statement,
-                ";",
-            ),
+            ZeroOrMore(cls.equation, ";"),
             ZeroOrMore(
                 cls.ELSEIF,
                 cls.expression,
                 cls.THEN,
-                ZeroOrMore(
-                    cls.statement,
-                    ";",
-                ),
+                ZeroOrMore(cls.equation, ";"),
             ),
-            Optional(
-                cls.ELSE,
-                ZeroOrMore(
-                    cls.statement,
-                    ";",
-                ),
-            ),
+            Optional(cls.ELSE, ZeroOrMore(cls.equation, ";")),
             cls.END,
             cls.IF,
         )
 
     @classmethod
-    def for_equation(cls):  # type: ignore
+    @returns_parsing_expression
+    def if_statement(cls) -> ParsingExpressionLike:
         """
-        for_equation =
-            FOR for_indices LOOP
-                (equation ";")*
-            END FOR
+        if-statement :
+           `if` expression `then`
+             { statement ";" }
+           { `elseif` expression `then`
+             { statement ";" }
+           }
+           [ `else`
+             { statement ";" }
+           ]
+           `end` `if`
+        """
+        return (
+            cls.IF,
+            cls.expression,
+            cls.THEN,
+            ZeroOrMore(cls.statement, ";"),
+            ZeroOrMore(
+                cls.ELSEIF,
+                cls.expression,
+                cls.THEN,
+                ZeroOrMore(cls.statement, ";"),
+            ),
+            Optional(cls.ELSE, ZeroOrMore(cls.statement, ";")),
+            cls.END,
+            cls.IF,
+        )
+
+    @classmethod
+    @returns_parsing_expression
+    def for_equation(cls) -> ParsingExpressionLike:
+        """
+        for-equation :
+           `for` for-indices `loop`
+             { equation ";" }
+           `end` `for`
         """
         return (
             cls.FOR,
             cls.for_indices,
             cls.LOOP,
-            ZeroOrMore(
-                cls.equation,
-                ";",
-            ),
+            ZeroOrMore(cls.equation, ";"),
             cls.END,
             cls.FOR,
         )
 
     @classmethod
-    def for_statement(cls):  # type: ignore
+    @returns_parsing_expression
+    def for_statement(cls) -> ParsingExpressionLike:
         """
-        for_statement =
-            FOR for_indices LOOP
-                (statement ";")*
-            END FOR
+        for-statement :
+           `for` for-indices `loop`
+             { statement ";" }
+           `end` `for`
         """
         return (
             cls.FOR,
             cls.for_indices,
             cls.LOOP,
-            ZeroOrMore(
-                cls.statement,
-                ";",
-            ),
+            ZeroOrMore(cls.statement, ";"),
             cls.END,
             cls.FOR,
         )
 
     @classmethod
-    def for_indices(cls):  # type: ignore
+    @returns_parsing_expression
+    def for_indices(cls) -> ParsingExpressionLike:
         """
-        for_indices =
-            for_index ("," for_index)*
+        for-indices :
+           for-index {"," for-index}
         """
-        return cls.for_index, ZeroOrMore(",", cls.for_index)
+        return (cls.for_index, ZeroOrMore(",", cls.for_index))
 
     @classmethod
-    def for_index(cls):  # type: ignore
+    @returns_parsing_expression
+    def for_index(cls) -> ParsingExpressionLike:
         """
-        for_index =
-            IDENT (IN expression)?
+        for-index :
+           IDENT [ `in` expression ]
         """
-        return cls.IDENT, Optional(cls.IN, cls.expression)
+        return (cls.IDENT, Optional(cls.IN, cls.expression))
 
     @classmethod
-    def while_statement(cls):  # type: ignore
+    @returns_parsing_expression
+    def while_statement(cls) -> ParsingExpressionLike:
         """
-        while_statement =
-            WHILE expression LOOP
-                (statement ";")*
-            END WHILE
+        while-statement :
+           `while` expression `loop`
+           { statement ";" }
+           `end` `while`
         """
         return (
             cls.WHILE,
             cls.expression,
             cls.LOOP,
-            ZeroOrMore(
-                cls.statement,
-                ";",
-            ),
+            ZeroOrMore(cls.statement, ";"),
             cls.END,
             cls.WHILE,
         )
 
     @classmethod
-    def when_equation(cls):  # type: ignore
+    @returns_parsing_expression
+    def when_equation(cls) -> ParsingExpressionLike:
         """
-        when_equation =
-            WHEN     expression THEN (equation ";")*
-        ( ELSEWHEN expression THEN (equation ";")* )*
-            END WHEN
+        when-equation :
+           `when` expression `then`
+             { equation ";" }
+           { `elsewhen` expression `then`
+             { equation ";" } }
+           `end` `when`
         """
         return (
             cls.WHEN,
             cls.expression,
             cls.THEN,
-            ZeroOrMore(
-                cls.equation,
-                ";",
-            ),
+            ZeroOrMore(cls.equation, ";"),
             ZeroOrMore(
                 cls.ELSEWHEN,
                 cls.expression,
                 cls.THEN,
-                ZeroOrMore(
-                    cls.equation,
-                    ";",
-                ),
+                ZeroOrMore(cls.equation, ";"),
             ),
             cls.END,
             cls.WHEN,
         )
 
     @classmethod
-    def when_statement(cls):  # type: ignore
+    @returns_parsing_expression
+    def when_statement(cls) -> ParsingExpressionLike:
         """
-        when_statement =
-            WHEN     expression THEN (statement ";")*
-        ( ELSEWHEN expression THEN (statement ";")* )*
-            END WHEN
+        when-statement :
+           `when` expression `then`
+             { statement ";" }
+           { `elsewhen` expression `then`
+             { statement ";" } }
+           `end` `when`
         """
         return (
             cls.WHEN,
             cls.expression,
             cls.THEN,
-            ZeroOrMore(
-                cls.statement,
-                ";",
-            ),
+            ZeroOrMore(cls.statement, ";"),
             ZeroOrMore(
                 cls.ELSEWHEN,
                 cls.expression,
                 cls.THEN,
-                ZeroOrMore(
-                    cls.statement,
-                    ";",
-                ),
+                ZeroOrMore(cls.statement, ";"),
             ),
             cls.END,
             cls.WHEN,
         )
 
     @classmethod
-    def connect_clause(cls):  # type: ignore
+    @returns_parsing_expression
+    def connect_clause(cls) -> ParsingExpressionLike:
         """
-        connect_clause =
-            CONNECT "(" component_reference "," component_reference ")"
+        connect-clause :
+           `connect` "(" component-reference "," component-reference ")"
         """
         return (
             cls.CONNECT,
@@ -1252,44 +1479,37 @@ class Syntax:
             ")",
         )
 
-    # §B.2.7 Expressions
     @classmethod
-    def expression(cls):  # type: ignore
+    @returns_parsing_expression
+    def expression(cls) -> ParsingExpressionLike:
         """
-        expression =
-            simple_expression
-            / IF expression THEN expression
-            (ELSEIF expression THEN expression)*
-            ELSE expression
+        expression :
+           simple-expression
+           | `if` expression `then` expression { `elseif` expression `then` expression }
+           `else` expression
         """
         return [
             cls.simple_expression,
             (
-                (
-                    cls.IF,
-                    cls.expression,
-                    cls.THEN,
-                    cls.expression,
-                ),
+                cls.IF,
+                cls.expression,
+                cls.THEN,
+                cls.expression,
                 ZeroOrMore(
-                    cls.ELSEIF,
-                    cls.expression,
-                    cls.THEN,
-                    cls.expression,
+                    cls.ELSEIF, cls.expression, cls.THEN, cls.expression
                 ),
-                (
-                    cls.ELSE,
-                    cls.expression,
-                ),
+                cls.ELSE,
+                cls.expression,
             ),
         ]
 
     @classmethod
-    def simple_expression(cls):  # type: ignore
+    @returns_parsing_expression
+    def simple_expression(cls) -> ParsingExpressionLike:
         """
-        simple_expression =
-            logical_expression (":" logical_expression (":" logical_expression)?)?
-        """  # noqa: E501
+        simple-expression :
+           logical-expression [ ":" logical-expression [ ":" logical-expression ] ]
+        """
         return (
             cls.logical_expression,
             Optional(
@@ -1300,34 +1520,38 @@ class Syntax:
         )
 
     @classmethod
-    def logical_expression(cls):  # type: ignore
+    @returns_parsing_expression
+    def logical_expression(cls) -> ParsingExpressionLike:
         """
-        logical_expression =
-            logical_term (OR logical_term)*
+        logical-expression :
+           logical-term { `or` logical-term }
         """
-        return cls.logical_term, ZeroOrMore(cls.OR, cls.logical_term)
+        return (cls.logical_term, ZeroOrMore(cls.OR, cls.logical_term))
 
     @classmethod
-    def logical_term(cls):  # type: ignore
+    @returns_parsing_expression
+    def logical_term(cls) -> ParsingExpressionLike:
         """
-        logical_term =
-            logical_factor (AND logical_factor)*
+        logical-term :
+           logical-factor { `and` logical-factor }
         """
-        return cls.logical_factor, ZeroOrMore(cls.AND, cls.logical_factor)
+        return (cls.logical_factor, ZeroOrMore(cls.AND, cls.logical_factor))
 
     @classmethod
-    def logical_factor(cls):  # type: ignore
+    @returns_parsing_expression
+    def logical_factor(cls) -> ParsingExpressionLike:
         """
-        logical_factor =
-            NOT? relation
+        logical-factor :
+           [ `not` ] relation
         """
-        return Optional(cls.NOT), cls.relation
+        return (Optional(cls.NOT), cls.relation)
 
     @classmethod
-    def relation(cls):  # type: ignore
+    @returns_parsing_expression
+    def relation(cls) -> ParsingExpressionLike:
         """
-        relation =
-            arithmetic_expression (relational_operator arithmetic_expression)?
+        relation :
+           arithmetic-expression [ relational-operator arithmetic-expression ]
         """
         return (
             cls.arithmetic_expression,
@@ -1335,20 +1559,22 @@ class Syntax:
         )
 
     @classmethod
-    def relational_operator(cls):  # type: ignore
+    @returns_parsing_expression
+    def relational_operator(cls) -> ParsingExpressionLike:
         """
-        relational_operator =
-            "<>" / "<=" / ">=" / "<" / ">" / "=="
+        relational-operator :
+           "==" | "<>" | "<=" | ">=" |  // 2-letter operators
+           "<" | ">"
         """
-        return ["<>", "<=", ">=", "<", ">", "=="]
+        return ["==", "<>", "<=", ">=", "<", ">"]
 
     @classmethod
-    def arithmetic_expression(cls):  # type: ignore
+    @returns_parsing_expression
+    def arithmetic_expression(cls) -> ParsingExpressionLike:
         """
-        arithmetic_expression =
-            add_operator? term (add_operator term)*
+        arithmetic-expression :
+           [ add-operator ] term { add-operator term }
         """
-
         return (
             Optional(cls.add_operator),
             cls.term,
@@ -1356,58 +1582,67 @@ class Syntax:
         )
 
     @classmethod
-    def add_operator(cls):  # type: ignore
+    @returns_parsing_expression
+    def add_operator(cls) -> ParsingExpressionLike:
         """
-        add_operator =
-            "+" / "-" / ".+" / ".-"
+        add-operator :
+           "+" | "-" | ".+" | ".-"
         """
         return ["+", "-", ".+", ".-"]
 
     @classmethod
-    def term(cls):  # type: ignore
+    @returns_parsing_expression
+    def term(cls) -> ParsingExpressionLike:
         """
-        term =
-            factor (mul_operator factor)*
+        term :
+           factor { mul-operator factor }
         """
-        return cls.factor, ZeroOrMore(cls.mul_operator, cls.factor)
+        return (cls.factor, ZeroOrMore(cls.mul_operator, cls.factor))
 
     @classmethod
-    def mul_operator(cls):  # type: ignore
+    @returns_parsing_expression
+    def mul_operator(cls) -> ParsingExpressionLike:
         """
-        mul_operator =
-            "*" / "/" / ".*" / "./"
+        mul-operator :
+           "*" | "/" | ".*" | "./"
         """
         return ["*", "/", ".*", "./"]
 
     @classmethod
-    def factor(cls):  # type: ignore
+    @returns_parsing_expression
+    def factor(cls) -> ParsingExpressionLike:
         """
-        factor =
-            primary (("^" / ".^") primary)?
+        factor :
+           primary [ ("^" | ".^") primary ]
         """
-        return cls.primary, Optional(["^", ".^"], cls.primary)
+        return (cls.primary, Optional(["^", ".^"], cls.primary))
 
     @classmethod
-    def primary(cls):  # type: ignore
+    @returns_parsing_expression
+    def primary(cls) -> ParsingExpressionLike:
         """
-        primary =
-            FALSE
-            / TRUE
-            / END
-            / UNSIGNED_NUMBER
-            / STRING
-            / "(" output_expression_list ")"
-            / "[" expression_list (";" expression_list)* "]"
-            / "{" array_arguments "}"
-            / (component_reference / DER / INITIAL / PURE) function_call_args
-            / component_reference
+        primary :
+           UNSIGNED-NUMBER
+           | STRING
+           | `false`
+           | `true`
+           | (component-reference | `der` | `initial` | `pure` ) function-call-args
+           | component-reference
+           | "(" output-expression-list ")"
+           | "[" expression-list { ";" expression-list } "]"
+           | "{" array-arguments "}"
+           | `end`
         """
         return [
-            cls.FALSE,
-            cls.TRUE,
-            cls.END,
             cls.UNSIGNED_NUMBER,
             cls.STRING,
+            cls.FALSE,
+            cls.TRUE,
+            (
+                [cls.component_reference, cls.DER, cls.INITIAL, cls.PURE],
+                cls.function_call_args,
+            ),
+            cls.component_reference,
             ("(", cls.output_expression_list, ")"),
             (
                 "[",
@@ -1416,37 +1651,31 @@ class Syntax:
                 "]",
             ),
             ("{", cls.array_arguments, "}"),
-            (
-                [
-                    cls.component_reference,
-                    cls.DER,
-                    cls.INITIAL,
-                    cls.PURE,
-                ],
-                cls.function_call_args,
-            ),
-            cls.component_reference,
+            cls.END,
         ]
 
     @classmethod
-    def type_specifier(cls):  # type: ignore
+    @returns_parsing_expression
+    def type_specifier(cls) -> ParsingExpressionLike:
         """
-        type_specifier = "."? name
+        type-specifier : ["."] name
         """
-        return Optional("."), cls.name
+        return (Optional("."), cls.name)
 
     @classmethod
-    def name(cls):  # type: ignore
+    @returns_parsing_expression
+    def name(cls) -> ParsingExpressionLike:
         """
-        name = IDENT ("." IDENT)*
+        name : IDENT { "." IDENT }
         """
-        return cls.IDENT, ZeroOrMore(".", cls.IDENT)
+        return (cls.IDENT, ZeroOrMore(".", cls.IDENT))
 
     @classmethod
-    def component_reference(cls):  # type: ignore
+    @returns_parsing_expression
+    def component_reference(cls) -> ParsingExpressionLike:
         """
-        component_reference =
-            "."? IDENT array_subscripts? ("." IDENT array_subscripts?)*
+        component-reference :
+           [ "." ] IDENT [ array-subscripts ] { "." IDENT [ array-subscripts ] }
         """
         return (
             Optional("."),
@@ -1456,26 +1685,27 @@ class Syntax:
         )
 
     @classmethod
-    def function_call_args(cls):  # type: ignore
+    @returns_parsing_expression
+    def function_call_args(cls) -> ParsingExpressionLike:
         """
-        function_call_args =
-            "(" function_arguments? ")"
+        function-call-args :
+           "(" [ function-arguments ] ")"
         """
-        return "(", Optional(cls.function_arguments), ")"
+        return ("(", Optional(cls.function_arguments), ")")
 
     @classmethod
-    def function_arguments(cls):  # type: ignore
+    @returns_parsing_expression
+    def function_arguments(cls) -> ParsingExpressionLike:
         """
-        function_arguments =
-            FUNCTION name "(" named_arguments? ")"
-            ("," function_arguments_non_first)?
-            / named_arguments
-            / expression ("," function_arguments_non_first / FOR for_indices)
+        function-arguments :
+           `function` type-specifier "(" [ named-arguments ] ")" [ "," function-arguments-non-first ]
+           | named-arguments
+           | expression [ "," function-arguments-non-first | `for` for-indices ]
         """
         return [
             (
                 cls.FUNCTION,
-                cls.name,
+                cls.type_specifier,
                 "(",
                 Optional(cls.named_arguments),
                 ")",
@@ -1486,10 +1716,7 @@ class Syntax:
                 cls.expression,
                 Optional(
                     [
-                        (
-                            ",",
-                            cls.function_arguments_non_first,
-                        ),
+                        (",", cls.function_arguments_non_first),
                         (cls.FOR, cls.for_indices),
                     ]
                 ),
@@ -1497,11 +1724,12 @@ class Syntax:
         ]
 
     @classmethod
-    def function_arguments_non_first(cls):  # type: ignore
+    @returns_parsing_expression
+    def function_arguments_non_first(cls) -> ParsingExpressionLike:
         """
-        function_arguments_non_first =
-            named_arguments
-            / function_argument ("," function_arguments_non_first)?
+        function-arguments-non-first :
+           named-arguments
+           | function-argument [ "," function-arguments-non-first ]
         """
         return [
             cls.named_arguments,
@@ -1512,17 +1740,11 @@ class Syntax:
         ]
 
     @classmethod
-    def named_arguments(cls):  # type: ignore
+    @returns_parsing_expression
+    def array_arguments(cls) -> ParsingExpressionLike:
         """
-        named_arguments = named_argument ("," named_arguments)?
-        """
-        return cls.named_argument, ZeroOrMore(",", cls.named_argument)
-
-    @classmethod
-    def array_arguments(cls):  # type: ignore
-        """
-        array_arguments =
-            expression ("," array_arguments_non_first / FOR for_indices)?
+        array-arguments :
+           expression [ "," array-arguments-non-first | `for` for-indices ]
         """
         return (
             cls.expression,
@@ -1535,31 +1757,41 @@ class Syntax:
         )
 
     @classmethod
-    def array_arguments_non_first(cls):  # type: ignore
+    @returns_parsing_expression
+    def array_arguments_non_first(cls) -> ParsingExpressionLike:
         """
-        array_arguments_non_first =
-            expression ("," array_arguments_non_first)?
+        array-arguments-non-first :
+           expression [ "," array-arguments-non-first ]
         """
-        return cls.expression, ZeroOrMore(",", cls.expression)
+        return (cls.expression, Optional(",", cls.array_arguments_non_first))
 
     @classmethod
-    def named_argument(cls):  # type: ignore
+    @returns_parsing_expression
+    def named_arguments(cls) -> ParsingExpressionLike:
         """
-        named_argument = IDENT "=" function_argument
+        named-arguments : named-argument [ "," named-arguments ]
         """
-        return cls.IDENT, "=", cls.function_argument
+        return (cls.named_argument, Optional(",", cls.named_arguments))
 
     @classmethod
-    def function_argument(cls):  # type: ignore
+    @returns_parsing_expression
+    def named_argument(cls) -> ParsingExpressionLike:
         """
-        function_argument =
-            FUNCTION name "(" named_arguments? ")"
-            / expression
+        named-argument : IDENT "=" function-argument
+        """
+        return (cls.IDENT, "=", cls.function_argument)
+
+    @classmethod
+    @returns_parsing_expression
+    def function_argument(cls) -> ParsingExpressionLike:
+        """
+        function-argument :
+           `function` type-specifier "(" [ named-arguments ] ")" | expression
         """
         return [
             (
                 cls.FUNCTION,
-                cls.name,
+                cls.type_specifier,
                 "(",
                 Optional(cls.named_arguments),
                 ")",
@@ -1568,10 +1800,11 @@ class Syntax:
         ]
 
     @classmethod
-    def output_expression_list(cls):  # type: ignore
+    @returns_parsing_expression
+    def output_expression_list(cls) -> ParsingExpressionLike:
         """
-        output_expression_list =
-            expression? ("," expression?)*
+        output-expression-list :
+           [ expression ] { "," [ expression ] }
         """
         return (
             Optional(cls.expression),
@@ -1579,52 +1812,55 @@ class Syntax:
         )
 
     @classmethod
-    def expression_list(cls):  # type: ignore
+    @returns_parsing_expression
+    def expression_list(cls) -> ParsingExpressionLike:
         """
-        expression_list =
-            expression ("," expression)*
+        expression-list :
+           expression { "," expression }
         """
-        return cls.expression, ZeroOrMore(",", cls.expression)
+        return (cls.expression, ZeroOrMore(",", cls.expression))
 
     @classmethod
-    def array_subscripts(cls):  # type: ignore
+    @returns_parsing_expression
+    def array_subscripts(cls) -> ParsingExpressionLike:
         """
-        array_subscripts =
-            "[" subscript ("," subscript)* "]"
+        array-subscripts :
+           "[" subscript { "," subscript } "]"
         """
-        return "[", cls.subscript, ZeroOrMore(",", cls.subscript), "]"
+        return ("[", cls.subscript, ZeroOrMore(",", cls.subscript), "]")
 
     @classmethod
-    def subscript(cls):  # type: ignore
+    @returns_parsing_expression
+    def subscript(cls) -> ParsingExpressionLike:
         """
-        subscript =
-            ":" / expression
+        subscript :
+           ":" | expression
         """
         return [":", cls.expression]
 
     @classmethod
-    def comment(cls):  # type: ignore
+    @returns_parsing_expression
+    def comment(cls) -> ParsingExpressionLike:
         """
-        comment =
-            string_comment annotation?
+        comment :
+           string-comment [ annotation-comment ]
         """
-        return (
-            cls.string_comment,
-            Optional(cls.annotation),
-        )
+        return (cls.string_comment, Optional(cls.annotation_comment))
 
     @classmethod
-    def string_comment(cls):  # type: ignore
+    @returns_parsing_expression
+    def string_comment(cls) -> ParsingExpressionLike:
         """
-        string_comment =
-            (STRING ("+" STRING)*)?
+        string-comment :
+           [ STRING { "+" STRING } ]
         """
         return Optional(cls.STRING, ZeroOrMore("+", cls.STRING))
 
     @classmethod
-    def annotation(cls):  # type: ignore
+    @returns_parsing_expression
+    def annotation_comment(cls) -> ParsingExpressionLike:
         """
-        annotation =
-            ANNOTATION class_modification
+        annotation-comment :
+           `annotation` class-modification
         """
-        return cls.ANNOTATION, cls.class_modification
+        return (cls.ANNOTATION, cls.class_modification)
