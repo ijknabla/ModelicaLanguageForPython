@@ -1,13 +1,13 @@
 from ast import AnnAssign, Ellipsis, FunctionDef, Module, Tuple, expr
 from typing import (
     Any,
+    Callable,
     DefaultDict,
-    Iterable,
+    Dict,
     Iterator,
-    List,
-    Mapping,
     Sequence,
     Set,
+    Union,
 )
 
 from arpeggio import NonTerminal, ParseTreeNode, PTNodeVisitor, Terminal
@@ -54,24 +54,137 @@ class SupportsChildren(Protocol):
     syntax_ordered_choice: Sequence[expr]
     syntax_primary: Sequence[expr]
     syntax_quantity: Sequence[expr]
-    syntax_rule_statement: Sequence[FunctionDef]
     syntax_sequence: Sequence[expr]
 
 
 class ModuleVisitor(PTNodeVisitor):
     class_name: str
     keywords: Set[Keyword]
-    lexical_rule_order: List[Rule]
     pattern_references: DefaultDict[Rule, PatternReference]
+    rule_definitions: Dict[Rule, Callable[[], FunctionDef]]
 
     def __init__(self, class_name: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.class_name = class_name
         self.keywords = set()
-        self.lexical_rule_order = []
         self.pattern_references = DefaultDict[Rule, PatternReference](
             PatternReference
         )
+        self.rule_definitions = {}
+
+    def visit_grammar(
+        self, _: PTNodeVisitor, children: SupportsChildren
+    ) -> Module:
+        return create_module_with_class(
+            imports=[],
+            import_froms=[
+                ("typing", ["ClassVar", "Tuple"]),
+                ("arpeggio", ["Optional", "RegExMatch", "ZeroOrMore"]),
+                (
+                    "modelica_language._backend",
+                    [
+                        "ParsingExpressionLike",
+                        "not_start_with_keyword",
+                        "returns_parsing_expression",
+                    ],
+                ),
+            ],
+            class_name=self.class_name,
+            class_bases=[],
+            class_body=[
+                *self.__keyword_definitions(),
+                *map(lambda f: f(), self.rule_definitions.values()),
+            ],
+        )
+
+    def __keyword_definitions(self) -> Iterator[Union[AnnAssign, FunctionDef]]:
+        sorted_keywords = sorted(self.keywords)
+        yield create_ann_assign(
+            target="_keywords_",
+            annotation=create_subscript(
+                value=create_attribute("ClassVar"),
+                slice=create_subscript(
+                    value=create_attribute("Tuple"),
+                    slice=create_tuple(
+                        elts=[create_attribute("str"), Ellipsis()]
+                    ),
+                ),
+            ),
+            value=create_tuple(
+                elts=[
+                    create_constant(value=keyword)
+                    for keyword in sorted_keywords
+                ]
+            ),
+        )
+        for keyword in sorted_keywords:
+            name = keyword.upper()
+            regex = Regex(rf"{keyword}(?![0-9A-Z_a-z])")
+
+            yield create_function_def(
+                name=name,
+                args=[],
+                value=create_call(
+                    "RegExMatch",
+                    args=[create_constant(value=regex)],
+                ),
+                decorator_list=["staticmethod", "returns_parsing_expression"],
+                returns="RegExMatch",
+            )
+
+    def visit_lexical_rule_statement(
+        self, _: ParseTreeNode, children: SupportsChildren
+    ) -> None:
+        (name,) = children.LEXICAL_RULE
+        (pattern,) = children.lexical_expression
+
+        self.pattern_references[name].target = pattern
+        if name == "IDENT":
+            decorator_list = [
+                "classmethod",
+                "not_start_with_keyword",
+                "returns_parsing_expression",
+            ]
+            args = ["cls"]
+        else:
+            decorator_list = [
+                "staticmethod",
+                "returns_parsing_expression",
+            ]
+            args = []
+
+        def rule_definition() -> FunctionDef:
+            value = pattern2regex(resolve_pattern(pattern))
+
+            return create_function_def(
+                name=name,
+                args=args,
+                value=create_call(
+                    "RegExMatch",
+                    args=[create_constant(value=value)],
+                ),
+                decorator_list=decorator_list,
+                returns="RegExMatch",
+            )
+
+        self.rule_definitions[name] = rule_definition
+
+    def visit_syntax_rule_statement(
+        self, _: ParseTreeNode, children: SupportsChildren
+    ) -> None:
+        (name,) = children.SYNTAX_RULE
+        (value,) = children.syntax_expression
+
+        def rule_definition() -> FunctionDef:
+            return create_function_def(
+                name=name,
+                args=["cls"],
+                value=value,
+                decorator_list=["classmethod", "returns_parsing_expression"],
+                returns="ParsingExpressionLike",
+            )
+
+        self.rule_definitions[name] = rule_definition
 
     def visit_KEYWORD(self, node: Terminal, _: SupportsChildren) -> Keyword:
         keyword = Keyword(node.value[1:-1])
@@ -144,15 +257,6 @@ class ModuleVisitor(PTNodeVisitor):
         (child,) = children.lexical_ordered_choice
         return child
 
-    def visit_lexical_rule_statement(
-        self, _: ParseTreeNode, children: SupportsChildren
-    ) -> None:
-        (rule,) = children.LEXICAL_RULE
-        (expression,) = children.lexical_expression
-        if rule not in self.lexical_rule_order:
-            self.lexical_rule_order.append(rule)
-        self.pattern_references[rule].target = expression
-
     def visit_syntax_primary(
         self, _: ParseTreeNode, children: SupportsChildren
     ) -> expr:
@@ -221,119 +325,3 @@ class ModuleVisitor(PTNodeVisitor):
     ) -> expr:
         (child,) = children.syntax_ordered_choice
         return child
-
-    def visit_syntax_rule_statement(
-        self, _: ParseTreeNode, children: SupportsChildren
-    ) -> FunctionDef:
-        (name,) = children.SYNTAX_RULE
-        (value,) = children.syntax_expression
-
-        return create_function_def(
-            name=name,
-            args=["cls"],
-            value=value,
-            decorator_list=["classmethod", "returns_parsing_expression"],
-            returns="ParsingExpressionLike",
-        )
-
-    def visit_grammar(
-        self, _: PTNodeVisitor, children: SupportsChildren
-    ) -> Module:
-        sorted_keywords = sorted(self.keywords)
-
-        return create_module_with_class(
-            imports=[],
-            import_froms=[
-                ("typing", ["ClassVar", "Tuple"]),
-                ("arpeggio", ["Optional", "RegExMatch", "ZeroOrMore"]),
-                (
-                    "modelica_language._backend",
-                    [
-                        "ParsingExpressionLike",
-                        "not_start_with_keyword",
-                        "returns_parsing_expression",
-                    ],
-                ),
-            ],
-            class_name=self.class_name,
-            class_bases=[],
-            class_body=[
-                self.__create_keywords_classvar(sorted_keywords),
-                *self.__create_keyword_methods(sorted_keywords),
-                *self.__create_lexical_methods(
-                    self.lexical_rule_order, self.pattern_references
-                ),
-                *children.syntax_rule_statement,
-            ],
-        )
-
-    @staticmethod
-    def __create_keywords_classvar(keywords: Iterable[Keyword]) -> AnnAssign:
-        return create_ann_assign(
-            target="_keywords_",
-            annotation=create_subscript(
-                value=create_attribute("ClassVar"),
-                slice=create_subscript(
-                    value=create_attribute("Tuple"),
-                    slice=create_tuple(
-                        elts=[create_attribute("str"), Ellipsis()]
-                    ),
-                ),
-            ),
-            value=create_tuple(
-                elts=[
-                    create_constant(value=keyword)
-                    for keyword in sorted(keywords)
-                ]
-            ),
-        )
-
-    @staticmethod
-    def __create_keyword_methods(
-        keywords: Iterable[Keyword],
-    ) -> Iterator[FunctionDef]:
-        for keyword in keywords:
-            name = keyword.upper()
-            regex = Regex(rf"{keyword}(?![0-9A-Z_a-z])")
-
-            yield create_function_def(
-                name=name,
-                args=[],
-                value=create_call(
-                    "RegExMatch",
-                    args=[create_constant(value=regex)],
-                ),
-                decorator_list=["staticmethod", "returns_parsing_expression"],
-                returns="RegExMatch",
-            )
-
-    @staticmethod
-    def __create_lexical_methods(
-        order: Iterable[Rule],
-        patterns: Mapping[Rule, Pattern],
-    ) -> Iterator[FunctionDef]:
-        for rule in order:
-            name = rule.replace("-", "_")
-            regex = pattern2regex(resolve_pattern(patterns[rule]))
-
-            if name == "IDENT":
-                args = ["cls"]
-                decorator_list = [
-                    "classmethod",
-                    "not_start_with_keyword",
-                    "returns_parsing_expression",
-                ]
-            else:
-                args = []
-                decorator_list = ["staticmethod", "returns_parsing_expression"]
-
-            yield create_function_def(
-                name=name,
-                args=args,
-                value=create_call(
-                    "RegExMatch",
-                    args=[create_constant(value=regex)],
-                ),
-                decorator_list=decorator_list,
-                returns="RegExMatch",
-            )
