@@ -126,23 +126,21 @@ class ModuleVisitor(PTNodeVisitor):
             regex = Regex(rf"{keyword}(?![0-9A-Z_a-z])")
 
             yield create_function_def(
+                decorator_list=["staticmethod", "returns_parsing_expression"],
                 name=name,
                 args=[],
+                returns="RegExMatch",
+                doc=f"`{keyword}`",
                 value=create_call(
                     "RegExMatch",
                     args=[create_constant(value=regex)],
                 ),
-                decorator_list=["staticmethod", "returns_parsing_expression"],
-                returns="RegExMatch",
             )
 
     def visit_lexical_rule_statement(
-        self, _: ParseTreeNode, children: SupportsChildren
+        self, node: ParseTreeNode, children: SupportsChildren
     ) -> None:
         (name,) = children.LEXICAL_RULE
-        (pattern,) = children.lexical_expression
-
-        self.pattern_references[name].target = pattern
         if name == "IDENT":
             decorator_list = [
                 "classmethod",
@@ -157,35 +155,42 @@ class ModuleVisitor(PTNodeVisitor):
             ]
             args = []
 
+        doc = self.__get_source(node)
+        (pattern,) = children.lexical_expression
+
         def rule_definition() -> FunctionDef:
             value = pattern2regex(resolve_pattern(pattern))
 
             return create_function_def(
+                decorator_list=decorator_list,
                 name=name,
                 args=args,
+                returns="RegExMatch",
+                doc=doc,
                 value=create_call(
                     "RegExMatch",
                     args=[create_constant(value=value)],
                 ),
-                decorator_list=decorator_list,
-                returns="RegExMatch",
             )
 
+        self.pattern_references[name].target = pattern
         self.rule_definitions[name] = rule_definition
 
     def visit_syntax_rule_statement(
-        self, _: ParseTreeNode, children: SupportsChildren
+        self, node: ParseTreeNode, children: SupportsChildren
     ) -> None:
         (name,) = children.SYNTAX_RULE
+        doc = self.__get_source(node)
         (value,) = children.syntax_expression
 
         def rule_definition() -> FunctionDef:
             return create_function_def(
+                decorator_list=["classmethod", "returns_parsing_expression"],
                 name=name,
                 args=["cls"],
-                value=value,
-                decorator_list=["classmethod", "returns_parsing_expression"],
                 returns="ParsingExpressionLike",
+                doc=doc,
+                value=value,
             )
 
         self.rule_definitions[name] = rule_definition

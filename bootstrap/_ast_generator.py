@@ -5,6 +5,7 @@ from ast import (
     Call,
     ClassDef,
     Constant,
+    Expr,
     FunctionDef,
     Import,
     ImportFrom,
@@ -101,12 +102,20 @@ def create_constant(
 
 
 def create_function_def(
+    decorator_list: Sequence[str],
     name: str,
     args: Sequence[str],
-    value: expr,
-    decorator_list: Sequence[str],
     returns: str,
+    doc: str,
+    value: expr,
 ) -> FunctionDef:
+    doc = doc.strip()
+
+    body: "list[stmt]" = []
+    if doc:
+        body.append(Expr(value=create_constant(value="\n" + doc + "\n\n")))
+    body.append(Return(value=value))
+
     return FunctionDef(
         name=name,
         args=arguments(
@@ -121,7 +130,7 @@ def create_function_def(
             kwarg=None,
             defaults=[],
         ),
-        body=[Return(value=value)],
+        body=body,
         decorator_list=list(map(create_attribute, decorator_list)),
         returns=create_attribute(returns),
         lineno=None,
