@@ -4,10 +4,10 @@ from typing import (
     Callable,
     DefaultDict,
     Dict,
-    Iterable,
     Iterator,
     Sequence,
     Set,
+    Union,
 )
 
 from arpeggio import NonTerminal, ParseTreeNode, PTNodeVisitor, Terminal
@@ -76,6 +76,41 @@ class ModuleVisitor(PTNodeVisitor):
         keyword = Keyword(node.value[1:-1])
         self.keywords.add(keyword)
         return keyword
+
+    def __keyword_definitions(self) -> Iterator[Union[AnnAssign, FunctionDef]]:
+        sorted_keywords = sorted(self.keywords)
+        yield create_ann_assign(
+            target="_keywords_",
+            annotation=create_subscript(
+                value=create_attribute("ClassVar"),
+                slice=create_subscript(
+                    value=create_attribute("Tuple"),
+                    slice=create_tuple(
+                        elts=[create_attribute("str"), Ellipsis()]
+                    ),
+                ),
+            ),
+            value=create_tuple(
+                elts=[
+                    create_constant(value=keyword)
+                    for keyword in sorted_keywords
+                ]
+            ),
+        )
+        for keyword in sorted_keywords:
+            name = keyword.upper()
+            regex = Regex(rf"{keyword}(?![0-9A-Z_a-z])")
+
+            yield create_function_def(
+                name=name,
+                args=[],
+                value=create_call(
+                    "RegExMatch",
+                    args=[create_constant(value=regex)],
+                ),
+                decorator_list=["staticmethod", "returns_parsing_expression"],
+                returns="RegExMatch",
+            )
 
     def visit_REGEX(self, node: NonTerminal, _: SupportsChildren) -> Regex:
         (terminal,) = node
@@ -269,8 +304,6 @@ class ModuleVisitor(PTNodeVisitor):
     def visit_grammar(
         self, _: PTNodeVisitor, children: SupportsChildren
     ) -> Module:
-        sorted_keywords = sorted(self.keywords)
-
         return create_module_with_class(
             imports=[],
             import_froms=[
@@ -288,48 +321,7 @@ class ModuleVisitor(PTNodeVisitor):
             class_name=self.class_name,
             class_bases=[],
             class_body=[
-                self.__create_keywords_classvar(sorted_keywords),
-                *self.__create_keyword_methods(sorted_keywords),
+                *self.__keyword_definitions(),
                 *map(lambda f: f(), self.rule_definitions.values()),
             ],
         )
-
-    @staticmethod
-    def __create_keywords_classvar(keywords: Iterable[Keyword]) -> AnnAssign:
-        return create_ann_assign(
-            target="_keywords_",
-            annotation=create_subscript(
-                value=create_attribute("ClassVar"),
-                slice=create_subscript(
-                    value=create_attribute("Tuple"),
-                    slice=create_tuple(
-                        elts=[create_attribute("str"), Ellipsis()]
-                    ),
-                ),
-            ),
-            value=create_tuple(
-                elts=[
-                    create_constant(value=keyword)
-                    for keyword in sorted(keywords)
-                ]
-            ),
-        )
-
-    @staticmethod
-    def __create_keyword_methods(
-        keywords: Iterable[Keyword],
-    ) -> Iterator[FunctionDef]:
-        for keyword in keywords:
-            name = keyword.upper()
-            regex = Regex(rf"{keyword}(?![0-9A-Z_a-z])")
-
-            yield create_function_def(
-                name=name,
-                args=[],
-                value=create_call(
-                    "RegExMatch",
-                    args=[create_constant(value=regex)],
-                ),
-                decorator_list=["staticmethod", "returns_parsing_expression"],
-                returns="RegExMatch",
-            )
