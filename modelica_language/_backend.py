@@ -7,6 +7,7 @@ __all__ = (
 )
 
 import builtins
+import enum
 import types
 from functools import wraps
 from typing import Any, Callable, ClassVar, Tuple, Type, TypeVar, cast
@@ -25,24 +26,33 @@ ParsingExpressionLike: TypeAlias = "arpeggio._ParsingExpressionLike"
 __builtins_isinstance = builtins.isinstance
 
 
-@wraps(__builtins_isinstance)
-def __callable_is_instance_of_function(obj: Any, class_or_tuple: Any) -> bool:
-    if class_or_tuple is types.FunctionType:  # noqa: E721
-        return __builtins_isinstance(obj, Callable)  # type: ignore
-    else:
-        return __builtins_isinstance(obj, class_or_tuple)
+class EnableMethodInParserPython(enum.Enum):
+    instance = enum.auto()
+
+    def __call__(self, f: Callable[P, T]) -> Callable[P, T]:
+        @wraps(f)
+        def wrapped(*args: P.args, **kwargs: P.kwargs) -> T:
+            try:
+                builtins.isinstance = self.__callable_is_instance_of_function
+                return f(*args, **kwargs)
+            finally:
+                builtins.isinstance = self.__builtins_isinstance
+
+        return wrapped
+
+    __builtins_isinstance = staticmethod(builtins.isinstance)
+
+    @wraps(builtins.isinstance)
+    def __callable_is_instance_of_function(
+        self, obj: Any, class_or_tuple: Any
+    ) -> bool:
+        if class_or_tuple is types.FunctionType:  # noqa: E721
+            return self.__builtins_isinstance(obj, Callable)
+        else:
+            return self.__builtins_isinstance(obj, class_or_tuple)
 
 
-def enable_method_in_parser_python(f: Callable[P, T]) -> Callable[P, T]:
-    @wraps(f)
-    def wrapped(*args: P.args, **kwargs: P.kwargs) -> T:
-        try:
-            builtins.isinstance = __callable_is_instance_of_function
-            return f(*args, **kwargs)
-        finally:
-            builtins.isinstance = __builtins_isinstance
-
-    return wrapped
+enable_method_in_parser_python = EnableMethodInParserPython.instance
 
 
 class SupportsKeywords(Protocol):
