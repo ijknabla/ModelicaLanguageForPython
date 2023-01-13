@@ -62,8 +62,11 @@ class ModuleVisitor(PTNodeVisitor):
     keywords: Set[Keyword]
     pattern_references: DefaultDict[Rule, PatternReference]
     rule_definitions: Dict[Rule, Callable[[], FunctionDef]]
+    source: str
 
-    def __init__(self, class_name: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(
+        self, class_name: str, source: str, *args: Any, **kwargs: Any
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.class_name = class_name
         self.keywords = set()
@@ -71,6 +74,7 @@ class ModuleVisitor(PTNodeVisitor):
             PatternReference
         )
         self.rule_definitions = {}
+        self.source = source
 
     def visit_grammar(
         self, _: PTNodeVisitor, children: SupportsChildren
@@ -325,3 +329,8 @@ class ModuleVisitor(PTNodeVisitor):
     ) -> expr:
         (child,) = children.syntax_ordered_choice
         return child
+
+    def __get_source(self, node: ParseTreeNode) -> str:
+        begin = node.position
+        end = node.position_end
+        return self.source[begin:end]
