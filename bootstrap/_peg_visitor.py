@@ -72,10 +72,30 @@ class ModuleVisitor(PTNodeVisitor):
         )
         self.rule_definitions = {}
 
-    def visit_KEYWORD(self, node: Terminal, _: SupportsChildren) -> Keyword:
-        keyword = Keyword(node.value[1:-1])
-        self.keywords.add(keyword)
-        return keyword
+    def visit_grammar(
+        self, _: PTNodeVisitor, children: SupportsChildren
+    ) -> Module:
+        return create_module_with_class(
+            imports=[],
+            import_froms=[
+                ("typing", ["ClassVar", "Tuple"]),
+                ("arpeggio", ["Optional", "RegExMatch", "ZeroOrMore"]),
+                (
+                    "modelica_language._backend",
+                    [
+                        "ParsingExpressionLike",
+                        "not_start_with_keyword",
+                        "returns_parsing_expression",
+                    ],
+                ),
+            ],
+            class_name=self.class_name,
+            class_bases=[],
+            class_body=[
+                *self.__keyword_definitions(),
+                *map(lambda f: f(), self.rule_definitions.values()),
+            ],
+        )
 
     def __keyword_definitions(self) -> Iterator[Union[AnnAssign, FunctionDef]]:
         sorted_keywords = sorted(self.keywords)
@@ -111,6 +131,65 @@ class ModuleVisitor(PTNodeVisitor):
                 decorator_list=["staticmethod", "returns_parsing_expression"],
                 returns="RegExMatch",
             )
+
+    def visit_lexical_rule_statement(
+        self, _: ParseTreeNode, children: SupportsChildren
+    ) -> None:
+        (name,) = children.LEXICAL_RULE
+        (pattern,) = children.lexical_expression
+
+        self.pattern_references[name].target = pattern
+        if name == "IDENT":
+            decorator_list = [
+                "classmethod",
+                "not_start_with_keyword",
+                "returns_parsing_expression",
+            ]
+            args = ["cls"]
+        else:
+            decorator_list = [
+                "staticmethod",
+                "returns_parsing_expression",
+            ]
+            args = []
+
+        def rule_definition() -> FunctionDef:
+            value = pattern2regex(resolve_pattern(pattern))
+
+            return create_function_def(
+                name=name,
+                args=args,
+                value=create_call(
+                    "RegExMatch",
+                    args=[create_constant(value=value)],
+                ),
+                decorator_list=decorator_list,
+                returns="RegExMatch",
+            )
+
+        self.rule_definitions[name] = rule_definition
+
+    def visit_syntax_rule_statement(
+        self, _: ParseTreeNode, children: SupportsChildren
+    ) -> None:
+        (name,) = children.SYNTAX_RULE
+        (value,) = children.syntax_expression
+
+        def rule_definition() -> FunctionDef:
+            return create_function_def(
+                name=name,
+                args=["cls"],
+                value=value,
+                decorator_list=["classmethod", "returns_parsing_expression"],
+                returns="ParsingExpressionLike",
+            )
+
+        self.rule_definitions[name] = rule_definition
+
+    def visit_KEYWORD(self, node: Terminal, _: SupportsChildren) -> Keyword:
+        keyword = Keyword(node.value[1:-1])
+        self.keywords.add(keyword)
+        return keyword
 
     def visit_REGEX(self, node: NonTerminal, _: SupportsChildren) -> Regex:
         (terminal,) = node
@@ -177,43 +256,6 @@ class ModuleVisitor(PTNodeVisitor):
     ) -> Pattern:
         (child,) = children.lexical_ordered_choice
         return child
-
-    def visit_lexical_rule_statement(
-        self, _: ParseTreeNode, children: SupportsChildren
-    ) -> None:
-        (name,) = children.LEXICAL_RULE
-        (pattern,) = children.lexical_expression
-
-        self.pattern_references[name].target = pattern
-        if name == "IDENT":
-            decorator_list = [
-                "classmethod",
-                "not_start_with_keyword",
-                "returns_parsing_expression",
-            ]
-            args = ["cls"]
-        else:
-            decorator_list = [
-                "staticmethod",
-                "returns_parsing_expression",
-            ]
-            args = []
-
-        def rule_definition() -> FunctionDef:
-            value = pattern2regex(resolve_pattern(pattern))
-
-            return create_function_def(
-                name=name,
-                args=args,
-                value=create_call(
-                    "RegExMatch",
-                    args=[create_constant(value=value)],
-                ),
-                decorator_list=decorator_list,
-                returns="RegExMatch",
-            )
-
-        self.rule_definitions[name] = rule_definition
 
     def visit_syntax_primary(
         self, _: ParseTreeNode, children: SupportsChildren
@@ -283,45 +325,3 @@ class ModuleVisitor(PTNodeVisitor):
     ) -> expr:
         (child,) = children.syntax_ordered_choice
         return child
-
-    def visit_syntax_rule_statement(
-        self, _: ParseTreeNode, children: SupportsChildren
-    ) -> None:
-        (name,) = children.SYNTAX_RULE
-        (value,) = children.syntax_expression
-
-        def rule_definition() -> FunctionDef:
-            return create_function_def(
-                name=name,
-                args=["cls"],
-                value=value,
-                decorator_list=["classmethod", "returns_parsing_expression"],
-                returns="ParsingExpressionLike",
-            )
-
-        self.rule_definitions[name] = rule_definition
-
-    def visit_grammar(
-        self, _: PTNodeVisitor, children: SupportsChildren
-    ) -> Module:
-        return create_module_with_class(
-            imports=[],
-            import_froms=[
-                ("typing", ["ClassVar", "Tuple"]),
-                ("arpeggio", ["Optional", "RegExMatch", "ZeroOrMore"]),
-                (
-                    "modelica_language._backend",
-                    [
-                        "ParsingExpressionLike",
-                        "not_start_with_keyword",
-                        "returns_parsing_expression",
-                    ],
-                ),
-            ],
-            class_name=self.class_name,
-            class_bases=[],
-            class_body=[
-                *self.__keyword_definitions(),
-                *map(lambda f: f(), self.rule_definitions.values()),
-            ],
-        )
