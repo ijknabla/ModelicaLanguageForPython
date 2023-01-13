@@ -42,6 +42,7 @@ from arpeggio import (
     EndOfFile,
     NoMatch,
     OneOrMore,
+    ParserPython,
     ParseTreeNode,
     PTNodeVisitor,
     RegExMatch,
@@ -50,7 +51,6 @@ from arpeggio import (
 )
 from typing_extensions import Protocol, runtime_checkable
 
-from modelica_language import ParserPython
 from modelica_language._backend import (
     ParsingExpressionLike,
     returns_parsing_expression,

@@ -1,9 +1,9 @@
 import pytest
-from arpeggio import EndOfFile, RegExMatch
+from arpeggio import EndOfFile, ParserPython, RegExMatch
 
-from modelica_language import ParserPython
 from modelica_language._backend import (
     ParsingExpressionLike,
+    enable_method_in_parser_python,
     returns_parsing_expression,
 )
 from modelica_language.v3_4 import Syntax
@@ -25,6 +25,7 @@ def ident_dialect() -> ParsingExpressionLike:
 
 
 @pytest.fixture(scope="module")
+@enable_method_in_parser_python
 def file_parser() -> ParserPython:
     return ParserPython(
         file,
@@ -33,10 +34,12 @@ def file_parser() -> ParserPython:
 
 
 @pytest.fixture(scope="module")
+@enable_method_in_parser_python
 def ident_parser() -> ParserPython:
     return ParserPython(ident, Syntax.COMMENT)
 
 
 @pytest.fixture(scope="module")
+@enable_method_in_parser_python
 def ident_dialect_parser() -> ParserPython:
     return ParserPython(ident_dialect, Syntax.COMMENT)
