@@ -62,8 +62,11 @@ class ModuleVisitor(PTNodeVisitor):
     keywords: Set[Keyword]
     pattern_references: DefaultDict[Rule, PatternReference]
     rule_definitions: Dict[Rule, Callable[[], FunctionDef]]
+    source: str
 
-    def __init__(self, class_name: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(
+        self, class_name: str, source: str, *args: Any, **kwargs: Any
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.class_name = class_name
         self.keywords = set()
@@ -71,6 +74,7 @@ class ModuleVisitor(PTNodeVisitor):
             PatternReference
         )
         self.rule_definitions = {}
+        self.source = source
 
     def visit_grammar(
         self, _: PTNodeVisitor, children: SupportsChildren
@@ -122,66 +126,69 @@ class ModuleVisitor(PTNodeVisitor):
             regex = Regex(rf"{keyword}(?![0-9A-Z_a-z])")
 
             yield create_function_def(
+                decorator_list=["staticmethod", "returns_parsing_expression"],
                 name=name,
                 args=[],
+                returns="RegExMatch",
+                doc=f"`{keyword}`",
                 value=create_call(
                     "RegExMatch",
                     args=[create_constant(value=regex)],
                 ),
-                decorator_list=["staticmethod", "returns_parsing_expression"],
-                returns="RegExMatch",
             )
 
     def visit_lexical_rule_statement(
-        self, _: ParseTreeNode, children: SupportsChildren
+        self, node: ParseTreeNode, children: SupportsChildren
     ) -> None:
         (name,) = children.LEXICAL_RULE
-        (pattern,) = children.lexical_expression
-
-        self.pattern_references[name].target = pattern
         if name == "IDENT":
             decorator_list = [
                 "classmethod",
                 "not_start_with_keyword",
                 "returns_parsing_expression",
             ]
-            args = ["cls"]
         else:
             decorator_list = [
-                "staticmethod",
+                "classmethod",
                 "returns_parsing_expression",
             ]
-            args = []
+
+        doc = self.__get_source(node)
+        (pattern,) = children.lexical_expression
 
         def rule_definition() -> FunctionDef:
             value = pattern2regex(resolve_pattern(pattern))
 
             return create_function_def(
+                decorator_list=decorator_list,
                 name=name,
-                args=args,
+                args=["cls"],
+                returns="RegExMatch",
+                doc=doc,
                 value=create_call(
                     "RegExMatch",
                     args=[create_constant(value=value)],
                 ),
-                decorator_list=decorator_list,
-                returns="RegExMatch",
             )
 
+        self.pattern_references[name].target = pattern
         self.rule_definitions[name] = rule_definition
 
     def visit_syntax_rule_statement(
-        self, _: ParseTreeNode, children: SupportsChildren
+        self, node: ParseTreeNode, children: SupportsChildren
     ) -> None:
         (name,) = children.SYNTAX_RULE
+        doc = self.__get_source(node)
         (value,) = children.syntax_expression
 
         def rule_definition() -> FunctionDef:
             return create_function_def(
+                decorator_list=["classmethod", "returns_parsing_expression"],
                 name=name,
                 args=["cls"],
-                value=value,
-                decorator_list=["classmethod", "returns_parsing_expression"],
                 returns="ParsingExpressionLike",
+                doc=doc,
+                value=value,
             )
 
         self.rule_definitions[name] = rule_definition
@@ -325,3 +332,8 @@ class ModuleVisitor(PTNodeVisitor):
     ) -> expr:
         (child,) = children.syntax_ordered_choice
         return child
+
+    def __get_source(self, node: ParseTreeNode) -> str:
+        begin = node.position
+        end = node.position_end
+        return self.source[begin:end]

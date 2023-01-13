@@ -25,13 +25,15 @@ def main() -> None:
     class_name: str = args.class_name
     output: TextIO = args.output
 
+    peg_source = peg.read()
     peg_parser = ParserPython(
         language_def=PEGSyntax.grammar,
         comment_def=PEGSyntax.COMMENT,
     )
-    parse_tree = peg_parser.parse(peg.read())
+    parse_tree = peg_parser.parse(peg_source)
     module: Module = visit_parse_tree(
-        parse_tree=parse_tree, visitor=ModuleVisitor(class_name=class_name)
+        parse_tree=parse_tree,
+        visitor=ModuleVisitor(class_name=class_name, source=peg_source),
     )
 
     print("# flake8: noqa", file=output)
