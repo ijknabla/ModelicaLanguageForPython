@@ -147,13 +147,11 @@ class ModuleVisitor(PTNodeVisitor):
                 "not_start_with_keyword",
                 "returns_parsing_expression",
             ]
-            args = ["cls"]
         else:
             decorator_list = [
-                "staticmethod",
+                "classmethod",
                 "returns_parsing_expression",
             ]
-            args = []
 
         doc = self.__get_source(node)
         (pattern,) = children.lexical_expression
@@ -164,7 +162,7 @@ class ModuleVisitor(PTNodeVisitor):
             return create_function_def(
                 decorator_list=decorator_list,
                 name=name,
-                args=args,
+                args=["cls"],
                 returns="RegExMatch",
                 doc=doc,
                 value=create_call(
