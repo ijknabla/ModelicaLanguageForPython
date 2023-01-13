@@ -1,4 +1,4 @@
-from ast import AnnAssign, Constant, Ellipsis, FunctionDef, Module, Tuple, expr
+from ast import AnnAssign, Ellipsis, FunctionDef, Module, Tuple, expr
 from typing import (
     Any,
     DefaultDict,
@@ -23,6 +23,7 @@ from ._ast_generator import (
     create_ann_assign,
     create_attribute,
     create_call,
+    create_constant,
     create_function_def,
     create_list,
     create_module_with_class,
@@ -163,7 +164,7 @@ class ModuleVisitor(PTNodeVisitor):
             return create_attribute(f"cls.{keyword.upper()}")
         elif children.TEXT:
             (text,) = children.TEXT
-            return Constant(value=text)
+            return create_constant(value=text)
         elif children.SYNTAX_REFERENCE:
             (rule,) = children.SYNTAX_REFERENCE
             return create_attribute(f"cls.{rule}")
@@ -280,7 +281,10 @@ class ModuleVisitor(PTNodeVisitor):
                 ),
             ),
             value=create_tuple(
-                elts=[Constant(value=keyword) for keyword in sorted(keywords)]
+                elts=[
+                    create_constant(value=keyword)
+                    for keyword in sorted(keywords)
+                ]
             ),
         )
 
@@ -297,7 +301,7 @@ class ModuleVisitor(PTNodeVisitor):
                 args=[],
                 value=create_call(
                     "RegExMatch",
-                    args=[Constant(value=regex)],
+                    args=[create_constant(value=regex)],
                 ),
                 decorator_list=["staticmethod", "returns_parsing_expression"],
                 returns="RegExMatch",
@@ -328,7 +332,7 @@ class ModuleVisitor(PTNodeVisitor):
                 args=args,
                 value=create_call(
                     "RegExMatch",
-                    args=[Constant(value=regex)],
+                    args=[create_constant(value=regex)],
                 ),
                 decorator_list=decorator_list,
                 returns="RegExMatch",

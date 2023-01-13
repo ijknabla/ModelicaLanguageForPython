@@ -1,12 +1,13 @@
 import argparse
 import sys
-from ast import Module, unparse
+from ast import Module
 from typing import TextIO
 
 from arpeggio import visit_parse_tree
 
 from modelica_language import ParserPython
 
+from ._backport import unparse
 from ._peg_syntax import PEGSyntax
 from ._peg_visitor import ModuleVisitor
 
