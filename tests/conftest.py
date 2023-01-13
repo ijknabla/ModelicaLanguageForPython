@@ -1,6 +1,7 @@
 import pytest
-from arpeggio import EndOfFile, ParserPython, RegExMatch
+from arpeggio import EOF, ParserPython, RegExMatch
 
+from modelica_language import ModelicaVersion, get_file_parser
 from modelica_language._backend import (
     ParsingExpressionLike,
     enable_method_in_parser_python,
@@ -9,37 +10,26 @@ from modelica_language._backend import (
 from modelica_language.v3_4 import Syntax
 
 
-@returns_parsing_expression
-def file() -> ParsingExpressionLike:
-    return Syntax.stored_definition, EndOfFile()
-
-
-@returns_parsing_expression
-def ident() -> ParsingExpressionLike:
-    return Syntax.IDENT, EndOfFile()
-
-
-@returns_parsing_expression
-def ident_dialect() -> ParsingExpressionLike:
-    return [Syntax.IDENT, RegExMatch(r"\$\w+")], EndOfFile()
-
-
 @pytest.fixture(scope="module")
-@enable_method_in_parser_python
 def file_parser() -> ParserPython:
-    return ParserPython(
-        file,
-        Syntax.COMMENT,
-    )
+    return get_file_parser(ModelicaVersion.v3_4)
 
 
 @pytest.fixture(scope="module")
 @enable_method_in_parser_python
 def ident_parser() -> ParserPython:
-    return ParserPython(ident, Syntax.COMMENT)
+    @returns_parsing_expression
+    def file() -> ParsingExpressionLike:
+        return Syntax.IDENT, EOF
+
+    return ParserPython(file, Syntax.COMMENT)
 
 
 @pytest.fixture(scope="module")
 @enable_method_in_parser_python
 def ident_dialect_parser() -> ParserPython:
-    return ParserPython(ident_dialect, Syntax.COMMENT)
+    @returns_parsing_expression
+    def file() -> ParsingExpressionLike:
+        return [Syntax.IDENT, RegExMatch(r"\$\w+")], EOF
+
+    return ParserPython(file, Syntax.COMMENT)

@@ -1,4 +1,4 @@
-from arpeggio import EndOfFile, Not, OneOrMore, RegExMatch
+from arpeggio import EOF, Not, OneOrMore, RegExMatch
 
 from modelica_language._backend import (
     ParsingExpressionLike,
@@ -70,7 +70,7 @@ class PEGSyntax:
                     cls.syntax_rule_statement,
                 ]
             ),
-            EndOfFile(),
+            EOF,
         )
 
     @classmethod

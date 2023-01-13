@@ -39,7 +39,7 @@ from typing import (
 )
 
 from arpeggio import (
-    EndOfFile,
+    EOF,
     NoMatch,
     OneOrMore,
     ParserPython,
@@ -300,7 +300,7 @@ def _character_code_set() -> ParsingExpressionLike:
         "[",
         OneOrMore([_character_code_range, _character_code]),
         "]",
-        EndOfFile(),
+        EOF,
     )
 
 
