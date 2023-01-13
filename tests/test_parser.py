@@ -1,9 +1,7 @@
 from contextlib import ExitStack
 
 import pytest
-from arpeggio import NoMatch
-
-from modelica_language import ParserPython
+from arpeggio import NoMatch, ParserPython
 
 
 @pytest.mark.parametrize(
