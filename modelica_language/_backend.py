@@ -10,9 +10,20 @@ import builtins
 import enum
 import types
 from functools import wraps
-from typing import Any, Callable, ClassVar, Tuple, Type, TypeVar, cast
+from types import TracebackType
+from typing import (
+    Any,
+    Callable,
+    ClassVar,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    cast,
+)
 
 import arpeggio
+from arpeggio import ParserPython
 from typing_extensions import ParamSpec, Protocol, TypeAlias
 
 P = ParamSpec("P")
@@ -23,7 +34,14 @@ ParsingExpression = arpeggio.ParsingExpression
 ParsingExpressionLike: TypeAlias = "arpeggio._ParsingExpressionLike"
 
 
-__builtins_isinstance = builtins.isinstance
+_isinstance__builtins = builtins.isinstance
+
+
+def _isinstance__callable_as_function(obj: Any, class_or_tuple: Any) -> bool:
+    if class_or_tuple is types.FunctionType:  # noqa: E721
+        return _isinstance__builtins(obj, Callable)  # type: ignore
+    else:
+        return _isinstance__builtins(obj, class_or_tuple)
 
 
 class EnableMethodInParserPython(enum.Enum):
@@ -32,24 +50,23 @@ class EnableMethodInParserPython(enum.Enum):
     def __call__(self, f: Callable[P, T]) -> Callable[P, T]:
         @wraps(f)
         def wrapped(*args: P.args, **kwargs: P.kwargs) -> T:
-            try:
-                builtins.isinstance = self.__callable_is_instance_of_function
+            with self:
                 return f(*args, **kwargs)
-            finally:
-                builtins.isinstance = self.__builtins_isinstance
 
         return wrapped
 
-    __builtins_isinstance = staticmethod(builtins.isinstance)
+    def __enter__(self) -> Type[ParserPython]:
+        builtins.isinstance = _isinstance__callable_as_function
+        return ParserPython
 
-    @wraps(builtins.isinstance)
-    def __callable_is_instance_of_function(
-        self, obj: Any, class_or_tuple: Any
-    ) -> bool:
-        if class_or_tuple is types.FunctionType:  # noqa: E721
-            return self.__builtins_isinstance(obj, Callable)
-        else:
-            return self.__builtins_isinstance(obj, class_or_tuple)
+    def __exit__(
+        self,
+        typ: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> Optional[bool]:
+        builtins.isinstance = _isinstance__builtins
+        return None
 
 
 enable_method_in_parser_python = EnableMethodInParserPython.instance
