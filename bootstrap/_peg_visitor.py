@@ -68,7 +68,7 @@ class ModuleVisitor(PTNodeVisitor):
         self.source = source
 
     def visit_grammar(
-        self, _: PTNodeVisitor, children: SupportsChildren
+        self, node: PTNodeVisitor, chidren: SupportsChildren
     ) -> Module:
         return create_module_with_class(
             imports=[],
