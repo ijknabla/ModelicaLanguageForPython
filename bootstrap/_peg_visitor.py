@@ -1,7 +1,9 @@
 from ast import AnnAssign, Ellipsis, FunctionDef, Module, Tuple, expr
 from typing import (
     Any,
+    Callable,
     DefaultDict,
+    Dict,
     Iterable,
     Iterator,
     List,
@@ -54,7 +56,6 @@ class SupportsChildren(Protocol):
     syntax_ordered_choice: Sequence[expr]
     syntax_primary: Sequence[expr]
     syntax_quantity: Sequence[expr]
-    syntax_rule_statement: Sequence[FunctionDef]
     syntax_sequence: Sequence[expr]
 
 
@@ -63,6 +64,7 @@ class ModuleVisitor(PTNodeVisitor):
     keywords: Set[Keyword]
     lexical_rule_order: List[Rule]
     pattern_references: DefaultDict[Rule, PatternReference]
+    rule_definitions: Dict[Rule, Callable[[], FunctionDef]]
 
     def __init__(self, class_name: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -72,6 +74,7 @@ class ModuleVisitor(PTNodeVisitor):
         self.pattern_references = DefaultDict[Rule, PatternReference](
             PatternReference
         )
+        self.rule_definitions = {}
 
     def visit_KEYWORD(self, node: Terminal, _: SupportsChildren) -> Keyword:
         keyword = Keyword(node.value[1:-1])
@@ -224,17 +227,20 @@ class ModuleVisitor(PTNodeVisitor):
 
     def visit_syntax_rule_statement(
         self, _: ParseTreeNode, children: SupportsChildren
-    ) -> FunctionDef:
+    ) -> None:
         (name,) = children.SYNTAX_RULE
         (value,) = children.syntax_expression
 
-        return create_function_def(
-            name=name,
-            args=["cls"],
-            value=value,
-            decorator_list=["classmethod", "returns_parsing_expression"],
-            returns="ParsingExpressionLike",
-        )
+        def rule_definition() -> FunctionDef:
+            return create_function_def(
+                name=name,
+                args=["cls"],
+                value=value,
+                decorator_list=["classmethod", "returns_parsing_expression"],
+                returns="ParsingExpressionLike",
+            )
+
+        self.rule_definitions[name] = rule_definition
 
     def visit_grammar(
         self, _: PTNodeVisitor, children: SupportsChildren
@@ -263,7 +269,7 @@ class ModuleVisitor(PTNodeVisitor):
                 *self.__create_lexical_methods(
                     self.lexical_rule_order, self.pattern_references
                 ),
-                *children.syntax_rule_statement,
+                *map(lambda f: f(), self.rule_definitions.values()),
             ],
         )
 
