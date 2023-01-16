@@ -2,7 +2,7 @@ import enum
 from functools import lru_cache
 from typing import TYPE_CHECKING, Optional
 
-from arpeggio import EOF, ParserPython
+from arpeggio import EOF, ParserPython, RegExMatch
 
 from modelica_language import (
     ModelicaVersion,
@@ -16,6 +16,7 @@ from modelica_language import (
 class TargetLanguageDef(enum.Flag):
     NULL = 0
     IDENT = enum.auto()
+    IDENT_DIALECT = enum.auto()
     Q_IDENT = enum.auto()
     NONDIGIT = enum.auto()
     S_CHAR = enum.auto()
@@ -36,11 +37,19 @@ class TargetLanguageDef(enum.Flag):
         else:
 
             class Syntax(base_syntax_type):
-                ...
+                if self is TargetLanguageDef.IDENT_DIALECT:
+
+                    @classmethod
+                    @returns_parsing_expression
+                    def IDENT(cls) -> ParsingExpressionLike:
+                        return [super().IDENT(), RegExMatch(r"\$\w+")]
 
         @returns_parsing_expression
         def file() -> ParsingExpressionLike:
-            if self is TargetLanguageDef.IDENT:
+            if (
+                self is TargetLanguageDef.IDENT
+                or self is TargetLanguageDef.IDENT_DIALECT
+            ):
                 return Syntax.IDENT, EOF
             elif self is TargetLanguageDef.Q_IDENT:
                 return Syntax.Q_IDENT, EOF
