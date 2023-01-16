@@ -23,7 +23,7 @@ latest = v3_4
 
 
 class ModelicaVersion(enum.Enum):
-    latest = v3_4 = enum.auto()
+    v3_4 = latest = enum.auto()
 
 
 _SYNTAXES = {ModelicaVersion.v3_4: v3_4.Syntax}
