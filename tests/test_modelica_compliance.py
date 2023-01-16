@@ -1,8 +1,10 @@
 from pathlib import Path
 
 import pytest
-from arpeggio import Parser, ParseTreeNode
+from arpeggio import ParseTreeNode
 from pkg_resources import resource_filename
+
+from modelica_language import ModelicaVersion, get_file_parser
 
 SOURCE_DIRECTORY = Path(
     resource_filename(__name__, "Modelica-Compliance/ModelicaCompliance/")
@@ -10,6 +12,7 @@ SOURCE_DIRECTORY = Path(
 SOURCE_FILES = tuple(SOURCE_DIRECTORY.rglob("*.mo"))
 
 
+@pytest.mark.parametrize("version", ModelicaVersion)
 @pytest.mark.parametrize(
     "source_file",
     SOURCE_FILES,
@@ -19,8 +22,10 @@ SOURCE_FILES = tuple(SOURCE_DIRECTORY.rglob("*.mo"))
     ],
 )
 def test_modelica_parser(
+    version: ModelicaVersion,
     source_file: Path,
-    file_parser: Parser,
 ) -> None:
-    parseTree = file_parser.parse(source_file.read_text(encoding="utf-8-sig"))
+    parseTree = get_file_parser(version).parse(
+        source_file.read_text(encoding="utf-8-sig")
+    )
     assert isinstance(parseTree, ParseTreeNode)
