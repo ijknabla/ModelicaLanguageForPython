@@ -17,16 +17,6 @@ def file_parser() -> ParserPython:
 
 @pytest.fixture(scope="module")
 @enable_method_in_parser_python
-def ident_parser() -> ParserPython:
-    @returns_parsing_expression
-    def file() -> ParsingExpressionLike:
-        return Syntax.IDENT, EOF
-
-    return ParserPython(file, Syntax.COMMENT)
-
-
-@pytest.fixture(scope="module")
-@enable_method_in_parser_python
 def ident_dialect_parser() -> ParserPython:
     @returns_parsing_expression
     def file() -> ParsingExpressionLike:

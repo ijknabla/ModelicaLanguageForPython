@@ -6,7 +6,7 @@ from arpeggio import NoMatch, ParserPython
 
 from . import TargetLanguageDef
 
-text_and_target: List[Tuple[str, TargetLanguageDef]] = [
+text_and_matching_target: List[Tuple[str, TargetLanguageDef]] = [
     ("abc", TargetLanguageDef.IDENT),
     (" abc ", TargetLanguageDef.IDENT),
     ("ab c", TargetLanguageDef.NULL),
@@ -20,16 +20,17 @@ text_and_target: List[Tuple[str, TargetLanguageDef]] = [
 ]
 
 
-@pytest.mark.parametrize("text, target", text_and_target)
-def test_ident_parser(
-    ident_parser: ParserPython,
+@pytest.mark.parametrize("target", [TargetLanguageDef.IDENT])
+@pytest.mark.parametrize("text, matching_target", text_and_matching_target)
+def test_parser(
+    target: TargetLanguageDef,
     text: str,
-    target: bool,
+    matching_target: TargetLanguageDef,
 ) -> None:
     with ExitStack() as stack:
-        if not target & TargetLanguageDef.IDENT:
+        if not matching_target & target:
             stack.enter_context(pytest.raises(NoMatch))
-        ident_parser.parse(text)
+        target.get_parser().parse(text)
 
 
 @pytest.mark.parametrize(
