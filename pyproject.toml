@@ -36,6 +36,12 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 79
 
+[tool.coverage.report]
+exclude_lines = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
+
 [tool.flake8]
 exclude = ".venv"
 per-file-ignores = [
