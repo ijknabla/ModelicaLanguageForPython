@@ -40,15 +40,14 @@ text_and_matching_target: List[Tuple[str, TargetLanguageDef]] = [
         | TargetLanguageDef.S_CHAR
         | TargetLanguageDef.Q_CHAR,
     ),
-    ("abc", TargetLanguageDef.IDENT),
-    (" abc ", TargetLanguageDef.IDENT),
-    ("ab c", TargetLanguageDef.NULL),
-    ("model", TargetLanguageDef.NULL),
-    ("modelica", TargetLanguageDef.IDENT),
-    ("modelA", TargetLanguageDef.IDENT),
-    ("model0", TargetLanguageDef.IDENT),
-    ("model:", TargetLanguageDef.NULL),
-    ("$identifier", TargetLanguageDef.NULL),
+    *(
+        (text, TargetLanguageDef.IDENT)
+        for text in ("abc", " abc ", "modelica", "modelA", "model0")
+    ),
+    *(
+        (text, TargetLanguageDef.NULL)
+        for text in ("ab c", "model", "model:", "$identifier")
+    ),
 ]
 
 
