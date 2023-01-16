@@ -1,31 +1,33 @@
 from contextlib import ExitStack
+from typing import List, Tuple
 
 import pytest
 from arpeggio import NoMatch, ParserPython
 
+from . import TargetLanguageDef
 
-@pytest.mark.parametrize(
-    "text, match",
-    [
-        ("abc", True),
-        (" abc ", True),
-        ("ab c", False),
-        ("model", False),
-        ("modelica", True),
-        ("modelA", True),
-        ("model0", True),
-        ("model:", False),
-        ("'model'", True),
-        ("$identifier", False),
-    ],
-)
+text_and_target: List[Tuple[str, TargetLanguageDef]] = [
+    ("abc", TargetLanguageDef.IDENT),
+    (" abc ", TargetLanguageDef.IDENT),
+    ("ab c", TargetLanguageDef.NULL),
+    ("model", TargetLanguageDef.NULL),
+    ("modelica", TargetLanguageDef.IDENT),
+    ("modelA", TargetLanguageDef.IDENT),
+    ("model0", TargetLanguageDef.IDENT),
+    ("model:", TargetLanguageDef.NULL),
+    ("'model'", TargetLanguageDef.IDENT),
+    ("$identifier", TargetLanguageDef.NULL),
+]
+
+
+@pytest.mark.parametrize("text, target", text_and_target)
 def test_ident_parser(
     ident_parser: ParserPython,
     text: str,
-    match: bool,
+    target: bool,
 ) -> None:
     with ExitStack() as stack:
-        if not match:
+        if not target & TargetLanguageDef.IDENT:
             stack.enter_context(pytest.raises(NoMatch))
         ident_parser.parse(text)
 
