@@ -30,19 +30,12 @@ class TargetLanguageDef(enum.Flag):
     def get_parser(
         self, version: Optional[ModelicaVersion] = None
     ) -> ParserPython:
-        base_syntax_type = get_syntax_type(version)
+        Syntax = get_syntax_type(version)
 
-        if TYPE_CHECKING:
-            Syntax = base_syntax_type
-        else:
+        if self is TargetLanguageDef.IDENT_DIALECT and not TYPE_CHECKING:
 
-            class Syntax(base_syntax_type):
-                if self is TargetLanguageDef.IDENT_DIALECT:
-
-                    @classmethod
-                    @returns_parsing_expression
-                    def IDENT(cls) -> ParsingExpressionLike:
-                        return [super().IDENT(), RegExMatch(r"\$\w+")]
+            class Syntax(_DialectMixin, Syntax):
+                ...
 
         @returns_parsing_expression
         def file() -> ParsingExpressionLike:
@@ -67,4 +60,14 @@ class TargetLanguageDef(enum.Flag):
                 return Syntax.UNSIGNED_INTEGER, EOF
             raise NotImplementedError()
 
-        return ParserPython(file, base_syntax_type.COMMENT)
+        return ParserPython(file, Syntax.COMMENT)
+
+
+class _DialectMixin:
+    @classmethod
+    @returns_parsing_expression
+    def IDENT(cls) -> ParsingExpressionLike:
+        return [
+            super().IDENT(),  # type: ignore
+            RegExMatch(r"\$\w+"),
+        ]
