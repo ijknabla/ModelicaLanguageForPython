@@ -7,6 +7,39 @@ from arpeggio import NoMatch, ParserPython
 from . import TargetLanguageDef
 
 text_and_matching_target: List[Tuple[str, TargetLanguageDef]] = [
+    *(
+        (text, TargetLanguageDef.IDENT | TargetLanguageDef.Q_IDENT)
+        for text in ["'model'"]
+    ),
+    *(
+        (
+            text,
+            TargetLanguageDef.S_ESCAPE,
+        )
+        for text in [r"\'", r"\"", r"\\"]
+    ),
+    *(
+        (
+            text,
+            TargetLanguageDef.DIGIT
+            | TargetLanguageDef.S_CHAR
+            | TargetLanguageDef.Q_CHAR
+            | TargetLanguageDef.UNSIGNED_INTEGER,
+        )
+        for text in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    ),
+    *(
+        (text, TargetLanguageDef.UNSIGNED_INTEGER)
+        for text in ["00", "111", "2222", "33333"]
+    ),
+    ("α", TargetLanguageDef.S_CHAR),
+    (
+        "_",
+        TargetLanguageDef.IDENT
+        | TargetLanguageDef.NONDIGIT
+        | TargetLanguageDef.S_CHAR
+        | TargetLanguageDef.Q_CHAR,
+    ),
     ("abc", TargetLanguageDef.IDENT),
     (" abc ", TargetLanguageDef.IDENT),
     ("ab c", TargetLanguageDef.NULL),
@@ -15,12 +48,11 @@ text_and_matching_target: List[Tuple[str, TargetLanguageDef]] = [
     ("modelA", TargetLanguageDef.IDENT),
     ("model0", TargetLanguageDef.IDENT),
     ("model:", TargetLanguageDef.NULL),
-    ("'model'", TargetLanguageDef.IDENT),
     ("$identifier", TargetLanguageDef.NULL),
 ]
 
 
-@pytest.mark.parametrize("target", [TargetLanguageDef.IDENT])
+@pytest.mark.parametrize("target", filter(None, TargetLanguageDef))
 @pytest.mark.parametrize("text, matching_target", text_and_matching_target)
 def test_parser(
     target: TargetLanguageDef,
