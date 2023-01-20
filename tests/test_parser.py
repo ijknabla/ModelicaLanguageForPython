@@ -1,52 +1,72 @@
 from contextlib import ExitStack
-from typing import List, Tuple
+from functools import lru_cache
+from typing import Iterator, Tuple
 
 import pytest
 from arpeggio import NoMatch
 
 from . import TargetLanguageDef
 
-ACCEPT_IDENT = TargetLanguageDef.IDENT | TargetLanguageDef.IDENT_DIALECT
-ACCEPT_Q_CHAR = TargetLanguageDef.Q_CHAR | TargetLanguageDef.S_CHAR
-ACCEPT_Q_IDENT = TargetLanguageDef.Q_IDENT | ACCEPT_IDENT
-ACCEPT_DIGIT_CHAR = (
-    TargetLanguageDef.DIGIT
-    | TargetLanguageDef.UNSIGNED_INTEGER
-    | ACCEPT_Q_CHAR
-)
-ACCEPT_NONDIGIT_CHAR = (
-    TargetLanguageDef.NONDIGIT | ACCEPT_IDENT | ACCEPT_Q_CHAR
-)
+
+@lru_cache()
+def _accept_DIGIT() -> TargetLanguageDef:
+    return (
+        TargetLanguageDef.DIGIT
+        | TargetLanguageDef.UNSIGNED_INTEGER
+        | _accept_Q_CHAR()
+    )
 
 
-text_and_matching_target: List[Tuple[str, TargetLanguageDef]] = [
+@lru_cache
+def _accept_NONDIGIT() -> TargetLanguageDef:
+    return TargetLanguageDef.NONDIGIT | _accept_IDENT() | _accept_Q_CHAR()
+
+
+@lru_cache()
+def _accept_IDENT() -> TargetLanguageDef:
+    return TargetLanguageDef.IDENT | TargetLanguageDef.IDENT_DIALECT
+
+
+@lru_cache()
+def _accept_Q_IDENT() -> TargetLanguageDef:
+    return TargetLanguageDef.Q_IDENT | _accept_IDENT()
+
+
+@lru_cache()
+def _accept_Q_CHAR() -> TargetLanguageDef:
+    return TargetLanguageDef.Q_CHAR | TargetLanguageDef.S_CHAR
+
+
+def iter_text_and_matching_target() -> Iterator[Tuple[str, TargetLanguageDef]]:
     # Character tests
-    *(
-        (text, ACCEPT_DIGIT_CHAR)
-        for text in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-    ),
-    ("_", ACCEPT_NONDIGIT_CHAR),
-    ("α", TargetLanguageDef.S_CHAR),
-    *((text, TargetLanguageDef.S_ESCAPE) for text in [r"\'", r"\"", r"\\"]),
+    for text in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
+        yield text, _accept_DIGIT()
+    for text in ["_"]:
+        yield text, _accept_NONDIGIT()
+    for text in ["α"]:
+        yield text, TargetLanguageDef.S_CHAR
+    # Escape tests
+    for text in [r"\'", r"\"", r"\\"]:
+        yield text, TargetLanguageDef.S_ESCAPE
     # Word tests
-    *(
-        (text, TargetLanguageDef.UNSIGNED_INTEGER)
-        for text in ["00", "111", "2222", "33333"]
-    ),
+    for text in ["00", "111", "2222", "33333"]:
+        yield text, TargetLanguageDef.UNSIGNED_INTEGER
     # Ident tests
-    *((text, ACCEPT_Q_IDENT) for text in ["'model'"]),
-    *(
-        (text, ACCEPT_IDENT)
-        for text in ("abc", " abc ", "modelica", "modelA", "model0")
-    ),
-    *((text, TargetLanguageDef.IDENT_DIALECT) for text in ["$identifier"]),
+    for text in ["abc", " abc ", "modelica", "modelA", "model0"]:
+        yield text, _accept_IDENT()
+    for text in ["'model'"]:
+        yield text, _accept_Q_IDENT()
+    for text in ["$identifier"]:
+        yield text, TargetLanguageDef.IDENT_DIALECT
     # Other tests
-    *((text, TargetLanguageDef.NULL) for text in ("ab c", "model", "model:")),
-]
+    for text in ["ab c", "model", "model:"]:
+        yield text, TargetLanguageDef.NULL
 
 
 @pytest.mark.parametrize("target", filter(None, TargetLanguageDef))
-@pytest.mark.parametrize("text, matching_target", text_and_matching_target)
+@pytest.mark.parametrize(
+    "text, matching_target", iter_text_and_matching_target()
+)
 def test_parser(
     target: TargetLanguageDef,
     text: str,
