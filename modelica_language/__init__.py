@@ -8,7 +8,7 @@ __all__ = (
 )
 
 import enum
-from typing import Optional, Type
+from typing import Optional, Type, cast
 
 from arpeggio import EOF, ParserPython
 
@@ -23,7 +23,7 @@ latest = v3_4
 
 
 class ModelicaVersion(enum.Enum):
-    latest = v3_4 = enum.auto()
+    v3_4 = latest = enum.auto()
 
 
 _SYNTAXES = {ModelicaVersion.v3_4: v3_4.Syntax}
@@ -44,6 +44,6 @@ def get_syntax_type(
     version: Optional[ModelicaVersion] = None,
 ) -> Type[v3_4.Syntax]:
     return _SYNTAXES.get(
-        version,  # type: ignore
+        cast(ModelicaVersion, version),
         latest.Syntax,
     )
