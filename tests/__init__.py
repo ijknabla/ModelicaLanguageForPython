@@ -1,6 +1,6 @@
 import enum
 from functools import lru_cache
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from arpeggio import EOF, ParserPython, RegExMatch
 
@@ -32,9 +32,9 @@ class TargetLanguageDef(enum.Flag):
     ) -> ParserPython:
         Syntax = get_syntax_type(version)
 
-        if self is TargetLanguageDef.IDENT_DIALECT and not TYPE_CHECKING:
+        if self is TargetLanguageDef.IDENT_DIALECT:
 
-            class Syntax(_DialectMixin, Syntax):
+            class Syntax(_DialectMixin, Syntax):  # type: ignore
                 ...
 
         @returns_parsing_expression
