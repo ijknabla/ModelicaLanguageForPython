@@ -17,7 +17,7 @@ def _accept_DIGIT() -> TargetLanguageDef:
     )
 
 
-@lru_cache
+@lru_cache()
 def _accept_NONDIGIT() -> TargetLanguageDef:
     return TargetLanguageDef.NONDIGIT | _accept_IDENT() | _accept_Q_CHAR()
 
