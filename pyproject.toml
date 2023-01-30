@@ -20,18 +20,19 @@ Arpeggio = ">=0.8"
 typing-extensions = ">=3.10"
 
 [tool.poetry.group.dev.dependencies]
-pyproject-flake8 = "^0.0.1-alpha.2"
-mypy = "^0.971"
-pytest = "^6.2.5"
 black = {version = "^22", python = ">=3.6.2"}
-types-setuptools = "^57.4.11"
 isort = "^5.8"
 astunparse = {version = "^1.6.3", python = "<3.9"}
-pytest-cov = "^4.0.0"
-
 
 [tool.poetry.group.document.dependencies]
 sphinx = "^5"
+
+[tool.poetry.group.test.dependencies]
+mypy = "^0.971"
+pyproject-flake8 = "^0.0.1-alpha.2"
+pytest = "^6.2.5"
+pytest-cov = "^4.0.0"
+types-setuptools = "^57.4.11"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
