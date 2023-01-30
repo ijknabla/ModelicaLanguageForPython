@@ -145,7 +145,11 @@ class ModuleVisitor(PTNodeVisitor):
                 "returns_parsing_expression",
             ]
 
-        docs = list(self.__get_source(node).splitlines())
+        docs = [
+            ".. code-block:: modelicapeg",
+            "",
+            *(f"    {line}" for line in self.__get_source(node).splitlines()),
+        ]
         (pattern,) = children.lexical_expression
 
         def rule_definition() -> FunctionDef:
@@ -170,7 +174,11 @@ class ModuleVisitor(PTNodeVisitor):
         self, node: ParseTreeNode, children: SupportsChildren
     ) -> None:
         (name,) = children.SYNTAX_RULE
-        docs = list(self.__get_source(node).splitlines())
+        docs = [
+            ".. code-block:: modelicapeg",
+            "",
+            *(f"    {line}" for line in self.__get_source(node).splitlines()),
+        ]
         (value,) = children.syntax_expression
 
         def rule_definition() -> FunctionDef:
