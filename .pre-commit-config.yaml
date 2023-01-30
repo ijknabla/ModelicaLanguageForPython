@@ -47,3 +47,14 @@ repos:
         language: system
         pass_filenames: false
         files: ^(poetry\.lock|\.pre\-commit\-config\.yaml)$
+    -   id: export-requirements-test
+        name: Export requirements.txt (test)
+        entry: poetry
+        args:
+        -   export
+        -   --only=test
+        -   --without-hashes
+        -   --output=.github/resources/requirements.test.txt
+        language: system
+        pass_filenames: false
+        files: ^(poetry\.lock|\.pre\-commit\-config\.yaml)$
