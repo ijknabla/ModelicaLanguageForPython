@@ -120,7 +120,7 @@ class ModuleVisitor(PTNodeVisitor):
                 name=name,
                 args=[],
                 returns="RegExMatch",
-                doc=f"`{keyword}`",
+                docs=[f"`{keyword}`"],
                 value=create_call(
                     "RegExMatch",
                     args=[create_constant(value=regex)],
@@ -145,7 +145,7 @@ class ModuleVisitor(PTNodeVisitor):
                 "returns_parsing_expression",
             ]
 
-        doc = self.__get_source(node)
+        docs = list(self.__get_source(node).splitlines())
         (pattern,) = children.lexical_expression
 
         def rule_definition() -> FunctionDef:
@@ -156,7 +156,7 @@ class ModuleVisitor(PTNodeVisitor):
                 name=name,
                 args=["cls"],
                 returns="RegExMatch",
-                doc=doc,
+                docs=docs,
                 value=create_call(
                     "RegExMatch",
                     args=[create_constant(value=value)],
@@ -170,7 +170,7 @@ class ModuleVisitor(PTNodeVisitor):
         self, node: ParseTreeNode, children: SupportsChildren
     ) -> None:
         (name,) = children.SYNTAX_RULE
-        doc = self.__get_source(node)
+        docs = list(self.__get_source(node).splitlines())
         (value,) = children.syntax_expression
 
         def rule_definition() -> FunctionDef:
@@ -179,7 +179,7 @@ class ModuleVisitor(PTNodeVisitor):
                 name=name,
                 args=["cls"],
                 returns="ParsingExpressionLike",
-                doc=doc,
+                docs=docs,
                 value=value,
             )
 
