@@ -29,6 +29,10 @@ isort = "^5.8"
 astunparse = {version = "^1.6.3", python = "<3.9"}
 pytest-cov = "^4.0.0"
 
+
+[tool.poetry.group.document.dependencies]
+sphinx = "^5"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
