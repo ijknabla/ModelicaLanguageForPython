@@ -9,21 +9,11 @@ from ast import (
     FunctionDef,
     Import,
     ImportFrom,
-    List,
-    Load,
-    Module,
-    Name,
-    Return,
-    Store,
-    Subscript,
-    Tuple,
-    alias,
-    arg,
-    arguments,
-    expr,
-    expr_context,
-    stmt,
 )
+from ast import List as AstList
+from ast import Load, Module, Name, Return, Store, Subscript
+from ast import Tuple as AstTuple
+from ast import alias, arg, arguments, expr, expr_context, stmt
 from dataclasses import dataclass, field
 from functools import reduce
 from operator import or_
@@ -139,10 +129,10 @@ def create_function_def(
 
 def create_list(
     elts: Sequence[expr], ctx: Optional[expr_context] = None
-) -> List:
+) -> AstList:
     if ctx is None:
         ctx = Load()
-    return List(elts=elts, ctx=ctx)
+    return AstList(elts=elts, ctx=ctx)
 
 
 def create_module_with_class(
@@ -198,10 +188,10 @@ def create_subscript(
 
 def create_tuple(
     elts: Sequence[expr], ctx: Optional[expr_context] = None
-) -> Tuple:
+) -> AstTuple:
     if ctx is None:
         ctx = Load()
-    return Tuple(elts=elts, ctx=ctx)
+    return AstTuple(elts=elts, ctx=ctx)
 
 
 Pattern = Union[
