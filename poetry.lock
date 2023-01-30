@@ -666,6 +666,25 @@ files = [
 plugins = ["importlib-metadata"]
 
 [[package]]
+name = "pygments-modelicapeg-plugin"
+version = "0.0.0"
+description = "pygments plugin for .modelicapeg"
+category = "dev"
+optional = false
+python-versions = "^3.6"
+files = []
+develop = false
+
+[package.dependencies]
+pygments = ">=2"
+
+[package.source]
+type = "git"
+url = "https://github.com/ijknabla/pygments-modelicapeg-plugin.git"
+reference = "main"
+resolved_reference = "fc38aae1ea261882c674fd829caaeb06198dad34"
+
+[[package]]
 name = "pyparsing"
 version = "3.0.7"
 description = "Python parsing module"
@@ -1159,4 +1178,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=4.6)", "pytest-black (
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.6"
-content-hash = "4971749a369f0d751421066599cbeaa3ac2db4fe0620d9ef81c4b7de1db24c5f"
+content-hash = "1ff4bb5dc94ce90c6ea47acb5dd200274d8e9654573a5ff2a6cb4fb3524cba85"

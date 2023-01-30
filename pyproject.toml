@@ -28,6 +28,7 @@ astunparse = {version = "^1.6.3", python = "<3.9"}
 sphinx = "^5"
 sphinx-autobuild = "^2021.3.14"
 sphinx-rtd-theme = "^1.1.1"
+pygments-modelicapeg-plugin = {git = "https://github.com/ijknabla/pygments-modelicapeg-plugin.git", rev = "main"}
 
 [tool.poetry.group.test.dependencies]
 mypy = "^0.971"
