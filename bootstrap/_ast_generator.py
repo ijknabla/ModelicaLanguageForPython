@@ -21,10 +21,12 @@ from typing import (
     ClassVar,
     Collection,
     Iterator,
+    List,
     NewType,
     Optional,
     Sequence,
     Set,
+    Tuple,
     Union,
 )
 
@@ -101,7 +103,7 @@ def create_function_def(
 ) -> FunctionDef:
     doc = doc.strip()
 
-    body: "list[stmt]" = []
+    body: List[stmt] = []
     if doc:
         body.append(Expr(value=create_constant(value="\n" + doc + "\n\n")))
     body.append(Return(value=value))
@@ -137,12 +139,12 @@ def create_list(
 
 def create_module_with_class(
     imports: Sequence[str],
-    import_froms: Sequence["tuple[str, Sequence[str]]"],
+    import_froms: Sequence[Tuple[str, Sequence[str]]],
     class_name: str,
     class_bases: Sequence[str],
     class_body: Sequence[stmt],
 ) -> Module:
-    body: "list[stmt]" = []
+    body: List[stmt] = []
 
     if imports:
         body.append(
@@ -410,7 +412,7 @@ class SequencePattern(SequencePatternBase):
 class OrderedChoicePattern(SequencePatternBase):
     def resolve(self) -> Pattern:
         character_code_set: CharacterCodeSet = set()
-        patterns: "list[Pattern]" = []
+        patterns: List[Pattern] = []
 
         for pattern in self._flatten(*self):
             if isinstance(pattern, set):
