@@ -56,3 +56,9 @@ per-file-ignores = [
 [tool.isort]
 profile = "black"
 line_length = 79
+
+[[tool.mypy.overrides]]
+module = [
+    "astunparse",
+]
+ignore_missing_imports = true

@@ -31,4 +31,6 @@ jobs:
           pip install ./ --requirement .github/resources/requirements.test.txt
       - name: Test with pytest
         run: |
+          pflake8
+          mypy --strict .
           pytest --cov --cov-branch --cov-report=term-missing

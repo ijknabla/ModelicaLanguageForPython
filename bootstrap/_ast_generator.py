@@ -9,21 +9,11 @@ from ast import (
     FunctionDef,
     Import,
     ImportFrom,
-    List,
-    Load,
-    Module,
-    Name,
-    Return,
-    Store,
-    Subscript,
-    Tuple,
-    alias,
-    arg,
-    arguments,
-    expr,
-    expr_context,
-    stmt,
 )
+from ast import List as AstList
+from ast import Load, Module, Name, Return, Store, Subscript
+from ast import Tuple as AstTuple
+from ast import alias, arg, arguments, expr, expr_context, stmt
 from dataclasses import dataclass, field
 from functools import reduce
 from operator import or_
@@ -31,10 +21,12 @@ from typing import (
     ClassVar,
     Collection,
     Iterator,
+    List,
     NewType,
     Optional,
     Sequence,
     Set,
+    Tuple,
     Union,
 )
 
@@ -111,7 +103,7 @@ def create_function_def(
 ) -> FunctionDef:
     doc = doc.strip()
 
-    body: "list[stmt]" = []
+    body: List[stmt] = []
     if doc:
         body.append(Expr(value=create_constant(value="\n" + doc + "\n\n")))
     body.append(Return(value=value))
@@ -139,20 +131,20 @@ def create_function_def(
 
 def create_list(
     elts: Sequence[expr], ctx: Optional[expr_context] = None
-) -> List:
+) -> AstList:
     if ctx is None:
         ctx = Load()
-    return List(elts=elts, ctx=ctx)
+    return AstList(elts=elts, ctx=ctx)
 
 
 def create_module_with_class(
     imports: Sequence[str],
-    import_froms: Sequence["tuple[str, Sequence[str]]"],
+    import_froms: Sequence[Tuple[str, Sequence[str]]],
     class_name: str,
     class_bases: Sequence[str],
     class_body: Sequence[stmt],
 ) -> Module:
-    body: "list[stmt]" = []
+    body: List[stmt] = []
 
     if imports:
         body.append(
@@ -198,10 +190,10 @@ def create_subscript(
 
 def create_tuple(
     elts: Sequence[expr], ctx: Optional[expr_context] = None
-) -> Tuple:
+) -> AstTuple:
     if ctx is None:
         ctx = Load()
-    return Tuple(elts=elts, ctx=ctx)
+    return AstTuple(elts=elts, ctx=ctx)
 
 
 Pattern = Union[
@@ -420,7 +412,7 @@ class SequencePattern(SequencePatternBase):
 class OrderedChoicePattern(SequencePatternBase):
     def resolve(self) -> Pattern:
         character_code_set: CharacterCodeSet = set()
-        patterns: "list[Pattern]" = []
+        patterns: List[Pattern] = []
 
         for pattern in self._flatten(*self):
             if isinstance(pattern, set):
