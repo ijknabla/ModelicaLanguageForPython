@@ -1,6 +1,6 @@
 # Modelica Language for Python
 
-[see document](https://ijknabla.github.io/ModelicaLanguageForPython/)
+[See document](https://ijknabla.github.io/ModelicaLanguageForPython/)
 
 ## Features
 
