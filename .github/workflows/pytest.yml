@@ -1,7 +1,13 @@
 
 name: Pytest
 
-on: [push]
+on:
+  # Runs on pushes targeting the master, develop branch
+  push:
+    branches: [ master, develop ]
+  # Runs on pull-request targeting the master, develop branch
+  pull_request:
+    branches: [ master, develop ]
 
 jobs:
   build:
