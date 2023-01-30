@@ -31,4 +31,5 @@ jobs:
           pip install ./ --requirement .github/resources/requirements.test.txt
       - name: Test with pytest
         run: |
+          mypy --strict .
           pytest --cov --cov-branch --cov-report=term-missing
