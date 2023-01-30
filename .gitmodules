@@ -1,3 +1,6 @@
 [submodule "tests/Modelica-Compliance"]
 	path = tests/Modelica-Compliance
 	url = git@github.com:modelica/Modelica-Compliance.git
+[submodule "types-arpeggio"]
+	path = types-arpeggio
+	url = git@github.com:ijknabla/types-arpeggio.git
