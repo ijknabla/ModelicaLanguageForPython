@@ -2055,7 +2055,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            named-arguments : named-argument [ "," named-arguments ]
+            named-arguments: named-argument [ "," named-arguments ]
         """
         return (cls.named_argument, Optional(",", cls.named_arguments))
 
@@ -2065,7 +2065,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            named-argument : IDENT "=" function-argument
+            named-argument: IDENT "=" function-argument
         """
         return (cls.IDENT, "=", cls.function_argument)
 
@@ -2095,7 +2095,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            output-expression-list :
+            output-expression-list:
                [ expression ] { "," [ expression ] }
         """
         return (
@@ -2154,7 +2154,7 @@ class Syntax:
         .. code-block:: modelicapeg
 
             string-comment :
-               [ STRING { "+" STRING } ]
+            [ STRING { "+" STRING } ]
         """
         return Optional(cls.STRING, ZeroOrMore("+", cls.STRING))
 

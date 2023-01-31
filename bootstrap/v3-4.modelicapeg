@@ -231,49 +231,35 @@ when-statement :
    `end` `when`
 connect-clause :
    `connect` "(" component-reference "," component-reference ")"
-/**
- * https://specification.modelica.org/maint/3.4/A2.html#expressions1
- * #### B.2.7 Expressions
- */
+// B.2.7 Expressions
+// ⬇
 expression :
    simple-expression
    | `if` expression `then` expression { `elseif` expression `then` expression }
    `else` expression
-
 simple-expression :
    logical-expression [ ":" logical-expression [ ":" logical-expression ] ]
-
 logical-expression :
    logical-term { `or` logical-term }
-
 logical-term :
    logical-factor { `and` logical-factor }
-
 logical-factor :
    [ `not` ] relation
-
 relation :
    arithmetic-expression [ relational-operator arithmetic-expression ]
-
 relational-operator :
    /* 2-characters */ "==" | "<>" | "<=" | ">=" |
    /* 1-character  */ "<"  | ">"
-
 arithmetic-expression :
    [ add-operator ] term { add-operator term }
-
 add-operator :
    "+" | "-" | ".+" | ".-"
-
 term :
    factor { mul-operator factor }
-
 mul-operator :
    "*" | "/" | ".*" | "./"
-
 factor :
    primary [ ("^" | ".^") primary ]
-
 primary :
    UNSIGNED-NUMBER
    | STRING
@@ -285,56 +271,38 @@ primary :
    | "[" expression-list { ";" expression-list } "]"
    | "{" array-arguments "}"
    | `end`
-
 type-specifier : ["."] name
-
 name : IDENT { "." IDENT }
-
 component-reference :
    [ "." ] IDENT [ array-subscripts ] { "." IDENT [ array-subscripts ] }
-
 function-call-args :
    "(" [ function-arguments ] ")"
-
 function-arguments :
    `function` type-specifier "(" [ named-arguments ] ")" [ "," function-arguments-non-first ]
    | named-arguments
    | expression [ "," function-arguments-non-first | `for` for-indices ]
-
 function-arguments-non-first :
    named-arguments
    | function-argument [ "," function-arguments-non-first ]
-
 array-arguments :
    expression [ "," array-arguments-non-first | `for` for-indices ]
-
 array-arguments-non-first :
    expression [ "," array-arguments-non-first ]
-
-named-arguments : named-argument [ "," named-arguments ]
-
-named-argument : IDENT "=" function-argument
-
+named-arguments: named-argument [ "," named-arguments ]
+named-argument: IDENT "=" function-argument
 function-argument :
    `function` type-specifier "(" [ named-arguments ] ")" | expression
-
-output-expression-list :
+output-expression-list:
    [ expression ] { "," [ expression ] }
-
 expression-list :
    expression { "," expression }
-
 array-subscripts :
    "[" subscript { "," subscript } "]"
-
 subscript :
    ":" | expression
-
 comment :
    string-comment [ annotation-comment ]
-
 string-comment :
-   [ STRING { "+" STRING } ]
-
+[ STRING { "+" STRING } ]
 annotation-comment :
    `annotation` class-modification
