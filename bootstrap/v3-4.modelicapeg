@@ -128,48 +128,35 @@ condition-attribute:
    `if` expression
 declaration :
    IDENT [ array-subscripts ] [ modification ]
-/**
- * https://specification.modelica.org/maint/3.4/A2.html#modification
- * #### B.2.5 Modification
- */
+// B.2.5 Modification
+// ⬇
 modification :
    class-modification [ "=" expression ]
    | "=" expression
    | ":=" expression
-
 class-modification :
    "(" [ argument-list ] ")"
-
 argument-list :
    argument { "," argument }
-
 argument :
    element-modification-or-replaceable
    | element-redeclaration
-
-element-modification-or-replaceable :
+element-modification-or-replaceable:
    [ `each` ] [ `final` ] ( element-modification | element-replaceable)
-
 element-modification :
    name [ modification ] string-comment
-
 element-redeclaration :
    `redeclare` [ `each` ] [ `final` ]
    ( ( short-class-definition | component-clause1) | element-replaceable )
-
-element-replaceable :
-   `replaceable` ( short-class-definition | component-clause1 )
-   [ constraining-clause ]
-
+element-replaceable:
+   `replaceable` ( short-class-definition | component-clause1)
+   [constraining-clause]
 component-clause1 :
    type-prefix type-specifier component-declaration1
-
 component-declaration1 :
    declaration comment
-
 short-class-definition :
    class-prefixes short-class-specifier
-
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#equations1
  * #### B.2.6 Equations

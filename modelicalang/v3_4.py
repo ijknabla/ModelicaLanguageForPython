@@ -1308,7 +1308,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            element-modification-or-replaceable :
+            element-modification-or-replaceable:
                [ `each` ] [ `final` ] ( element-modification | element-replaceable)
         """
         return (
@@ -1354,9 +1354,9 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            element-replaceable :
-               `replaceable` ( short-class-definition | component-clause1 )
-               [ constraining-clause ]
+            element-replaceable:
+               `replaceable` ( short-class-definition | component-clause1)
+               [constraining-clause]
         """
         return (
             cls.REPLACEABLE,
