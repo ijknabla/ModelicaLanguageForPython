@@ -801,7 +801,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            stored-definition :
+            stored-definition:
                [ `within` [ name ] ";" ]
                { [ `final` ] class-definition ";" }
         """

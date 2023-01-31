@@ -46,19 +46,12 @@ COMMENT =
 // • Description strings (= production “string-comment” in the grammar) and strings in annotations (= STRING with production annotation-comment in the grammar) may contain any member of the Unicode character set. All other strings have to contain only the sub-set of Unicode characters identical with the 7-bit US-ASCII character set. [As a consequence, operators like “>” or “<”, and external functions only operate on ASCII strings and not on Unicode-strings. Within a description string the tags <HTML> and </HTML> or <html> and </html> define optionally begin and end of content that is HTML encoded.]
 // • Boldface denotes keywords of the Modelica language. Keywords are reserved words and may not be used as identifiers.
 // • Productions use hyphen as separator both in the grammar and in the text. Previously the grammar used underscore.
-/**
- * https://specification.modelica.org/maint/3.4/A2.html#grammar
- * ### B.2 Grammar
- */
-
-/**
- * https://specification.modelica.org/maint/3.4/A2.html#stored-definition-within
- * #### B.2.1 Stored Definition - Within
- */
-stored-definition :
+// B.2 Grammar
+// B.2.1 Stored Definition – Within
+// ⬇
+stored-definition:
    [ `within` [ name ] ";" ]
    { [ `final` ] class-definition ";" }
-
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#class-definition
  * #### B.2.2 Class Definition
