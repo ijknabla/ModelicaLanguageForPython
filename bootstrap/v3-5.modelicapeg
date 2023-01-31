@@ -262,21 +262,22 @@ connect-clause :
 // ⬇
 expression :
    simple-expression
-   | if expression then expression
-     { elseif expression then expression }
-     else expression
+   | `if` expression `then` expression
+     { `elseif` expression `then` expression }
+     `else` expression
 simple-expression :
    logical-expression [ ":" logical-expression [ ":" logical-expression ] ]
 logical-expression :
-   logical-term { or logical-term }
+   logical-term { `or` logical-term }
 logical-term :
-   logical-factor { and logical-factor }
+   logical-factor { `and` logical-factor }
 logical-factor :
-   [ not ] relation
+   [ `not` ] relation
 relation :
    arithmetic-expression [ relational-operator arithmetic-expression ]
 relational-operator :
-   "<" | "<=" | ">" | ">=" | "==" | "<>"
+   /* 2-characters */ "==" | "<>" | "<=" | ">=" |
+   /* 1-character  */ "<"  | ">"
 arithmetic-expression :
    [ add-operator ] term { add-operator term }
 add-operator :
@@ -290,15 +291,15 @@ factor :
 primary :
    UNSIGNED-NUMBER
    | STRING
-   | false
-   | true
-   | ( component-reference | der | initial | pure ) function-call-args
+   | `false`
+   | `true`
+   | ( component-reference | `der` | `initial` | `pure` ) function-call-args
    | component-reference
    | "(" output-expression-list ")"
    | "[" expression-list { ";" expression-list } "]"
    | "{" array-arguments "}"
-   | end
-UNSIGNED-NUMBER :
+   | `end`
+UNSIGNED-NUMBER =
    UNSIGNED-INTEGER | UNSIGNED-REAL
 type-specifier :
    ["."] name
@@ -309,14 +310,14 @@ component-reference :
 function-call-args :
    "(" [ function-arguments ] ")"
 function-arguments :
-   expression [ "," function-arguments-non-first | for for-indices ]
-   | function-partial-application [ "," function-arguments-non-first ]
+   function-partial-application [ "," function-arguments-non-first ]
    | named-arguments
+   | expression [ "," function-arguments-non-first | `for` for-indices ]
 function-arguments-non-first :
-   function-argument [ "," function-arguments-non-first ]
-   | named-arguments
+   named-arguments
+   | function-argument [ "," function-arguments-non-first ]
 array-arguments :
-   expression [ "," array-arguments-non-first | for for-indices ]
+   expression [ "," array-arguments-non-first | `for` for-indices ]
 array-arguments-non-first :
    expression [ "," array-arguments-non-first ]
 named-arguments: named-argument [ "," named-arguments ]
@@ -324,7 +325,7 @@ named-argument: IDENT "=" function-argument
 function-argument :
    function-partial-application | expression
 function-partial-application :
-   function type-specifier "(" [ named-arguments ] ")"
+   `function` type-specifier "(" [ named-arguments ] ")"
 output-expression-list :
    [ expression ] { "," [ expression ] }
 expression-list :
@@ -338,4 +339,4 @@ description :
 description-string :
    [ STRING { "+" STRING } ]
 annotation-clause :
-   annotation class-modification
+   `annotation` class-modification
