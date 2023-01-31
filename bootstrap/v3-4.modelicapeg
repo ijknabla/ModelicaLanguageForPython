@@ -107,16 +107,12 @@ import-clause :
    `import` ( IDENT "=" name | name ["." ( "*" | "{" import-list "}" ) ] ) comment
 import-list :
    IDENT { "," IDENT }
-/**
- * https://specification.modelica.org/maint/3.4/A2.html#extends
- * #### B.2.3 Extends
- */
+// B.2.3 Extends
+// ⬇
 extends-clause :
-   `extends` type-specifier [ class-modification ] [ annotation-comment ]
-
+   `extends` type-specifier [ class-modification ] [annotation-comment]
 constraining-clause :
    `constrainedby` type-specifier [ class-modification ]
-
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#component-clause
  * #### B.2.4 Component Clause

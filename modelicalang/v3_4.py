@@ -1137,7 +1137,7 @@ class Syntax:
         .. code-block:: modelicapeg
 
             extends-clause :
-               `extends` type-specifier [ class-modification ] [ annotation-comment ]
+               `extends` type-specifier [ class-modification ] [annotation-comment]
         """
         return (
             cls.EXTENDS,
