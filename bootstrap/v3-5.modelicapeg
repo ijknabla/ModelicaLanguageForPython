@@ -56,8 +56,8 @@ COMMENT =
 // A.2.1 Stored Definition – Within
 // ⬇
 stored-definition :
-   [ within [ name ] ";" ]
-   { [ final ] class-definition ";" }
+   [ `within` [ name ] ";" ]
+   { [ `final` ] class-definition ";" }
 // A.2.2 Class Definition
 // ⬇
 class-definition :
