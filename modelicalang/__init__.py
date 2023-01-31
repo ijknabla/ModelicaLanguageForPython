@@ -3,30 +3,37 @@ __all__ = (
     "enable_method_in_parser_python",
     "get_file_parser",
     "get_syntax_type",
+    "latest",
     "returns_parsing_expression",
     "v3_4",
+    "v3_5",
 )
 
 import enum
-from typing import Optional, Type, cast
+from typing import Dict, Optional, Type, Union, cast
 
 from arpeggio import EOF, ParserPython
 
-from . import v3_4
+from . import v3_4, v3_5
 from ._backend import (
     ParsingExpressionLike,
     enable_method_in_parser_python,
     returns_parsing_expression,
 )
 
-latest = v3_4
+latest = v3_5
 
 
 class ModelicaVersion(enum.Enum):
-    v3_4 = latest = enum.auto()
+    v3_5 = latest = enum.auto()
+    v3_4 = enum.auto()
 
 
-_SYNTAXES = {ModelicaVersion.v3_4: v3_4.Syntax}
+_AnySyntaxType = Union[Type[v3_4.Syntax], Type[v3_5.Syntax]]
+_SYNTAXES: Dict[ModelicaVersion, _AnySyntaxType] = {
+    ModelicaVersion.v3_4: v3_4.Syntax,
+    ModelicaVersion.v3_5: v3_5.Syntax,
+}
 
 
 def get_file_parser(version: Optional[ModelicaVersion] = None) -> ParserPython:
@@ -42,7 +49,7 @@ def get_file_parser(version: Optional[ModelicaVersion] = None) -> ParserPython:
 
 def get_syntax_type(
     version: Optional[ModelicaVersion] = None,
-) -> Type[v3_4.Syntax]:
+) -> _AnySyntaxType:
     return _SYNTAXES.get(
         cast(ModelicaVersion, version),
         latest.Syntax,

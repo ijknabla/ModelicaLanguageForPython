@@ -2,7 +2,7 @@ import enum
 from functools import lru_cache
 from typing import Optional
 
-from arpeggio import EOF, ParserPython, RegExMatch
+from arpeggio import EOF, Not, ParserPython, RegExMatch
 
 from modelicalang import (
     ModelicaVersion,
@@ -10,6 +10,7 @@ from modelicalang import (
     enable_method_in_parser_python,
     get_syntax_type,
     returns_parsing_expression,
+    v3_5,
 )
 
 
@@ -24,6 +25,7 @@ class TargetLanguageDef(enum.Flag):
     S_ESCAPE = enum.auto()
     DIGIT = enum.auto()
     UNSIGNED_INTEGER = enum.auto()
+    UNSIGNED_REAL = enum.auto()
 
     @lru_cache(None)
     @enable_method_in_parser_python
@@ -58,6 +60,15 @@ class TargetLanguageDef(enum.Flag):
                 return Syntax.DIGIT, EOF
             elif self is TargetLanguageDef.UNSIGNED_INTEGER:
                 return Syntax.UNSIGNED_INTEGER, EOF
+            elif self is TargetLanguageDef.UNSIGNED_REAL:
+                if issubclass(Syntax, v3_5.Syntax):
+                    return Syntax.UNSIGNED_REAL, EOF
+                else:
+                    return (
+                        Not(Syntax.UNSIGNED_INTEGER),
+                        Syntax.UNSIGNED_NUMBER,
+                        EOF,
+                    )
             raise NotImplementedError()
 
         return ParserPython(file, Syntax.COMMENT)

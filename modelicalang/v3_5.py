@@ -672,19 +672,19 @@ class Syntax:
             IDENT = NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
         """
         return RegExMatch(
-            "[A-Z_a-z][0-9A-Z_a-z]*|'([\\ !\\#-\\&\\(-\\[\\]-_a-\\~]|\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)([\\ -\\&\\(-\\[\\]-_a-\\~]|\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)*'"
+            "[A-Z_a-z][0-9A-Z_a-z]*|'([\\ -\\&\\(-\\[\\]-_a-\\~]|\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)*'"
         )
 
     @classmethod
     @returns_parsing_expression
     def Q_IDENT(cls) -> RegExMatch:
-        '''
+        """
         .. code-block:: modelicapeg
 
-            Q-IDENT = "'" ( Q-CHAR | S-ESCAPE ) { Q-CHAR | S-ESCAPE | """ } "'"
-        '''
+            Q-IDENT = "'" { Q-CHAR | S-ESCAPE } "'"
+        """
         return RegExMatch(
-            "'([\\ !\\#-\\&\\(-\\[\\]-_a-\\~]|\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)([\\ -\\&\\(-\\[\\]-_a-\\~]|\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)*'"
+            "'([\\ -\\&\\(-\\[\\]-_a-\\~]|\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v)*'"
         )
 
     @classmethod
@@ -717,8 +717,8 @@ class Syntax:
 
             S-CHAR =
                // S-CHAR is any member of the Unicode character set
-               // (http://www.unicode.org; see section 13.2.2 for storing as UTF-8 on files)
-               // except double-quote ”””, and backslash ”\\”
+               // (http://www.unicode.org; see section 13.4 for storing as UTF-8 on files)
+               // except double-quote ‘”’, and backslash ‘\\’.
                r'[^"\\\\]'
         """
         return RegExMatch('[^"\\\\]')
@@ -726,14 +726,14 @@ class Syntax:
     @classmethod
     @returns_parsing_expression
     def Q_CHAR(cls) -> RegExMatch:
-        """
+        '''
         .. code-block:: modelicapeg
 
-            Q-CHAR = NONDIGIT | DIGIT | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," |
-                     "-" | "." | "/" | ":" | ";" | "<" | ">" | "=" | "?" | "@" | "[" | "]" | "^" |
-                    "{" | "}" | "|" | "~" | " "
-        """
-        return RegExMatch("[\\ !\\#-\\&\\(-\\[\\]-_a-\\~]")
+            Q-CHAR = NONDIGIT | DIGIT | "!" | "#" | "$" | "%" | "&" | "(" | ")"
+               | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | "<" | ">" | "="
+               | "?" | "@" | "[" | "]" | "^" | "{" | "}" | "|" | "~" | " " | """
+        '''
+        return RegExMatch("[\\ -\\&\\(-\\[\\]-_a-\\~]")
 
     @classmethod
     @returns_parsing_expression
@@ -741,8 +741,8 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            S-ESCAPE = "\\'" | "\\"" | "\\?" | "\\\\" |
-                     "\\a" | "\\b" | "\\f" | "\\n" | "\\r" | "\\t" | "\\v"
+            S-ESCAPE = "\\'" | "\\"" | "\\?" | "\\\\"
+               | "\\a" | "\\b" | "\\f" | "\\n" | "\\r" | "\\t" | "\\v"
         """
         return RegExMatch(
             "\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v"
@@ -770,15 +770,18 @@ class Syntax:
 
     @classmethod
     @returns_parsing_expression
-    def UNSIGNED_NUMBER(cls) -> RegExMatch:
+    def UNSIGNED_REAL(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
 
-            UNSIGNED-NUMBER = UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
-                    [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]
+            UNSIGNED-REAL =
+               UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
+               ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER
+               | UNSIGNED-INTEGER  "." [ UNSIGNED-INTEGER ]
+               | "."  UNSIGNED-INTEGER [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]
         """
         return RegExMatch(
-            "[0-9][0-9]*(\\.([0-9][0-9]*)?)?([Ee][\\+\\-]?[0-9][0-9]*)?"
+            "[0-9][0-9]*(\\.([0-9][0-9]*)?)?[Ee][\\+\\-]?[0-9][0-9]*|[0-9][0-9]*\\.([0-9][0-9]*)?|\\.[0-9][0-9]*([Ee][\\+\\-]?[0-9][0-9]*)?"
         )
 
     @classmethod
@@ -801,7 +804,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            stored-definition:
+            stored-definition :
                [ `within` [ name ] ";" ]
                { [ `final` ] class-definition ";" }
         """
@@ -817,8 +820,7 @@ class Syntax:
         .. code-block:: modelicapeg
 
             class-definition :
-               [ `encapsulated` ] class-prefixes
-               class-specifier
+               [ `encapsulated` ] class-prefixes class-specifier
         """
         return (
             Optional(cls.ENCAPSULATED),
@@ -834,8 +836,16 @@ class Syntax:
 
             class-prefixes :
                [ `partial` ]
-               ( `class` | `model` | [ `operator` ] `record` | `block` | [ `expandable` ] `connector` | `type` |
-               `package` | [ ( `pure` | `impure` ) ] [ `operator` ] `function` | `operator` )
+               ( `class`
+                 | `model`
+                 | [ `operator` ] `record`
+                 | `block`
+                 | [ `expandable` ] `connector`
+                 | `type`
+                 | `package`
+                 | [ `pure` | `impure` ] [ `operator` ] `function`
+                 | `operator`
+               )
         """
         return (
             Optional(cls.PARTIAL),
@@ -878,14 +888,14 @@ class Syntax:
         .. code-block:: modelicapeg
 
             long-class-specifier :
-               IDENT string-comment composition `end` IDENT
-               | `extends` IDENT [ class-modification ] string-comment composition
-               `end` IDENT
+               IDENT description-string composition `end` IDENT
+               | `extends` IDENT [ class-modification ] description-string composition
+                 `end` IDENT
         """
         return [
             (
                 cls.IDENT,
-                cls.string_comment,
+                cls.description_string,
                 cls.composition,
                 cls.END,
                 cls.IDENT,
@@ -894,7 +904,7 @@ class Syntax:
                 cls.EXTENDS,
                 cls.IDENT,
                 Optional(cls.class_modification),
-                cls.string_comment,
+                cls.description_string,
                 cls.composition,
                 cls.END,
                 cls.IDENT,
@@ -909,8 +919,8 @@ class Syntax:
 
             short-class-specifier :
                IDENT "=" base-prefix type-specifier [ array-subscripts ]
-               [ class-modification ] comment
-               | IDENT "=" `enumeration` "(" ( [enum-list] | ":" ) ")" comment
+               [ class-modification ] description
+               | IDENT "=" `enumeration` "(" ( [ enum-list ] | ":" ) ")" description
         """
         return [
             (
@@ -920,7 +930,7 @@ class Syntax:
                 cls.type_specifier,
                 Optional(cls.array_subscripts),
                 Optional(cls.class_modification),
-                cls.comment,
+                cls.description,
             ),
             (
                 cls.IDENT,
@@ -929,7 +939,7 @@ class Syntax:
                 "(",
                 [Optional(cls.enum_list), ":"],
                 ")",
-                cls.comment,
+                cls.description,
             ),
         ]
 
@@ -940,7 +950,7 @@ class Syntax:
         .. code-block:: modelicapeg
 
             der-class-specifier :
-               IDENT "=" `der` "(" type-specifier "," IDENT { "," IDENT } ")" comment
+               IDENT "=" `der` "(" type-specifier "," IDENT { "," IDENT } ")" description
         """
         return (
             cls.IDENT,
@@ -952,7 +962,7 @@ class Syntax:
             cls.IDENT,
             ZeroOrMore(",", cls.IDENT),
             ")",
-            cls.comment,
+            cls.description,
         )
 
     @classmethod
@@ -972,7 +982,8 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            enum-list : enumeration-literal { "," enumeration-literal}
+            enum-list :
+               enumeration-literal { "," enumeration-literal }
         """
         return (
             cls.enumeration_literal,
@@ -985,9 +996,10 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            enumeration-literal : IDENT comment
+            enumeration-literal :
+               IDENT description
         """
-        return (cls.IDENT, cls.comment)
+        return (cls.IDENT, cls.description)
 
     @classmethod
     @returns_parsing_expression
@@ -997,14 +1009,14 @@ class Syntax:
 
             composition :
                element-list
-               { `public` element-list |
-                 `protected` element-list |
-                 equation-section |
-                 algorithm-section
+               { `public` element-list
+                 | `protected` element-list
+                 | equation-section
+                 | algorithm-section
                }
                [ `external` [ language-specification ]
-               [ external-function-call ] [ annotation-comment ] ";" ]
-               [ annotation-comment ";" ]
+               [ external-function-call ] [ annotation-clause ] ";" ]
+               [ annotation-clause ";" ]
         """
         return (
             cls.element_list,
@@ -1020,10 +1032,10 @@ class Syntax:
                 cls.EXTERNAL,
                 Optional(cls.language_specification),
                 Optional(cls.external_function_call),
-                Optional(cls.annotation_comment),
+                Optional(cls.annotation_clause),
                 ";",
             ),
-            Optional(cls.annotation_comment, ";"),
+            Optional(cls.annotation_clause, ";"),
         )
 
     @classmethod
@@ -1073,14 +1085,16 @@ class Syntax:
         .. code-block:: modelicapeg
 
             element :
-               import-clause |
-               extends-clause |
-               [ `redeclare` ]
-               [ `final` ]
-               [ `inner` ] [ `outer` ]
-               ( ( class-definition | component-clause) |
-               `replaceable` ( class-definition | component-clause)
-               [constraining-clause comment])
+               import-clause
+               | extends-clause
+               | [ `redeclare` ]
+                 [ `final` ]
+                 [ `inner` ] [ `outer` ]
+                 ( class-definition
+                   | component-clause
+                   | `replaceable` ( class-definition | component-clause )
+                     [ constraining-clause description ]
+                 )
         """
         return [
             cls.import_clause,
@@ -1091,11 +1105,12 @@ class Syntax:
                 Optional(cls.INNER),
                 Optional(cls.OUTER),
                 [
-                    [cls.class_definition, cls.component_clause],
+                    cls.class_definition,
+                    cls.component_clause,
                     (
                         cls.REPLACEABLE,
                         [cls.class_definition, cls.component_clause],
-                        Optional(cls.constraining_clause, cls.comment),
+                        Optional(cls.constraining_clause, cls.description),
                     ),
                 ],
             ),
@@ -1108,15 +1123,24 @@ class Syntax:
         .. code-block:: modelicapeg
 
             import-clause :
-               `import` ( IDENT "=" name | name ["." ( "*" | "{" import-list "}" ) ] ) comment
+               `import`
+               ( IDENT "=" name
+                 | name [ ".*" | "." ( "*" | "{" import-list "}" ) ]
+               )
+               description
         """
         return (
             cls.IMPORT,
             [
                 (cls.IDENT, "=", cls.name),
-                (cls.name, Optional(".", ["*", ("{", cls.import_list, "}")])),
+                (
+                    cls.name,
+                    Optional(
+                        [".*", (".", ["*", ("{", cls.import_list, "}")])]
+                    ),
+                ),
             ],
-            cls.comment,
+            cls.description,
         )
 
     @classmethod
@@ -1137,13 +1161,13 @@ class Syntax:
         .. code-block:: modelicapeg
 
             extends-clause :
-               `extends` type-specifier [ class-modification ] [annotation-comment]
+               `extends` type-specifier [ class-modification ] [ annotation-clause ]
         """
         return (
             cls.EXTENDS,
             cls.type_specifier,
             Optional(cls.class_modification),
-            Optional(cls.annotation_comment),
+            Optional(cls.annotation_clause),
         )
 
     @classmethod
@@ -1167,7 +1191,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            component-clause:
+            component-clause :
                type-prefix type-specifier [ array-subscripts ] component-list
         """
         return (
@@ -1185,7 +1209,8 @@ class Syntax:
 
             type-prefix :
                [ `flow` | `stream` ]
-               [ `discrete` | `parameter` | `constant` ] [ `input` | `output` ]
+               [ `discrete` | `parameter` | `constant` ]
+               [ `input` | `output` ]
         """
         return (
             Optional([cls.FLOW, cls.STREAM]),
@@ -1214,12 +1239,12 @@ class Syntax:
         .. code-block:: modelicapeg
 
             component-declaration :
-               declaration [ condition-attribute ] comment
+               declaration [ condition-attribute ] description
         """
         return (
             cls.declaration,
             Optional(cls.condition_attribute),
-            cls.comment,
+            cls.description,
         )
 
     @classmethod
@@ -1228,7 +1253,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            condition-attribute:
+            condition-attribute :
                `if` expression
         """
         return (cls.IF, cls.expression)
@@ -1308,8 +1333,8 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            element-modification-or-replaceable:
-               [ `each` ] [ `final` ] ( element-modification | element-replaceable)
+            element-modification-or-replaceable :
+               [ `each` ] [ `final` ] ( element-modification | element-replaceable )
         """
         return (
             Optional(cls.EACH),
@@ -1324,9 +1349,9 @@ class Syntax:
         .. code-block:: modelicapeg
 
             element-modification :
-               name [ modification ] string-comment
+               name [ modification ] description-string
         """
-        return (cls.name, Optional(cls.modification), cls.string_comment)
+        return (cls.name, Optional(cls.modification), cls.description_string)
 
     @classmethod
     @returns_parsing_expression
@@ -1336,14 +1361,15 @@ class Syntax:
 
             element-redeclaration :
                `redeclare` [ `each` ] [ `final` ]
-               ( ( short-class-definition | component-clause1) | element-replaceable )
+               ( short-class-definition | component-clause1 | element-replaceable )
         """
         return (
             cls.REDECLARE,
             Optional(cls.EACH),
             Optional(cls.FINAL),
             [
-                [cls.short_class_definition, cls.component_clause1],
+                cls.short_class_definition,
+                cls.component_clause1,
                 cls.element_replaceable,
             ],
         )
@@ -1354,9 +1380,9 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            element-replaceable:
-               `replaceable` ( short-class-definition | component-clause1)
-               [constraining-clause]
+            element-replaceable :
+               `replaceable` ( short-class-definition | component-clause1 )
+               [ constraining-clause ]
         """
         return (
             cls.REPLACEABLE,
@@ -1386,9 +1412,9 @@ class Syntax:
         .. code-block:: modelicapeg
 
             component-declaration1 :
-               declaration comment
+               declaration description
         """
-        return (cls.declaration, cls.comment)
+        return (cls.declaration, cls.description)
 
     @classmethod
     @returns_parsing_expression
@@ -1443,8 +1469,9 @@ class Syntax:
                  | for-equation
                  | connect-clause
                  | when-equation
-                 | component-reference function-call-args )
-               comment
+                 | component-reference function-call-args
+               )
+               description
         """
         return (
             [
@@ -1455,7 +1482,7 @@ class Syntax:
                 cls.when_equation,
                 (cls.component_reference, cls.function_call_args),
             ],
-            cls.comment,
+            cls.description,
         )
 
     @classmethod
@@ -1466,14 +1493,16 @@ class Syntax:
 
             statement :
                ( component-reference ( ":=" expression | function-call-args )
-                 | "(" output-expression-list ")" ":=" component-reference function-call-args
+                 | "(" output-expression-list ")" ":="
+                   component-reference function-call-args
                  | `break`
                  | `return`
                  | if-statement
                  | for-statement
                  | while-statement
-                 | when-statement )
-               comment
+                 | when-statement
+               )
+               description
         """
         return (
             [
@@ -1496,7 +1525,7 @@ class Syntax:
                 cls.while_statement,
                 cls.when_statement,
             ],
-            cls.comment,
+            cls.description,
         )
 
     @classmethod
@@ -1612,7 +1641,7 @@ class Syntax:
         .. code-block:: modelicapeg
 
             for-indices :
-               for-index {"," for-index}
+               for-index { "," for-index }
         """
         return (cls.for_index, ZeroOrMore(",", cls.for_index))
 
@@ -1622,7 +1651,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            for-index:
+            for-index :
                IDENT [ `in` expression ]
         """
         return (cls.IDENT, Optional(cls.IN, cls.expression))
@@ -1657,7 +1686,8 @@ class Syntax:
                `when` expression `then`
                  { equation ";" }
                { `elsewhen` expression `then`
-                 { equation ";" } }
+                 { equation ";" }
+               }
                `end` `when`
         """
         return (
@@ -1685,7 +1715,8 @@ class Syntax:
                `when` expression `then`
                  { statement ";" }
                { `elsewhen` expression `then`
-                 { statement ";" } }
+                 { statement ";" }
+               }
                `end` `when`
         """
         return (
@@ -1729,8 +1760,9 @@ class Syntax:
 
             expression :
                simple-expression
-               | `if` expression `then` expression { `elseif` expression `then` expression }
-               `else` expression
+               | `if` expression `then` expression
+                 { `elseif` expression `then` expression }
+                 `else` expression
         """
         return [
             cls.simple_expression,
@@ -1894,7 +1926,7 @@ class Syntax:
                | STRING
                | `false`
                | `true`
-               | (component-reference | `der` | `initial` | `pure` ) function-call-args
+               | ( component-reference | `der` | `initial` | `pure` ) function-call-args
                | component-reference
                | "(" output-expression-list ")"
                | "[" expression-list { ";" expression-list } "]"
@@ -1924,11 +1956,25 @@ class Syntax:
 
     @classmethod
     @returns_parsing_expression
+    def UNSIGNED_NUMBER(cls) -> RegExMatch:
+        """
+        .. code-block:: modelicapeg
+
+            UNSIGNED-NUMBER =
+               UNSIGNED-REAL | UNSIGNED-INTEGER
+        """
+        return RegExMatch(
+            "[0-9][0-9]*(\\.([0-9][0-9]*)?)?[Ee][\\+\\-]?[0-9][0-9]*|[0-9][0-9]*\\.([0-9][0-9]*)?|\\.[0-9][0-9]*([Ee][\\+\\-]?[0-9][0-9]*)?|[0-9][0-9]*"
+        )
+
+    @classmethod
+    @returns_parsing_expression
     def type_specifier(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
 
-            type-specifier : ["."] name
+            type-specifier :
+               ["."] name
         """
         return (Optional("."), cls.name)
 
@@ -1938,7 +1984,8 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            name : IDENT { "." IDENT }
+            name :
+               IDENT { "." IDENT }
         """
         return (cls.IDENT, ZeroOrMore(".", cls.IDENT))
 
@@ -1976,17 +2023,13 @@ class Syntax:
         .. code-block:: modelicapeg
 
             function-arguments :
-               `function` type-specifier "(" [ named-arguments ] ")" [ "," function-arguments-non-first ]
+               function-partial-application [ "," function-arguments-non-first ]
                | named-arguments
                | expression [ "," function-arguments-non-first | `for` for-indices ]
         """
         return [
             (
-                cls.FUNCTION,
-                cls.type_specifier,
-                "(",
-                Optional(cls.named_arguments),
-                ")",
+                cls.function_partial_application,
                 Optional(",", cls.function_arguments_non_first),
             ),
             cls.named_arguments,
@@ -2076,18 +2119,26 @@ class Syntax:
         .. code-block:: modelicapeg
 
             function-argument :
-               `function` type-specifier "(" [ named-arguments ] ")" | expression
+               function-partial-application | expression
         """
-        return [
-            (
-                cls.FUNCTION,
-                cls.type_specifier,
-                "(",
-                Optional(cls.named_arguments),
-                ")",
-            ),
-            cls.expression,
-        ]
+        return [cls.function_partial_application, cls.expression]
+
+    @classmethod
+    @returns_parsing_expression
+    def function_partial_application(cls) -> ParsingExpressionLike:
+        """
+        .. code-block:: modelicapeg
+
+            function-partial-application :
+               `function` type-specifier "(" [ named-arguments ] ")"
+        """
+        return (
+            cls.FUNCTION,
+            cls.type_specifier,
+            "(",
+            Optional(cls.named_arguments),
+            ")",
+        )
 
     @classmethod
     @returns_parsing_expression
@@ -2095,7 +2146,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            output-expression-list:
+            output-expression-list :
                [ expression ] { "," [ expression ] }
         """
         return (
@@ -2138,33 +2189,33 @@ class Syntax:
 
     @classmethod
     @returns_parsing_expression
-    def comment(cls) -> ParsingExpressionLike:
+    def description(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
 
-            comment :
-               string-comment [ annotation-comment ]
+            description :
+               description-string [ annotation-clause ]
         """
-        return (cls.string_comment, Optional(cls.annotation_comment))
+        return (cls.description_string, Optional(cls.annotation_clause))
 
     @classmethod
     @returns_parsing_expression
-    def string_comment(cls) -> ParsingExpressionLike:
+    def description_string(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
 
-            string-comment :
-            [ STRING { "+" STRING } ]
+            description-string :
+               [ STRING { "+" STRING } ]
         """
         return Optional(cls.STRING, ZeroOrMore("+", cls.STRING))
 
     @classmethod
     @returns_parsing_expression
-    def annotation_comment(cls) -> ParsingExpressionLike:
+    def annotation_clause(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
 
-            annotation-comment :
+            annotation-clause :
                `annotation` class-modification
         """
         return (cls.ANNOTATION, cls.class_modification)
