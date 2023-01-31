@@ -113,6 +113,11 @@ class ModuleVisitor(PTNodeVisitor):
         )
         for keyword in sorted_keywords:
             name = keyword.upper()
+            docs = [
+                ".. code-block:: modelicapeg",
+                "",
+                f"    {keyword.upper()} = `{keyword.lower()}`",
+            ]
             regex = Regex(rf"{keyword}(?![0-9A-Z_a-z])")
 
             yield create_function_def(
@@ -120,7 +125,7 @@ class ModuleVisitor(PTNodeVisitor):
                 name=name,
                 args=[],
                 returns="RegExMatch",
-                doc=f"`{keyword}`",
+                docs=docs,
                 value=create_call(
                     "RegExMatch",
                     args=[create_constant(value=regex)],
@@ -145,7 +150,11 @@ class ModuleVisitor(PTNodeVisitor):
                 "returns_parsing_expression",
             ]
 
-        doc = self.__get_source(node)
+        docs = [
+            ".. code-block:: modelicapeg",
+            "",
+            *(f"    {line}" for line in self.__get_source(node).splitlines()),
+        ]
         (pattern,) = children.lexical_expression
 
         def rule_definition() -> FunctionDef:
@@ -156,7 +165,7 @@ class ModuleVisitor(PTNodeVisitor):
                 name=name,
                 args=["cls"],
                 returns="RegExMatch",
-                doc=doc,
+                docs=docs,
                 value=create_call(
                     "RegExMatch",
                     args=[create_constant(value=value)],
@@ -170,7 +179,11 @@ class ModuleVisitor(PTNodeVisitor):
         self, node: ParseTreeNode, children: SupportsChildren
     ) -> None:
         (name,) = children.SYNTAX_RULE
-        doc = self.__get_source(node)
+        docs = [
+            ".. code-block:: modelicapeg",
+            "",
+            *(f"    {line}" for line in self.__get_source(node).splitlines()),
+        ]
         (value,) = children.syntax_expression
 
         def rule_definition() -> FunctionDef:
@@ -179,7 +192,7 @@ class ModuleVisitor(PTNodeVisitor):
                 name=name,
                 args=["cls"],
                 returns="ParsingExpressionLike",
-                doc=doc,
+                docs=docs,
                 value=value,
             )
 

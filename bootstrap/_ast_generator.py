@@ -98,14 +98,20 @@ def create_function_def(
     name: str,
     args: Sequence[str],
     returns: str,
-    doc: str,
+    docs: Sequence[str],
     value: expr,
 ) -> FunctionDef:
-    doc = doc.strip()
-
     body: List[stmt] = []
-    if doc:
-        body.append(Expr(value=create_constant(value="\n" + doc + "\n\n")))
+    if docs:
+        body.append(
+            Expr(
+                value=create_constant(
+                    value="".join(
+                        line.rstrip() + "\n" for line in ["", *docs, ""]
+                    )
+                )
+            )
+        )
     body.append(Return(value=value))
 
     return FunctionDef(

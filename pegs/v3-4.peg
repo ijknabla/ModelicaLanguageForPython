@@ -72,8 +72,10 @@ UNSIGNED-NUMBER =
 // Modelica uses the same comment syntax as C++ and Java
 // (i.e., // signals the start of a line comment and /**/ ... . */ is a multi-line comment)
 COMMENT =
-     r'//.*'                   // single-line comment
-   | r'/\*([^*]|\*(?!/))*\*/'  // multi-line comment
+   // single-line comment
+     r'//.*'
+    /* multi-line comment */
+   | r'/\*([^*]|\*(?!/))*\*/'
 
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#grammar
@@ -351,8 +353,8 @@ relation :
    arithmetic-expression [ relational-operator arithmetic-expression ]
 
 relational-operator :
-   "==" | "<>" | "<=" | ">=" |  // 2-letter operators
-   "<" | ">"                    // 1-letter operators
+   /* 2-characters */ "==" | "<>" | "<=" | ">=" |
+   /* 1-character  */ "<"  | ">"
 
 arithmetic-expression :
    [ add-operator ] term { add-operator term }
