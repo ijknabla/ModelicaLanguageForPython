@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+sphinx-apidoc \
+    --force \
+    --module-first \
+    --separate modelicalang \
+    --maxdepth 2 \
+    --output document/apis
