@@ -682,7 +682,7 @@ pygments = ">=2"
 type = "git"
 url = "https://github.com/ijknabla/pygments-modelicapeg-plugin.git"
 reference = "main"
-resolved_reference = "d4761b95a762c68ed5060022a9d572d434669f6e"
+resolved_reference = "899adc649a39ab65f9ceed672b026bad855a2d9c"
 
 [[package]]
 name = "pyparsing"
