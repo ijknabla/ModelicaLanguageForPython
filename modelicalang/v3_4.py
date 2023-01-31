@@ -1078,9 +1078,9 @@ class Syntax:
                [ `redeclare` ]
                [ `final` ]
                [ `inner` ] [ `outer` ]
-               ( ( class-definition | component-clause ) |
-               `replaceable` ( class-definition | component-clause )
-               [ constraining-clause comment ] )
+               ( ( class-definition | component-clause) |
+               `replaceable` ( class-definition | component-clause)
+               [constraining-clause comment])
         """
         return [
             cls.import_clause,
