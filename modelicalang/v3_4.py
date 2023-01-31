@@ -1622,7 +1622,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            for-index :
+            for-index:
                IDENT [ `in` expression ]
         """
         return (cls.IDENT, Optional(cls.IN, cls.expression))
