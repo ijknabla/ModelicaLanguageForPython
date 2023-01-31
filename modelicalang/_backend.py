@@ -1,5 +1,4 @@
 __all__ = (
-    "ParsingExpression",
     "ParsingExpressionLike",
     "enable_method_in_parser_python",
     "not_start_with_keyword",
@@ -11,27 +10,20 @@ import enum
 import types
 from functools import wraps
 from types import TracebackType
-from typing import (
-    Any,
-    Callable,
-    ClassVar,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    cast,
-)
+from typing import Any, Callable, ClassVar, Optional, Tuple, Type, TypeVar
 
 import arpeggio
-from arpeggio import ParserPython
-from typing_extensions import ParamSpec, Protocol, TypeAlias
+from arpeggio import ParserPython, ParsingExpression
+from typing_extensions import ParamSpec, Protocol
+
+from .arpeggio_annotation import (
+    ParsingExpressionLike,
+    returns_parsing_expression,
+)
 
 P = ParamSpec("P")
 T = TypeVar("T")
 T_keywords = TypeVar("T_keywords", bound="SupportsKeywords")
-
-ParsingExpression = arpeggio.ParsingExpression
-ParsingExpressionLike: TypeAlias = "arpeggio._ParsingExpressionLike"
 
 
 _isinstance__builtins = builtins.isinstance
@@ -92,9 +84,3 @@ def not_start_with_keyword(
         )
 
     return wrapped
-
-
-def returns_parsing_expression(
-    f: Callable[P, ParsingExpressionLike]
-) -> Callable[P, ParsingExpression]:
-    return cast(Callable[P, ParsingExpression], f)
