@@ -164,14 +164,14 @@ argument :
    element-modification-or-replaceable
    | element-redeclaration
 element-modification-or-replaceable :
-   [ each ] [ final ] ( element-modification | element-replaceable )
+   [ `each` ] [ `final` ] ( element-modification | element-replaceable )
 element-modification :
    name [ modification ] description-string
 element-redeclaration :
-   redeclare [ each ] [ final ]
+   `redeclare` [ `each` ] [ `final` ]
    ( short-class-definition | component-clause1 | element-replaceable )
 element-replaceable :
-   replaceable ( short-class-definition | component-clause1 )
+   `replaceable` ( short-class-definition | component-clause1 )
    [ constraining-clause ]
 component-clause1 :
    type-prefix type-specifier component-declaration1
