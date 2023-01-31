@@ -775,7 +775,7 @@ class Syntax:
         .. code-block:: modelicapeg
 
             UNSIGNED-REAL =
-               UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
+               UNSIGNED_INTEGER [ "." [ UNSIGNED_INTEGER ] ]
                ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER
                | UNSIGNED-INTEGER  "." [ UNSIGNED-INTEGER ]
                | "."  UNSIGNED-INTEGER [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]

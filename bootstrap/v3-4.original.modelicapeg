@@ -26,7 +26,7 @@ S-ESCAPE = "\’" | "\"" | "\?" | "\\" |
 DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 UNSIGNED-INTEGER = DIGIT { DIGIT }
 UNSIGNED-NUMBER = UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
-        [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]
+        [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]’
 // S-CHAR is any member of the Unicode character set (http://www.unicode.org; see section 13.2.2 for storing as UTF-8 on files) except double-quote ”””, and backslash ”\”
 
 // For identifiers the redundant escapes (’\?’ and ’\"’) are the same as the corresponding non-escaped variants (’?’ and ’"’). [The single quotes are part of an identifier. E.g. ’x’ and x are different IDENTs].
