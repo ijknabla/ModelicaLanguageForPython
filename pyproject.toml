@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ModelicaLanguage"
+name = "ModelicaLang"
 version = "0.0.0a10"
 description = "Modelica parser and class representation for Python"
 repository = "https://github.com/ijknabla/ModelicaLanguageForPython"
@@ -11,7 +11,7 @@ classifiers = [
         "Programming Language :: Python :: 3 :: Only",
 ]
 packages = [
-    { include = "modelica_language"},
+    { include = "modelicalang"},
 ]
 
 [tool.poetry.dependencies]
@@ -54,7 +54,7 @@ exclude_lines = [
 [tool.flake8]
 exclude = ".venv"
 per-file-ignores = [
-    "modelica_language/v?_?.py:E501"
+    "modelicalang/v?_?.py:E501"
 ]
 
 [tool.isort]

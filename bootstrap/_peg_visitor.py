@@ -76,7 +76,7 @@ class ModuleVisitor(PTNodeVisitor):
                 ("typing", ["ClassVar", "Tuple"]),
                 ("arpeggio", ["Optional", "RegExMatch", "ZeroOrMore"]),
                 (
-                    "modelica_language._backend",
+                    "modelicalang._backend",
                     [
                         "ParsingExpressionLike",
                         "not_start_with_keyword",

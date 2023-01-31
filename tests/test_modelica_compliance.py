@@ -4,7 +4,7 @@ import pytest
 from arpeggio import ParseTreeNode
 from pkg_resources import resource_filename
 
-from modelica_language import ModelicaVersion, get_file_parser
+from modelicalang import ModelicaVersion, get_file_parser
 
 SOURCE_DIRECTORY = Path(
     resource_filename(__name__, "Modelica-Compliance/ModelicaCompliance/")

@@ -2,7 +2,7 @@ from typing import ClassVar, Tuple
 
 from arpeggio import Optional, RegExMatch, ZeroOrMore
 
-from modelica_language._backend import (
+from modelicalang._backend import (
     ParsingExpressionLike,
     not_start_with_keyword,
     returns_parsing_expression,

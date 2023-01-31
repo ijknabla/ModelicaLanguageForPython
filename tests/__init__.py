@@ -4,7 +4,7 @@ from typing import Optional
 
 from arpeggio import EOF, ParserPython, RegExMatch
 
-from modelica_language import (
+from modelicalang import (
     ModelicaVersion,
     ParsingExpressionLike,
     enable_method_in_parser_python,
