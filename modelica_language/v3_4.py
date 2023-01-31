@@ -76,7 +76,9 @@ class Syntax:
     @returns_parsing_expression
     def ALGORITHM() -> RegExMatch:
         """
-        `algorithm`
+        .. code-block:: modelicapeg
+
+            ALGORITHM = `algorithm`
         """
         return RegExMatch("algorithm(?![0-9A-Z_a-z])")
 
@@ -84,7 +86,9 @@ class Syntax:
     @returns_parsing_expression
     def AND() -> RegExMatch:
         """
-        `and`
+        .. code-block:: modelicapeg
+
+            AND = `and`
         """
         return RegExMatch("and(?![0-9A-Z_a-z])")
 
@@ -92,7 +96,9 @@ class Syntax:
     @returns_parsing_expression
     def ANNOTATION() -> RegExMatch:
         """
-        `annotation`
+        .. code-block:: modelicapeg
+
+            ANNOTATION = `annotation`
         """
         return RegExMatch("annotation(?![0-9A-Z_a-z])")
 
@@ -100,7 +106,9 @@ class Syntax:
     @returns_parsing_expression
     def BLOCK() -> RegExMatch:
         """
-        `block`
+        .. code-block:: modelicapeg
+
+            BLOCK = `block`
         """
         return RegExMatch("block(?![0-9A-Z_a-z])")
 
@@ -108,7 +116,9 @@ class Syntax:
     @returns_parsing_expression
     def BREAK() -> RegExMatch:
         """
-        `break`
+        .. code-block:: modelicapeg
+
+            BREAK = `break`
         """
         return RegExMatch("break(?![0-9A-Z_a-z])")
 
@@ -116,7 +126,9 @@ class Syntax:
     @returns_parsing_expression
     def CLASS() -> RegExMatch:
         """
-        `class`
+        .. code-block:: modelicapeg
+
+            CLASS = `class`
         """
         return RegExMatch("class(?![0-9A-Z_a-z])")
 
@@ -124,7 +136,9 @@ class Syntax:
     @returns_parsing_expression
     def CONNECT() -> RegExMatch:
         """
-        `connect`
+        .. code-block:: modelicapeg
+
+            CONNECT = `connect`
         """
         return RegExMatch("connect(?![0-9A-Z_a-z])")
 
@@ -132,7 +146,9 @@ class Syntax:
     @returns_parsing_expression
     def CONNECTOR() -> RegExMatch:
         """
-        `connector`
+        .. code-block:: modelicapeg
+
+            CONNECTOR = `connector`
         """
         return RegExMatch("connector(?![0-9A-Z_a-z])")
 
@@ -140,7 +156,9 @@ class Syntax:
     @returns_parsing_expression
     def CONSTANT() -> RegExMatch:
         """
-        `constant`
+        .. code-block:: modelicapeg
+
+            CONSTANT = `constant`
         """
         return RegExMatch("constant(?![0-9A-Z_a-z])")
 
@@ -148,7 +166,9 @@ class Syntax:
     @returns_parsing_expression
     def CONSTRAINEDBY() -> RegExMatch:
         """
-        `constrainedby`
+        .. code-block:: modelicapeg
+
+            CONSTRAINEDBY = `constrainedby`
         """
         return RegExMatch("constrainedby(?![0-9A-Z_a-z])")
 
@@ -156,7 +176,9 @@ class Syntax:
     @returns_parsing_expression
     def DER() -> RegExMatch:
         """
-        `der`
+        .. code-block:: modelicapeg
+
+            DER = `der`
         """
         return RegExMatch("der(?![0-9A-Z_a-z])")
 
@@ -164,7 +186,9 @@ class Syntax:
     @returns_parsing_expression
     def DISCRETE() -> RegExMatch:
         """
-        `discrete`
+        .. code-block:: modelicapeg
+
+            DISCRETE = `discrete`
         """
         return RegExMatch("discrete(?![0-9A-Z_a-z])")
 
@@ -172,7 +196,9 @@ class Syntax:
     @returns_parsing_expression
     def EACH() -> RegExMatch:
         """
-        `each`
+        .. code-block:: modelicapeg
+
+            EACH = `each`
         """
         return RegExMatch("each(?![0-9A-Z_a-z])")
 
@@ -180,7 +206,9 @@ class Syntax:
     @returns_parsing_expression
     def ELSE() -> RegExMatch:
         """
-        `else`
+        .. code-block:: modelicapeg
+
+            ELSE = `else`
         """
         return RegExMatch("else(?![0-9A-Z_a-z])")
 
@@ -188,7 +216,9 @@ class Syntax:
     @returns_parsing_expression
     def ELSEIF() -> RegExMatch:
         """
-        `elseif`
+        .. code-block:: modelicapeg
+
+            ELSEIF = `elseif`
         """
         return RegExMatch("elseif(?![0-9A-Z_a-z])")
 
@@ -196,7 +226,9 @@ class Syntax:
     @returns_parsing_expression
     def ELSEWHEN() -> RegExMatch:
         """
-        `elsewhen`
+        .. code-block:: modelicapeg
+
+            ELSEWHEN = `elsewhen`
         """
         return RegExMatch("elsewhen(?![0-9A-Z_a-z])")
 
@@ -204,7 +236,9 @@ class Syntax:
     @returns_parsing_expression
     def ENCAPSULATED() -> RegExMatch:
         """
-        `encapsulated`
+        .. code-block:: modelicapeg
+
+            ENCAPSULATED = `encapsulated`
         """
         return RegExMatch("encapsulated(?![0-9A-Z_a-z])")
 
@@ -212,7 +246,9 @@ class Syntax:
     @returns_parsing_expression
     def END() -> RegExMatch:
         """
-        `end`
+        .. code-block:: modelicapeg
+
+            END = `end`
         """
         return RegExMatch("end(?![0-9A-Z_a-z])")
 
@@ -220,7 +256,9 @@ class Syntax:
     @returns_parsing_expression
     def ENUMERATION() -> RegExMatch:
         """
-        `enumeration`
+        .. code-block:: modelicapeg
+
+            ENUMERATION = `enumeration`
         """
         return RegExMatch("enumeration(?![0-9A-Z_a-z])")
 
@@ -228,7 +266,9 @@ class Syntax:
     @returns_parsing_expression
     def EQUATION() -> RegExMatch:
         """
-        `equation`
+        .. code-block:: modelicapeg
+
+            EQUATION = `equation`
         """
         return RegExMatch("equation(?![0-9A-Z_a-z])")
 
@@ -236,7 +276,9 @@ class Syntax:
     @returns_parsing_expression
     def EXPANDABLE() -> RegExMatch:
         """
-        `expandable`
+        .. code-block:: modelicapeg
+
+            EXPANDABLE = `expandable`
         """
         return RegExMatch("expandable(?![0-9A-Z_a-z])")
 
@@ -244,7 +286,9 @@ class Syntax:
     @returns_parsing_expression
     def EXTENDS() -> RegExMatch:
         """
-        `extends`
+        .. code-block:: modelicapeg
+
+            EXTENDS = `extends`
         """
         return RegExMatch("extends(?![0-9A-Z_a-z])")
 
@@ -252,7 +296,9 @@ class Syntax:
     @returns_parsing_expression
     def EXTERNAL() -> RegExMatch:
         """
-        `external`
+        .. code-block:: modelicapeg
+
+            EXTERNAL = `external`
         """
         return RegExMatch("external(?![0-9A-Z_a-z])")
 
@@ -260,7 +306,9 @@ class Syntax:
     @returns_parsing_expression
     def FALSE() -> RegExMatch:
         """
-        `false`
+        .. code-block:: modelicapeg
+
+            FALSE = `false`
         """
         return RegExMatch("false(?![0-9A-Z_a-z])")
 
@@ -268,7 +316,9 @@ class Syntax:
     @returns_parsing_expression
     def FINAL() -> RegExMatch:
         """
-        `final`
+        .. code-block:: modelicapeg
+
+            FINAL = `final`
         """
         return RegExMatch("final(?![0-9A-Z_a-z])")
 
@@ -276,7 +326,9 @@ class Syntax:
     @returns_parsing_expression
     def FLOW() -> RegExMatch:
         """
-        `flow`
+        .. code-block:: modelicapeg
+
+            FLOW = `flow`
         """
         return RegExMatch("flow(?![0-9A-Z_a-z])")
 
@@ -284,7 +336,9 @@ class Syntax:
     @returns_parsing_expression
     def FOR() -> RegExMatch:
         """
-        `for`
+        .. code-block:: modelicapeg
+
+            FOR = `for`
         """
         return RegExMatch("for(?![0-9A-Z_a-z])")
 
@@ -292,7 +346,9 @@ class Syntax:
     @returns_parsing_expression
     def FUNCTION() -> RegExMatch:
         """
-        `function`
+        .. code-block:: modelicapeg
+
+            FUNCTION = `function`
         """
         return RegExMatch("function(?![0-9A-Z_a-z])")
 
@@ -300,7 +356,9 @@ class Syntax:
     @returns_parsing_expression
     def IF() -> RegExMatch:
         """
-        `if`
+        .. code-block:: modelicapeg
+
+            IF = `if`
         """
         return RegExMatch("if(?![0-9A-Z_a-z])")
 
@@ -308,7 +366,9 @@ class Syntax:
     @returns_parsing_expression
     def IMPORT() -> RegExMatch:
         """
-        `import`
+        .. code-block:: modelicapeg
+
+            IMPORT = `import`
         """
         return RegExMatch("import(?![0-9A-Z_a-z])")
 
@@ -316,7 +376,9 @@ class Syntax:
     @returns_parsing_expression
     def IMPURE() -> RegExMatch:
         """
-        `impure`
+        .. code-block:: modelicapeg
+
+            IMPURE = `impure`
         """
         return RegExMatch("impure(?![0-9A-Z_a-z])")
 
@@ -324,7 +386,9 @@ class Syntax:
     @returns_parsing_expression
     def IN() -> RegExMatch:
         """
-        `in`
+        .. code-block:: modelicapeg
+
+            IN = `in`
         """
         return RegExMatch("in(?![0-9A-Z_a-z])")
 
@@ -332,7 +396,9 @@ class Syntax:
     @returns_parsing_expression
     def INITIAL() -> RegExMatch:
         """
-        `initial`
+        .. code-block:: modelicapeg
+
+            INITIAL = `initial`
         """
         return RegExMatch("initial(?![0-9A-Z_a-z])")
 
@@ -340,7 +406,9 @@ class Syntax:
     @returns_parsing_expression
     def INNER() -> RegExMatch:
         """
-        `inner`
+        .. code-block:: modelicapeg
+
+            INNER = `inner`
         """
         return RegExMatch("inner(?![0-9A-Z_a-z])")
 
@@ -348,7 +416,9 @@ class Syntax:
     @returns_parsing_expression
     def INPUT() -> RegExMatch:
         """
-        `input`
+        .. code-block:: modelicapeg
+
+            INPUT = `input`
         """
         return RegExMatch("input(?![0-9A-Z_a-z])")
 
@@ -356,7 +426,9 @@ class Syntax:
     @returns_parsing_expression
     def LOOP() -> RegExMatch:
         """
-        `loop`
+        .. code-block:: modelicapeg
+
+            LOOP = `loop`
         """
         return RegExMatch("loop(?![0-9A-Z_a-z])")
 
@@ -364,7 +436,9 @@ class Syntax:
     @returns_parsing_expression
     def MODEL() -> RegExMatch:
         """
-        `model`
+        .. code-block:: modelicapeg
+
+            MODEL = `model`
         """
         return RegExMatch("model(?![0-9A-Z_a-z])")
 
@@ -372,7 +446,9 @@ class Syntax:
     @returns_parsing_expression
     def NOT() -> RegExMatch:
         """
-        `not`
+        .. code-block:: modelicapeg
+
+            NOT = `not`
         """
         return RegExMatch("not(?![0-9A-Z_a-z])")
 
@@ -380,7 +456,9 @@ class Syntax:
     @returns_parsing_expression
     def OPERATOR() -> RegExMatch:
         """
-        `operator`
+        .. code-block:: modelicapeg
+
+            OPERATOR = `operator`
         """
         return RegExMatch("operator(?![0-9A-Z_a-z])")
 
@@ -388,7 +466,9 @@ class Syntax:
     @returns_parsing_expression
     def OR() -> RegExMatch:
         """
-        `or`
+        .. code-block:: modelicapeg
+
+            OR = `or`
         """
         return RegExMatch("or(?![0-9A-Z_a-z])")
 
@@ -396,7 +476,9 @@ class Syntax:
     @returns_parsing_expression
     def OUTER() -> RegExMatch:
         """
-        `outer`
+        .. code-block:: modelicapeg
+
+            OUTER = `outer`
         """
         return RegExMatch("outer(?![0-9A-Z_a-z])")
 
@@ -404,7 +486,9 @@ class Syntax:
     @returns_parsing_expression
     def OUTPUT() -> RegExMatch:
         """
-        `output`
+        .. code-block:: modelicapeg
+
+            OUTPUT = `output`
         """
         return RegExMatch("output(?![0-9A-Z_a-z])")
 
@@ -412,7 +496,9 @@ class Syntax:
     @returns_parsing_expression
     def PACKAGE() -> RegExMatch:
         """
-        `package`
+        .. code-block:: modelicapeg
+
+            PACKAGE = `package`
         """
         return RegExMatch("package(?![0-9A-Z_a-z])")
 
@@ -420,7 +506,9 @@ class Syntax:
     @returns_parsing_expression
     def PARAMETER() -> RegExMatch:
         """
-        `parameter`
+        .. code-block:: modelicapeg
+
+            PARAMETER = `parameter`
         """
         return RegExMatch("parameter(?![0-9A-Z_a-z])")
 
@@ -428,7 +516,9 @@ class Syntax:
     @returns_parsing_expression
     def PARTIAL() -> RegExMatch:
         """
-        `partial`
+        .. code-block:: modelicapeg
+
+            PARTIAL = `partial`
         """
         return RegExMatch("partial(?![0-9A-Z_a-z])")
 
@@ -436,7 +526,9 @@ class Syntax:
     @returns_parsing_expression
     def PROTECTED() -> RegExMatch:
         """
-        `protected`
+        .. code-block:: modelicapeg
+
+            PROTECTED = `protected`
         """
         return RegExMatch("protected(?![0-9A-Z_a-z])")
 
@@ -444,7 +536,9 @@ class Syntax:
     @returns_parsing_expression
     def PUBLIC() -> RegExMatch:
         """
-        `public`
+        .. code-block:: modelicapeg
+
+            PUBLIC = `public`
         """
         return RegExMatch("public(?![0-9A-Z_a-z])")
 
@@ -452,7 +546,9 @@ class Syntax:
     @returns_parsing_expression
     def PURE() -> RegExMatch:
         """
-        `pure`
+        .. code-block:: modelicapeg
+
+            PURE = `pure`
         """
         return RegExMatch("pure(?![0-9A-Z_a-z])")
 
@@ -460,7 +556,9 @@ class Syntax:
     @returns_parsing_expression
     def RECORD() -> RegExMatch:
         """
-        `record`
+        .. code-block:: modelicapeg
+
+            RECORD = `record`
         """
         return RegExMatch("record(?![0-9A-Z_a-z])")
 
@@ -468,7 +566,9 @@ class Syntax:
     @returns_parsing_expression
     def REDECLARE() -> RegExMatch:
         """
-        `redeclare`
+        .. code-block:: modelicapeg
+
+            REDECLARE = `redeclare`
         """
         return RegExMatch("redeclare(?![0-9A-Z_a-z])")
 
@@ -476,7 +576,9 @@ class Syntax:
     @returns_parsing_expression
     def REPLACEABLE() -> RegExMatch:
         """
-        `replaceable`
+        .. code-block:: modelicapeg
+
+            REPLACEABLE = `replaceable`
         """
         return RegExMatch("replaceable(?![0-9A-Z_a-z])")
 
@@ -484,7 +586,9 @@ class Syntax:
     @returns_parsing_expression
     def RETURN() -> RegExMatch:
         """
-        `return`
+        .. code-block:: modelicapeg
+
+            RETURN = `return`
         """
         return RegExMatch("return(?![0-9A-Z_a-z])")
 
@@ -492,7 +596,9 @@ class Syntax:
     @returns_parsing_expression
     def STREAM() -> RegExMatch:
         """
-        `stream`
+        .. code-block:: modelicapeg
+
+            STREAM = `stream`
         """
         return RegExMatch("stream(?![0-9A-Z_a-z])")
 
@@ -500,7 +606,9 @@ class Syntax:
     @returns_parsing_expression
     def THEN() -> RegExMatch:
         """
-        `then`
+        .. code-block:: modelicapeg
+
+            THEN = `then`
         """
         return RegExMatch("then(?![0-9A-Z_a-z])")
 
@@ -508,7 +616,9 @@ class Syntax:
     @returns_parsing_expression
     def TRUE() -> RegExMatch:
         """
-        `true`
+        .. code-block:: modelicapeg
+
+            TRUE = `true`
         """
         return RegExMatch("true(?![0-9A-Z_a-z])")
 
@@ -516,7 +626,9 @@ class Syntax:
     @returns_parsing_expression
     def TYPE() -> RegExMatch:
         """
-        `type`
+        .. code-block:: modelicapeg
+
+            TYPE = `type`
         """
         return RegExMatch("type(?![0-9A-Z_a-z])")
 
@@ -524,7 +636,9 @@ class Syntax:
     @returns_parsing_expression
     def WHEN() -> RegExMatch:
         """
-        `when`
+        .. code-block:: modelicapeg
+
+            WHEN = `when`
         """
         return RegExMatch("when(?![0-9A-Z_a-z])")
 
@@ -532,7 +646,9 @@ class Syntax:
     @returns_parsing_expression
     def WHILE() -> RegExMatch:
         """
-        `while`
+        .. code-block:: modelicapeg
+
+            WHILE = `while`
         """
         return RegExMatch("while(?![0-9A-Z_a-z])")
 
@@ -540,7 +656,9 @@ class Syntax:
     @returns_parsing_expression
     def WITHIN() -> RegExMatch:
         """
-        `within`
+        .. code-block:: modelicapeg
+
+            WITHIN = `within`
         """
         return RegExMatch("within(?![0-9A-Z_a-z])")
 

@@ -113,6 +113,11 @@ class ModuleVisitor(PTNodeVisitor):
         )
         for keyword in sorted_keywords:
             name = keyword.upper()
+            docs = [
+                ".. code-block:: modelicapeg",
+                "",
+                f"    {keyword.upper()} = `{keyword.lower()}`",
+            ]
             regex = Regex(rf"{keyword}(?![0-9A-Z_a-z])")
 
             yield create_function_def(
@@ -120,7 +125,7 @@ class ModuleVisitor(PTNodeVisitor):
                 name=name,
                 args=[],
                 returns="RegExMatch",
-                docs=[f"`{keyword}`"],
+                docs=docs,
                 value=create_call(
                     "RegExMatch",
                     args=[create_constant(value=regex)],
