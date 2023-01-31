@@ -131,9 +131,9 @@ import-list :
 // A.2.3 Extends
 // ⬇
 extends-clause :
-   extends type-specifier [ class-modification ] [ annotation-clause ]
+   `extends` type-specifier [ class-modification ] [ annotation-clause ]
 constraining-clause :
-   constrainedby type-specifier [ class-modification ]
+   `constrainedby` type-specifier [ class-modification ]
 // A.2.4 Component Clause
 // ⬇
 component-clause :
