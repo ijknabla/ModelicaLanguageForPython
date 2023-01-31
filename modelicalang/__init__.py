@@ -25,8 +25,8 @@ latest = v3_5
 
 
 class ModelicaVersion(enum.Enum):
-    v3_5 = latest = enum.auto()
     v3_4 = enum.auto()
+    v3_5 = latest = enum.auto()
 
 
 _AnySyntaxType = Union[Type[v3_4.Syntax], Type[v3_5.Syntax]]
