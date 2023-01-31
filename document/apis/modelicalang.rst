@@ -1,13 +1,13 @@
-modelica\_language package
+modelicalang package
 ==========================
 
 Submodules
 ----------
 
-modelica\_language.v3\_4 module
+modelicalang.v3\_4 module
 -------------------------------
 
-.. automodule:: modelica_language.v3_4
+.. automodule:: modelicalang.v3_4
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ modelica\_language.v3\_4 module
 Module contents
 ---------------
 
-.. automodule:: modelica_language
+.. automodule:: modelicalang
    :members:
    :undoc-members:
    :show-inheritance:

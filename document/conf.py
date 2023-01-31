@@ -12,7 +12,7 @@ sys.path.insert(0, resource_filename(__name__, ".."))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "ModelicaLanguage"
+project = "ModelicaLang"
 copyright = "2023, ijknabla <ijknabla@gmail.com>"
 author = "ijknabla <ijknabla@gmail.com>"
 

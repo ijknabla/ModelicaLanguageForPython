@@ -1,7 +1,7 @@
-modelica_language
-=================
+modelicalang
+============
 
 .. toctree::
    :maxdepth: 4
 
-   modelica_language
+   modelicalang

@@ -1,6 +1,6 @@
 from arpeggio import EOF, Not, OneOrMore, RegExMatch
 
-from modelica_language._backend import (
+from modelicalang._backend import (
     ParsingExpressionLike,
     returns_parsing_expression,
 )

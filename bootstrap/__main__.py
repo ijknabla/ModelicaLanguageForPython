@@ -5,7 +5,7 @@ from typing import TextIO
 
 from arpeggio import visit_parse_tree
 
-from modelica_language import enable_method_in_parser_python
+from modelicalang import enable_method_in_parser_python
 
 from ._backport import unparse
 from ._peg_syntax import PEGSyntax

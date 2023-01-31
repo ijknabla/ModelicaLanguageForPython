@@ -43,7 +43,7 @@ from arpeggio import (
 )
 from typing_extensions import Protocol, runtime_checkable
 
-from modelica_language._backend import (
+from modelicalang._backend import (
     ParsingExpressionLike,
     returns_parsing_expression,
 )
