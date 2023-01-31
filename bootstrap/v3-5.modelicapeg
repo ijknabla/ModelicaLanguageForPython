@@ -30,9 +30,9 @@ S-ESCAPE = "\'" | "\"" | "\?" | "\\"
 DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 UNSIGNED-INTEGER = DIGIT { DIGIT }
 UNSIGNED-REAL =
-   UNSIGNED-INTEGER  "." [ UNSIGNED-INTEGER ]
-   | UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
-     ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER
+   UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
+   ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER
+   | UNSIGNED-INTEGER  "." [ UNSIGNED-INTEGER ]
    | "."  UNSIGNED-INTEGER [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]
 // For identifiers the redundant escapes (‘\?’ and ‘\""’) are the same as the corresponding non-escaped variants (‘?’ and ’""’). The single quotes are part of an identifier. E.g. ’x’ and x are different IDENTs.
 
@@ -300,7 +300,7 @@ primary :
    | "{" array-arguments "}"
    | `end`
 UNSIGNED-NUMBER =
-   UNSIGNED-INTEGER | UNSIGNED-REAL
+   UNSIGNED-REAL | UNSIGNED-INTEGER
 type-specifier :
    ["."] name
 name :
