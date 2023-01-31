@@ -65,16 +65,16 @@ def iter_text_and_matching_target() -> Iterator[Tuple[str, TargetLanguageDef]]:
         yield text, TargetLanguageDef.NULL
 
 
-@pytest.mark.parametrize("version", ModelicaVersion)
-@pytest.mark.parametrize("target", filter(None, TargetLanguageDef))
 @pytest.mark.parametrize(
     "text, matching_target", iter_text_and_matching_target()
 )
+@pytest.mark.parametrize("target", filter(None, TargetLanguageDef))
+@pytest.mark.parametrize("version", ModelicaVersion)
 def test_parser(
-    version: ModelicaVersion,
-    target: TargetLanguageDef,
     text: str,
     matching_target: TargetLanguageDef,
+    target: TargetLanguageDef,
+    version: ModelicaVersion,
 ) -> None:
     with ExitStack() as stack:
         if not matching_target & target:

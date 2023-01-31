@@ -12,7 +12,6 @@ SOURCE_DIRECTORY = Path(
 SOURCE_FILES = tuple(SOURCE_DIRECTORY.rglob("*.mo"))
 
 
-@pytest.mark.parametrize("version", ModelicaVersion)
 @pytest.mark.parametrize(
     "source_file",
     SOURCE_FILES,
@@ -21,9 +20,10 @@ SOURCE_FILES = tuple(SOURCE_DIRECTORY.rglob("*.mo"))
         for source_file in SOURCE_FILES
     ],
 )
+@pytest.mark.parametrize("version", ModelicaVersion)
 def test_modelica_parser(
-    version: ModelicaVersion,
     source_file: Path,
+    version: ModelicaVersion,
 ) -> None:
     parseTree = get_file_parser(version).parse(
         source_file.read_text(encoding="utf-8-sig")
