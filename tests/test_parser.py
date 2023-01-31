@@ -5,6 +5,8 @@ from typing import Iterator, Tuple
 import pytest
 from arpeggio import NoMatch
 
+from modelicalang import ModelicaVersion
+
 from . import TargetLanguageDef
 
 
@@ -63,11 +65,13 @@ def iter_text_and_matching_target() -> Iterator[Tuple[str, TargetLanguageDef]]:
         yield text, TargetLanguageDef.NULL
 
 
+@pytest.mark.parametrize("version", ModelicaVersion)
 @pytest.mark.parametrize("target", filter(None, TargetLanguageDef))
 @pytest.mark.parametrize(
     "text, matching_target", iter_text_and_matching_target()
 )
 def test_parser(
+    version: ModelicaVersion,
     target: TargetLanguageDef,
     text: str,
     matching_target: TargetLanguageDef,
@@ -75,4 +79,4 @@ def test_parser(
     with ExitStack() as stack:
         if not matching_target & target:
             stack.enter_context(pytest.raises(NoMatch))
-        target.get_parser().parse(text)
+        target.get_parser(version).parse(text)
