@@ -36,15 +36,3 @@ repos:
         -   pflake8
         language: system
         pass_filenames: false
-    -   id: poetry-sphinx-apidoc
-        name: Run sphinx-apidoc
-        entry: poetry
-        args:
-        -   run
-        -   sphinx-apidoc
-        -   --force
-        -   --output=document/apis/
-        -   modelica_language/
-        language: system
-        pass_filenames: false
-        files: ^modelica_language/.*
