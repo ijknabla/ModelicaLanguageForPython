@@ -14,7 +14,7 @@ from typing import Dict, Optional, Type, Union, cast
 
 from arpeggio import EOF, ParserPython
 
-from . import v3_4, v3_5
+from . import v2_2, v3_4, v3_5
 from ._backend import (
     ParsingExpressionLike,
     enable_method_in_parser_python,
@@ -25,12 +25,14 @@ latest = v3_5
 
 
 class ModelicaVersion(enum.Enum):
-    v3_5 = latest = enum.auto()
+    v2_2 = enum.auto()
     v3_4 = enum.auto()
+    v3_5 = latest = enum.auto()
 
 
-_AnySyntaxType = Union[Type[v3_4.Syntax], Type[v3_5.Syntax]]
+_AnySyntaxType = Union[Type[v2_2.Syntax], Type[v3_4.Syntax], Type[v3_5.Syntax]]
 _SYNTAXES: Dict[ModelicaVersion, _AnySyntaxType] = {
+    ModelicaVersion.v2_2: v2_2.Syntax,
     ModelicaVersion.v3_4: v3_4.Syntax,
     ModelicaVersion.v3_5: v3_5.Syntax,
 }
