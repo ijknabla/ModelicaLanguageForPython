@@ -36,6 +36,7 @@ pyproject-flake8 = "^0.0.1-alpha.2"
 pytest = "^6.2.5"
 pytest-cov = "^4.0.0"
 types-setuptools = "^57.4.11"
+types-arpeggio = {git = "https://github.com/ijknabla/types-arpeggio.git", rev = "main"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
