@@ -715,7 +715,11 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            S-CHAR = r'[^"\\\\]'
+            S-CHAR =
+               // S-CHAR is any member of the Unicode character set
+               // (http://www.unicode.org; see section 13.2.2 for storing as UTF-8 on files)
+               // except double-quote ”””, and backslash ”\\”
+               r'[^"\\\\]'
         """
         return RegExMatch('[^"\\\\]')
 
@@ -725,10 +729,9 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            Q-CHAR =
-              NONDIGIT | DIGIT | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," |
-               "-" | "." | "/" | ":" | ";" | "<" | ">" | "=" | "?" | "@" | "[" | "]" | "^" |
-               "{" | "}" | "|" | "~" | " "
+            Q-CHAR = NONDIGIT | DIGIT | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," |
+                     "-" | "." | "/" | ":" | ";" | "<" | ">" | "=" | "?" | "@" | "[" | "]" | "^" |
+                    "{" | "}" | "|" | "~" | " "
         """
         return RegExMatch("[\\ !\\#-\\&\\(-\\[\\]-_a-\\~]")
 
@@ -738,9 +741,8 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            S-ESCAPE =
-               "\\'" | "\\"" | "\\?" | "\\\\" |
-               "\\a" | "\\b" | "\\f" | "\\n" | "\\r" | "\\t" | "\\v"
+            S-ESCAPE = "\\'" | "\\"" | "\\?" | "\\\\" |
+                     "\\a" | "\\b" | "\\f" | "\\n" | "\\r" | "\\t" | "\\v"
         """
         return RegExMatch(
             "\\\\'|\\\\\"|\\\\\\?|\\\\\\\\|\\\\a|\\\\b|\\\\f|\\\\n|\\\\r|\\\\t|\\\\v"
@@ -772,9 +774,8 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            UNSIGNED-NUMBER =
-               UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
-               [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]
+            UNSIGNED-NUMBER = UNSIGNED-INTEGER [ "." [ UNSIGNED-INTEGER ] ]
+                    [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]
         """
         return RegExMatch(
             "[0-9][0-9]*(\\.([0-9][0-9]*)?)?([Ee][\\+\\-]?[0-9][0-9]*)?"
@@ -787,9 +788,9 @@ class Syntax:
         .. code-block:: modelicapeg
 
             COMMENT =
-               // single-line comment
-                 r'//.*'
-                /* multi-line comment */
+               // line comment
+               r'//.*'
+               /* multi-line comment */
                | r'/\\*([^*]|\\*(?!/))*\\*/'
         """
         return RegExMatch("//.*|/\\*([^*]|\\*(?!/))*\\*/")
