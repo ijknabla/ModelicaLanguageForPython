@@ -1,0 +1,263 @@
+// https://modelica.org/documents/ModelicaSpec22.pdf
+
+// 2 Modelica syntax
+
+// 2.1 Lexical conventions
+// The following syntactic meta symbols are used (extended BNF):
+// [ ] optional
+// { } repeat zero or more times
+// The following lexical units are defined:
+IDENT = NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
+Q-IDENT = "’" ( Q-CHAR | S-ESCAPE ) { Q-CHAR | S-ESCAPE } "’"
+NONDIGIT = "_" | letters "a" to "z" | letters "A" to "Z"
+STRING = """ { S-CHAR | S-ESCAPE } """
+S-CHAR =  // any member of the source character set except double-quote """, and backslash "\"
+Q-CHAR =  // any member of the source character set except single-quote "’", and backslash "\"
+S-ESCAPE = "\’" | "\"" | "\?" | "\\" |
+ "\a" | "\b" | "\f" | "\n" | "\r" | "\t" | "\v"
+DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+UNSIGNED_INTEGER = DIGIT { DIGIT }
+UNSIGNED_NUMBER = UNSIGNED_INTEGER [ "." [ UNSIGNED_INTEGER ] ]
+ [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED_INTEGER ]
+// [The single quotes are part of an identifier. E.g. ’x’ and x are different IDENTs].
+// Note: string constant concatenation "a" "b" becoming "ab" (as in C) is replaced by the "+" operator in Modelica.
+// Modelica uses the same comment syntax as C++ and Java, and also has structured comments in the form of
+// annotations and string comments. Inside a comment, the sequence <HTML> .... </HTML> indicates HTML
+// code which may be used by tools to facilitate model documentation.
+// Bold face denotes keywords of the Modelica language. Keywords are reserved words and may not be used as
+// identifiers, with the exception of initial which is a keyword in section headings, but it is also possible to call
+// the function initial().
+// 2.2 Grammar
+// 2.2.1 Stored definition
+stored_definition:
+ [ within [ name ] ";" ]
+ { [ final ] class_definition ";" }
+// 2.2.2 Class definition
+class_definition :
+ [ encapsulated ]
+ [ partial ]
+ ( class | model | record | block | [ expandable ] connector | type |
+ package | function )
+ class_specifier
+class_specifier :
+ IDENT string_comment composition end IDENT
+ | IDENT "=" base_prefix name [ array_subscripts ]
+ [ class_modification ] comment
+ | IDENT "=" enumeration "(" ( [enum_list] | ":" ) ")" comment
+ | IDENT "=" der "(" name "," IDENT { "," IDENT } ")" comment
+ | extends IDENT [ class_modification ] string_comment composition
+ end IDENT
+base_prefix :
+ type_prefix
+enum_list : enumeration_literal { "," enumeration_literal}
+enumeration_literal : IDENT comment
+composition :
+ element_list
+ { public element_list |
+ protected element_list |
+ equation_clause |
+ algorithm_clause
+ }
+ [ external [ language_specification ]
+ [ external_function_call ] [ annotation ";" ]
+ [ annotation ";" ] ]
+language_specification :
+ STRING
+external_function_call :
+ [ component_reference "=" ]
+ IDENT "(" [ expression { "," expression } ] ")"
+element_list :
+ { element ";" | annotation ";" }
+element :
+ import_clause |
+ extends_clause |
+ [ redeclare ]
+ [ final ]
+ [ inner ] [ outer ]
+ ( ( class_definition | component_clause) |
+ replaceable ( class_definition | component_clause)
+ [constraining_clause comment])
+import_clause :
+ import ( IDENT "=" name | name ["." "*"] ) comment
+// 2.2.3 Extends
+extends_clause :
+ extends name [ class_modification ] [annotation]
+constraining_clause :
+ extends name [ class_modification ]
+// 2.2.4 Component clause
+component_clause:
+ type_prefix type_specifier [ array_subscripts ] component_list
+type_prefix :
+ [ flow ]
+ [ discrete | parameter | constant ] [ input | output ]
+type_specifier :
+ name
+component_list :
+ component_declaration { "," component_declaration }
+component_declaration :
+ declaration [ conditional_attribute ] comment
+conditional_attribute:
+ if expression
+declaration :
+ IDENT [ array_subscripts ] [ modification ]
+// 2.2.5 Modification
+modification :
+ class_modification [ "=" expression ]
+ | "=" expression
+ | ":=" expression
+class_modification :
+ "(" [ argument_list ] ")"
+argument_list :
+ argument { "," argument }
+argument :
+ element_modification_or_replaceable
+ | element_redeclaration
+element_modification_or_replaceable:
+ [ each ] [ final ] ( element_modification | element_replaceable)
+element_modification :
+ component_reference [ modification ] string_comment
+element_redeclaration :
+ redeclare [ each ] [ final ]
+( ( class_definition | component_clause1) | element_replaceable )
+element_replaceable:
+ replaceable ( class_definition | component_clause1)
+ [constraining_clause]
+component_clause1 :
+ type_prefix type_specifier component_declaration1
+component_declaration1 :
+ declaration comment
+// 2.2.6 Equations
+equation_clause :
+ [ initial ] equation { equation ";" | annotation ";" }
+algorithm_clause :
+ [ initial ] algorithm { algorithm ";" | annotation ";" }
+equation :
+ ( simple_expression "=" expression
+ | conditional_equation_e
+ | for_clause_e
+ | connect_clause
+ | when_clause_e
+ | IDENT function_call )
+ comment
+algorithm :
+ ( component_reference ( ":=" expression | function_call )
+ | "(" output_expression_list ")" ":=" component_reference function_call
+ | break
+ | return
+ | conditional_equation_a
+ | for_clause_a
+ | while_clause
+ | when_clause_a )
+ comment
+conditional_equation_e :
+ if expression then
+{ equation ";" }
+ { elseif expression then
+ { equation ";" }
+ }
+ [ else
+ { equation ";" }
+ ]
+ end if
+conditional_equation_a :
+ if expression then
+ { algorithm ";" }
+ { elseif expression then
+ { algorithm ";" }
+ }
+ [ else
+ { algorithm ";" }
+ ]
+ end if
+for_clause_e :
+ for for_indices loop
+ { equation ";" }
+ end for
+for_clause_a :
+ for for_indices loop
+ { algorithm ";" }
+ end for
+for_indices :
+ for_index {"," for_index}
+for_index:
+ IDENT [ in expression ]
+while_clause :
+ while expression loop
+ { algorithm ";" }
+ end while
+when_clause_e :
+ when expression then
+ { equation ";" }
+ { elsewhen expression then
+ { equation ";" } }
+ end when
+when_clause_a :
+ when expression then
+ { algorithm ";" }
+ { elsewhen expression then
+ { algorithm ";" } }
+ end when
+connect_clause :
+ connect "(" component_reference "," component_reference ")"
+// 2.2.7 Expressions
+expression :
+ simple_expression
+ | if expression then expression { elseif expression then expression } else
+expression
+simple_expression :
+ logical_expression [ ":" logical_expression [ ":" logical_expression ] ]
+logical_expression :
+ logical_term { or logical_term }
+logical_term :
+ logical_factor { and logical_factor }
+logical_factor :
+ [ not ] relation
+relation :
+ arithmetic_expression [ rel_op arithmetic_expression ]
+rel_op :
+ "<" | "<=" | ">" | ">=" | "==" | "<>"
+arithmetic_expression :
+ [ add_op ] term { add_op term }
+add_op :
+ "+" | "-"
+term :
+ factor { mul_op factor }
+mul_op :
+ "*" | "/"
+factor :
+ primary [ "^" primary ]
+primary :
+ UNSIGNED_NUMBER
+ | STRING
+ | false
+ | true
+ | component_reference [ function_call ]
+ | "(" output_expression_list ")"
+ | "[" expression_list { ";" expression_list } "]"
+ | "{" function_arguments "}"
+ | end
+name :
+ IDENT [ "." name ]
+component_reference :
+ IDENT [ array_subscripts ] [ "." component_reference ]
+function_call :
+ "(" [ function_arguments ] ")"
+function_arguments :
+ expression [ "," function_arguments | for for_indices ]
+ | named_arguments
+named_arguments: named_argument [ "," named_arguments ]
+named_argument: IDENT "=" expression
+output_expression_list:
+ [ expression ] { "," [ expression ] }
+expression_list :
+ expression { "," expression }
+array_subscripts :
+ "[" subscript { "," subscript } "]"
+subscript :
+ ":" | expression
+comment :
+ string_comment [ annotation ]
+string_comment :
+ [ STRING { "+" STRING } ]
+annotation :
+ annotation class_modification
