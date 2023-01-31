@@ -669,7 +669,9 @@ class Syntax:
         .. code-block:: modelicapeg
 
             COMMENT =
-                 r'//.*'                   // single-line comment
+               // single-line comment
+                 r'//.*'
+                /* multi-line comment */
                | r'/\\*([^*]|\\*(?!/))*\\*/'
         """
         return RegExMatch("//.*|/\\*([^*]|\\*(?!/))*\\*/")
@@ -1698,8 +1700,8 @@ class Syntax:
         .. code-block:: modelicapeg
 
             relational-operator :
-               "==" | "<>" | "<=" | ">=" |  // 2-letter operators
-               "<" | ">"
+               /* 2-characters */ "==" | "<>" | "<=" | ">=" |
+               /* 1-character  */ "<"  | ">"
         """
         return ["==", "<>", "<=", ">=", "<", ">"]
 
