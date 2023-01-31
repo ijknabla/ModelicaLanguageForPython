@@ -1167,7 +1167,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            component-clause :
+            component-clause:
                type-prefix type-specifier [ array-subscripts ] component-list
         """
         return (
@@ -1228,7 +1228,7 @@ class Syntax:
         """
         .. code-block:: modelicapeg
 
-            condition-attribute :
+            condition-attribute:
                `if` expression
         """
         return (cls.IF, cls.expression)

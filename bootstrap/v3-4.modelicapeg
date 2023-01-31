@@ -113,29 +113,21 @@ extends-clause :
    `extends` type-specifier [ class-modification ] [annotation-comment]
 constraining-clause :
    `constrainedby` type-specifier [ class-modification ]
-/**
- * https://specification.modelica.org/maint/3.4/A2.html#component-clause
- * #### B.2.4 Component Clause
- */
-component-clause :
+// B.2.4 Component Clause
+// ⬇
+component-clause:
    type-prefix type-specifier [ array-subscripts ] component-list
-
 type-prefix :
    [ `flow` | `stream` ]
    [ `discrete` | `parameter` | `constant` ] [ `input` | `output` ]
-
 component-list :
    component-declaration { "," component-declaration }
-
 component-declaration :
    declaration [ condition-attribute ] comment
-
-condition-attribute :
+condition-attribute:
    `if` expression
-
 declaration :
    IDENT [ array-subscripts ] [ modification ]
-
 /**
  * https://specification.modelica.org/maint/3.4/A2.html#modification
  * #### B.2.5 Modification
