@@ -3,6 +3,7 @@ __all__ = (
     "Optional",
     "ParsingExpressionLike",
     "RegExMatch",
+    "SyntaxMeta",
     "Tuple",
     "ZeroOrMore",
     "not_start_with_keyword",
@@ -101,3 +102,7 @@ def returns_parsing_expression(
     f: Callable[P, ParsingExpressionLike]
 ) -> Callable[P, ParsingExpression]:
     return cast(Callable[P, ParsingExpression], f)
+
+
+class SyntaxMeta(type):
+    ...
