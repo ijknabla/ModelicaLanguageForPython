@@ -37,3 +37,4 @@ html_static_path = ["_static"]
 pygments_style = "default"
 
 autodoc_member_order = "bysource"
+autodoc_typehints_format = "fully-qualified"
