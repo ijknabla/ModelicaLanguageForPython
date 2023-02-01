@@ -1,6 +1,11 @@
 modelicalang package
 ====================
 
+.. automodule:: modelicalang
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -9,11 +14,3 @@ Submodules
 
    modelicalang.v3_4
    modelicalang.v3_5
-
-Module contents
----------------
-
-.. automodule:: modelicalang
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -3,7 +3,7 @@ from subprocess import run
 
 import click
 
-SPHINX_APIDOC_OPTIONS = ["--maxdepth=2", "--separate"]
+SPHINX_APIDOC_OPTIONS = ["--maxdepth=2", "--separate", "--module-first"]
 
 
 @click.command()
