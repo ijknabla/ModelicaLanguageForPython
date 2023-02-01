@@ -36,3 +36,15 @@ repos:
         -   pflake8
         language: system
         pass_filenames: false
+    -   id: poetry-sphinx-apidoc
+        name: Make .rst from .py sources
+        entry: poetry
+        args:
+        -   run
+        -   python
+        -   .pre-commit/sphinx_apidoc.py
+        -   --module=modelicalang/
+        -   --output=document/apis/
+        language: system
+        pass_filenames: false
+        files: ^(\.pre\-commit/sphinx_apidoc\.py$|modelicalang/)
