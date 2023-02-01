@@ -30,7 +30,7 @@ class PEGSyntax:
     @staticmethod
     @returns_parsing_expression
     def LEXICAL_RULE() -> RegExMatch:
-        return RegExMatch(r"[A-Z]([\-0-9A-Z]*[0-9A-Z])?")
+        return RegExMatch(r"[A-Z]([\-0-9A-Z_]*[0-9A-Z])?")
 
     @staticmethod
     @returns_parsing_expression
@@ -48,7 +48,7 @@ class PEGSyntax:
     @staticmethod
     @returns_parsing_expression
     def SYNTAX_RULE() -> RegExMatch:
-        return RegExMatch(r"[a-z]([\-0-9a-z]*[0-9a-z])?")
+        return RegExMatch(r"[a-z]([\-0-9_a-z]*[0-9a-z])?")
 
     @staticmethod
     @returns_parsing_expression
