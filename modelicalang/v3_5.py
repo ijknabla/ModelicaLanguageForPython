@@ -1,7 +1,7 @@
 from modelicalang._backend import *
 
 
-class Syntax:
+class Syntax(metaclass=SyntaxMeta):
     _keywords_: ClassVar[Tuple[str, ...]] = (
         "algorithm",
         "and",

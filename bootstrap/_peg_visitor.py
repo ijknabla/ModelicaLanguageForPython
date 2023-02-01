@@ -75,7 +75,7 @@ class ModuleVisitor(PTNodeVisitor):
             import_froms=[("modelicalang._backend", ["*"])],
             class_name=self.class_name,
             class_bases=[],
-            class_keywords={},
+            class_keywords={"metaclass": create_attribute("SyntaxMeta")},
             class_body=[
                 *self.__class_body(),
             ],
