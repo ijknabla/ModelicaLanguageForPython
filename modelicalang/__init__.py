@@ -4,10 +4,10 @@ __all__ = (
     "enable_method_in_parser_python",
     "get_file_parser",
     "get_syntax_type",
-    "latest",
     "returns_parsing_expression",
     "v3_4",
     "v3_5",
+    "latest",
 )
 
 import enum
@@ -27,6 +27,9 @@ from ._backend import (
 )
 
 latest = v3_5
+"""
+:py:mod:`modelicalang.v3_5` (latest modelica standard)
+"""
 
 ParsingExpressionLike: TypeAlias = "_ParsingExpressionLike"
 _AnySyntaxType = Union[Type[v3_4.Syntax], Type[v3_5.Syntax]]
