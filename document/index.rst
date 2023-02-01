@@ -10,6 +10,7 @@ Welcome to ModelicaLang's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   apis/modules
 
 
 Indices and tables
