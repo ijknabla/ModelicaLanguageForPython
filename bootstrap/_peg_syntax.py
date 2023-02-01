@@ -2,11 +2,12 @@ from arpeggio import EOF, Not, OneOrMore, RegExMatch
 
 from modelicalang._backend import (
     ParsingExpressionLike,
+    SyntaxMeta,
     returns_parsing_expression,
 )
 
 
-class PEGSyntax:
+class PEGSyntax(metaclass=SyntaxMeta):
     # ## PEG comment rule
     @staticmethod
     @returns_parsing_expression

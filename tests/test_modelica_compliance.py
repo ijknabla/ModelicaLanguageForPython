@@ -4,7 +4,9 @@ import pytest
 from arpeggio import ParseTreeNode
 from pkg_resources import resource_filename
 
-from modelicalang import ModelicaVersion, get_file_parser
+from modelicalang import ModelicaVersion
+
+from . import get_stored_definition_parser
 
 SOURCE_DIRECTORY = Path(
     resource_filename(__name__, "Modelica-Compliance/ModelicaCompliance/")
@@ -25,7 +27,7 @@ def test_modelica_parser(
     source_file: Path,
     version: ModelicaVersion,
 ) -> None:
-    parseTree = get_file_parser(version).parse(
+    parseTree = get_stored_definition_parser(version).parse(
         source_file.read_text(encoding="utf-8-sig")
     )
     assert isinstance(parseTree, ParseTreeNode)

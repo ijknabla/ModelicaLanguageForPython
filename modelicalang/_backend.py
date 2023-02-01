@@ -1,29 +1,31 @@
 __all__ = (
-    "ParsingExpression",
+    "ClassVar",
+    "Optional",
     "ParsingExpressionLike",
-    "enable_method_in_parser_python",
+    "RegExMatch",
+    "SyntaxMeta",
+    "Tuple",
+    "ZeroOrMore",
     "not_start_with_keyword",
     "returns_parsing_expression",
 )
 
 import builtins
-import enum
 import types
 from functools import wraps
 from types import TracebackType
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    ClassVar,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Callable, ClassVar
+from typing import Optional as NoneOr
+from typing import Tuple, Type, TypeVar, cast
 
-from arpeggio import Not, ParserPython, ParsingExpression, RegExMatch
+from arpeggio import (
+    Not,
+    Optional,
+    ParserPython,
+    ParsingExpression,
+    RegExMatch,
+    ZeroOrMore,
+)
 from typing_extensions import ParamSpec, Protocol
 
 if TYPE_CHECKING:
@@ -35,46 +37,15 @@ P = ParamSpec("P")
 T = TypeVar("T")
 T_keywords = TypeVar("T_keywords", bound="SupportsKeywords")
 
-_isinstance__builtins = builtins.isinstance
-
-
-def _isinstance__callable_as_function(obj: Any, class_or_tuple: Any) -> bool:
-    if class_or_tuple is types.FunctionType:  # noqa: E721
-        return _isinstance__builtins(obj, Callable)  # type: ignore
-    else:
-        return _isinstance__builtins(obj, class_or_tuple)
-
-
-class EnableMethodInParserPython(enum.Enum):
-    instance = enum.auto()
-
-    def __call__(self, f: Callable[P, T]) -> Callable[P, T]:
-        @wraps(f)
-        def wrapped(*args: P.args, **kwargs: P.kwargs) -> T:
-            with self:
-                return f(*args, **kwargs)
-
-        return wrapped
-
-    def __enter__(self) -> Type[ParserPython]:
-        builtins.isinstance = _isinstance__callable_as_function
-        return ParserPython
-
-    def __exit__(
-        self,
-        typ: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Optional[bool]:
-        builtins.isinstance = _isinstance__builtins
-        return None
-
-
-enable_method_in_parser_python = EnableMethodInParserPython.instance
-
 
 class SupportsKeywords(Protocol):
     _keywords_: ClassVar[Tuple[str, ...]]
+
+
+def returns_parsing_expression(
+    f: Callable[P, ParsingExpressionLike]
+) -> Callable[P, ParsingExpression]:
+    return cast(Callable[P, ParsingExpression], f)
 
 
 def not_start_with_keyword(
@@ -95,7 +66,26 @@ def not_start_with_keyword(
     return wrapped
 
 
-def returns_parsing_expression(
-    f: Callable[P, ParsingExpressionLike]
-) -> Callable[P, ParsingExpression]:
-    return cast(Callable[P, ParsingExpression], f)
+_isinstance__builtins = builtins.isinstance
+
+
+def _isinstance__callable_as_function(obj: Any, class_or_tuple: Any) -> bool:
+    if class_or_tuple is types.FunctionType:  # noqa: E721
+        return _isinstance__builtins(obj, Callable)  # type: ignore
+    else:
+        return _isinstance__builtins(obj, class_or_tuple)
+
+
+class SyntaxMeta(type):
+    def __enter__(cls) -> Type[ParserPython]:
+        builtins.isinstance = _isinstance__callable_as_function
+        return ParserPython
+
+    def __exit__(
+        cls,
+        typ: NoneOr[Type[BaseException]],
+        value: NoneOr[BaseException],
+        traceback: NoneOr[TracebackType],
+    ) -> NoneOr[bool]:
+        builtins.isinstance = _isinstance__builtins
+        return None

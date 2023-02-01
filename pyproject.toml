@@ -54,7 +54,7 @@ exclude_lines = [
 [tool.flake8]
 exclude = ".venv"
 per-file-ignores = [
-    "modelicalang/v?_?.py:E501"
+    "modelicalang/v?_?.py:E501,F403,F405"
 ]
 
 [tool.isort]

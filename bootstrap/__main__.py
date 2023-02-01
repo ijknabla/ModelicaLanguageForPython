@@ -3,9 +3,7 @@ import sys
 from ast import Module
 from typing import TextIO
 
-from arpeggio import visit_parse_tree
-
-from modelicalang import enable_method_in_parser_python
+from arpeggio import ParserPython, visit_parse_tree
 
 from ._backport import unparse
 from ._peg_syntax import PEGSyntax
@@ -25,7 +23,7 @@ def main() -> None:
     class_name: str = args.class_name
     output: TextIO = args.output
 
-    with enable_method_in_parser_python as ParserPython:
+    with PEGSyntax:
         peg_parser = ParserPython(
             language_def=PEGSyntax.grammar,
             comment_def=PEGSyntax.COMMENT,

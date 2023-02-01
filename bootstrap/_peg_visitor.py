@@ -72,20 +72,10 @@ class ModuleVisitor(PTNodeVisitor):
     ) -> Module:
         return create_module_with_class(
             imports=[],
-            import_froms=[
-                ("typing", ["ClassVar", "Tuple"]),
-                ("arpeggio", ["Optional", "RegExMatch", "ZeroOrMore"]),
-                (
-                    "modelicalang._backend",
-                    [
-                        "ParsingExpressionLike",
-                        "not_start_with_keyword",
-                        "returns_parsing_expression",
-                    ],
-                ),
-            ],
+            import_froms=[("modelicalang._backend", ["*"])],
             class_name=self.class_name,
             class_bases=[],
+            class_keywords={"metaclass": create_attribute("SyntaxMeta")},
             class_body=[
                 *self.__class_body(),
             ],

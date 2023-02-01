@@ -13,7 +13,7 @@ from ast import (
 from ast import List as AstList
 from ast import Load, Module, Name, Return, Store, Subscript
 from ast import Tuple as AstTuple
-from ast import alias, arg, arguments, expr, expr_context, stmt
+from ast import alias, arg, arguments, expr, expr_context, keyword, stmt
 from dataclasses import dataclass, field
 from functools import reduce
 from operator import or_
@@ -22,6 +22,7 @@ from typing import (
     Collection,
     Iterator,
     List,
+    Mapping,
     NewType,
     Optional,
     Sequence,
@@ -148,6 +149,7 @@ def create_module_with_class(
     import_froms: Sequence[Tuple[str, Sequence[str]]],
     class_name: str,
     class_bases: Sequence[str],
+    class_keywords: Mapping[str, expr],
     class_body: Sequence[stmt],
 ) -> Module:
     body: List[stmt] = []
@@ -172,7 +174,10 @@ def create_module_with_class(
         ClassDef(
             name=class_name,
             bases=[create_attribute(class_base) for class_base in class_bases],
-            keywords=[],
+            keywords=[
+                keyword(arg=arg, value=value)
+                for arg, value in class_keywords.items()
+            ],
             body=class_body,
             decorator_list=[],
         ),

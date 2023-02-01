@@ -1,15 +1,7 @@
-from typing import ClassVar, Tuple
-
-from arpeggio import Optional, RegExMatch, ZeroOrMore
-
-from modelicalang._backend import (
-    ParsingExpressionLike,
-    not_start_with_keyword,
-    returns_parsing_expression,
-)
+from modelicalang._backend import *
 
 
-class Syntax:
+class Syntax(metaclass=SyntaxMeta):
     _keywords_: ClassVar[Tuple[str, ...]] = (
         "algorithm",
         "and",
