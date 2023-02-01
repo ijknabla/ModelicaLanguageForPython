@@ -3,7 +3,7 @@ from subprocess import run
 
 import click
 
-SPHINX_APIDOC_OPTIONS = []
+SPHINX_APIDOC_OPTIONS = ["--separate"]
 
 
 @click.command()
