@@ -1,6 +1,5 @@
 __all__ = (
     "ModelicaVersion",
-    "enable_method_in_parser_python",
     "get_file_parser",
     "get_syntax_type",
     "ParsingExpressionLike",
@@ -21,10 +20,7 @@ if TYPE_CHECKING:
     from arpeggio import _ParsingExpressionLike  # noqa: F401
 
 from . import v3_4, v3_5
-from ._backend import (
-    enable_method_in_parser_python,
-    returns_parsing_expression,
-)
+from ._backend import returns_parsing_expression
 
 latest = v3_5
 """
@@ -51,7 +47,7 @@ def get_file_parser(version: Optional[ModelicaVersion] = None) -> ParserPython:
     def file() -> ParsingExpressionLike:
         return syntax_type.stored_definition, EOF
 
-    with enable_method_in_parser_python:
+    with syntax_type:
         return ParserPython(file, syntax_type.COMMENT)
 
 

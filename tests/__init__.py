@@ -7,7 +7,6 @@ from arpeggio import EOF, Not, ParserPython, RegExMatch
 from modelicalang import (
     ModelicaVersion,
     ParsingExpressionLike,
-    enable_method_in_parser_python,
     get_syntax_type,
     returns_parsing_expression,
     v3_5,
@@ -28,7 +27,6 @@ class TargetLanguageDef(enum.Flag):
     UNSIGNED_REAL = enum.auto()
 
     @lru_cache(None)
-    @enable_method_in_parser_python
     def get_parser(
         self, version: Optional[ModelicaVersion] = None
     ) -> ParserPython:
@@ -71,7 +69,8 @@ class TargetLanguageDef(enum.Flag):
                     )
             raise NotImplementedError()
 
-        return ParserPython(file, Syntax.COMMENT)
+        with Syntax:
+            return ParserPython(file, Syntax.COMMENT)
 
 
 class _DialectMixin:
