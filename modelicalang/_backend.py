@@ -1,8 +1,11 @@
 __all__ = (
     "ClassVar",
+    "Optional",
     "ParsingExpression",
     "ParsingExpressionLike",
+    "RegExMatch",
     "Tuple",
+    "ZeroOrMore",
     "enable_method_in_parser_python",
     "not_start_with_keyword",
     "returns_parsing_expression",
@@ -13,19 +16,18 @@ import enum
 import types
 from functools import wraps
 from types import TracebackType
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    ClassVar,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Callable, ClassVar
+from typing import Optional as NoneOr
+from typing import Tuple, Type, TypeVar, cast
 
-from arpeggio import Not, ParserPython, ParsingExpression, RegExMatch
+from arpeggio import (
+    Not,
+    Optional,
+    ParserPython,
+    ParsingExpression,
+    RegExMatch,
+    ZeroOrMore,
+)
 from typing_extensions import ParamSpec, Protocol
 
 if TYPE_CHECKING:
@@ -64,10 +66,10 @@ class EnableMethodInParserPython(enum.Enum):
 
     def __exit__(
         self,
-        typ: Optional[Type[BaseException]],
-        value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> Optional[bool]:
+        typ: NoneOr[Type[BaseException]],
+        value: NoneOr[BaseException],
+        traceback: NoneOr[TracebackType],
+    ) -> NoneOr[bool]:
         builtins.isinstance = _isinstance__builtins
         return None
 
