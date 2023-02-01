@@ -1,4 +1,5 @@
 __all__ = (
+    "ModelicaVersion",
     "ParsingExpressionLike",
     "enable_method_in_parser_python",
     "get_file_parser",
