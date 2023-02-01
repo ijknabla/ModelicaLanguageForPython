@@ -1,6 +1,8 @@
 __all__ = (
+    "ClassVar",
     "ParsingExpression",
     "ParsingExpressionLike",
+    "Tuple",
     "enable_method_in_parser_python",
     "not_start_with_keyword",
     "returns_parsing_expression",
