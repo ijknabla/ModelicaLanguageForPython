@@ -13,6 +13,19 @@ from modelicalang import (
 )
 
 
+def get_stored_definition_parser(
+    version: Optional[ModelicaVersion] = None,
+) -> ParserPython:
+    syntax_type = get_syntax_type(version)
+
+    @returns_parsing_expression
+    def file() -> ParsingExpressionLike:
+        return syntax_type.stored_definition, EOF
+
+    with syntax_type:
+        return ParserPython(file, syntax_type.COMMENT)
+
+
 class TargetLanguageDef(enum.Flag):
     NULL = 0
     IDENT = enum.auto()
