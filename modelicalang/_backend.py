@@ -12,6 +12,7 @@ import types
 from functools import wraps
 from types import TracebackType
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     ClassVar,
@@ -22,17 +23,17 @@ from typing import (
     cast,
 )
 
-import arpeggio
-from arpeggio import ParserPython
-from typing_extensions import ParamSpec, Protocol, TypeAlias
+from arpeggio import Not, ParserPython, ParsingExpression, RegExMatch
+from typing_extensions import ParamSpec, Protocol
+
+if TYPE_CHECKING:
+    from . import ParsingExpressionLike
+else:
+    ParsingExpressionLike = "ParsingExpressionLike"
 
 P = ParamSpec("P")
 T = TypeVar("T")
 T_keywords = TypeVar("T_keywords", bound="SupportsKeywords")
-
-ParsingExpression = arpeggio.ParsingExpression
-ParsingExpressionLike: TypeAlias = "arpeggio._ParsingExpressionLike"
-
 
 _isinstance__builtins = builtins.isinstance
 
@@ -83,8 +84,8 @@ def not_start_with_keyword(
     @returns_parsing_expression
     def wrapped(cls: Type[T_keywords]) -> ParsingExpressionLike:
         return (
-            arpeggio.Not(
-                arpeggio.RegExMatch(
+            Not(
+                RegExMatch(
                     r"(" + r"|".join(cls._keywords_) + r")(?![0-9A-Z_a-z])"
                 )
             ),

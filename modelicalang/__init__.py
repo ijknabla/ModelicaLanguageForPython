@@ -11,26 +11,29 @@ __all__ = (
 
 import enum
 from functools import lru_cache
-from typing import Dict, Optional, Type, Union
+from typing import TYPE_CHECKING, Dict, Optional, Type, Union
 
 from arpeggio import EOF, ParserPython
+from typing_extensions import TypeAlias
+
+if TYPE_CHECKING:
+    from arpeggio import _ParsingExpressionLike  # noqa: F401
 
 from . import v3_4, v3_5
 from ._backend import (
-    ParsingExpressionLike,
     enable_method_in_parser_python,
     returns_parsing_expression,
 )
 
 latest = v3_5
 
+ParsingExpressionLike: TypeAlias = "_ParsingExpressionLike"
+_AnySyntaxType = Union[Type[v3_4.Syntax], Type[v3_5.Syntax]]
+
 
 class ModelicaVersion(enum.Enum):
     v3_4 = (3, 4)
     v3_5 = latest = (3, 5)
-
-
-_AnySyntaxType = Union[Type[v3_4.Syntax], Type[v3_5.Syntax]]
 
 
 def get_file_parser(version: Optional[ModelicaVersion] = None) -> ParserPython:
