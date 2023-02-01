@@ -1,9 +1,9 @@
 __all__ = (
     "ModelicaVersion",
-    "ParsingExpressionLike",
     "enable_method_in_parser_python",
     "get_file_parser",
     "get_syntax_type",
+    "ParsingExpressionLike",
     "returns_parsing_expression",
     "v3_4",
     "v3_5",
@@ -32,6 +32,10 @@ latest = v3_5
 """
 
 ParsingExpressionLike: TypeAlias = "_ParsingExpressionLike"
+"""
+Type-hint for objects valid as
+`Arrpegio grammars written in Python <https://textx.github.io/Arpeggio/latest/grammars/#grammars-written-in-python>`_
+"""  # noqa: E501
 _AnySyntaxType = Union[Type[v3_4.Syntax], Type[v3_5.Syntax]]
 
 
