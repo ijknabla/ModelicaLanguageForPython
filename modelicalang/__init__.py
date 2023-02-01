@@ -10,7 +10,8 @@ __all__ = (
 )
 
 import enum
-from typing import Dict, Optional, Type, Union, cast
+from functools import lru_cache
+from typing import Dict, Optional, Type, Union
 
 from arpeggio import EOF, ParserPython
 
@@ -30,10 +31,6 @@ class ModelicaVersion(enum.Enum):
 
 
 _AnySyntaxType = Union[Type[v3_4.Syntax], Type[v3_5.Syntax]]
-_SYNTAXES: Dict[ModelicaVersion, _AnySyntaxType] = {
-    ModelicaVersion.v3_4: v3_4.Syntax,
-    ModelicaVersion.v3_5: v3_5.Syntax,
-}
 
 
 def get_file_parser(version: Optional[ModelicaVersion] = None) -> ParserPython:
@@ -47,10 +44,16 @@ def get_file_parser(version: Optional[ModelicaVersion] = None) -> ParserPython:
         return ParserPython(file, syntax_type.COMMENT)
 
 
+@lru_cache(1)
+def _get_syntax_type_table() -> Dict[ModelicaVersion, _AnySyntaxType]:
+    return {
+        ModelicaVersion.v3_4: v3_4.Syntax,
+        ModelicaVersion.v3_5: v3_5.Syntax,
+    }
+
+
 def get_syntax_type(
     version: Optional[ModelicaVersion] = None,
 ) -> _AnySyntaxType:
-    return _SYNTAXES.get(
-        cast(ModelicaVersion, version),
-        latest.Syntax,
-    )
+    version = version if version is not None else ModelicaVersion.latest
+    return _get_syntax_type_table().get(version, latest.Syntax)
