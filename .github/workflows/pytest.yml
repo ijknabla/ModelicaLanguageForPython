@@ -1,0 +1,36 @@
+
+name: Pytest
+
+on:
+  # Runs on pushes targeting the master, develop branch
+  push:
+    branches: [ master, develop ]
+  # Runs on pull-request targeting the master, develop branch
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          curl -sSL https://install.python-poetry.org | python -
+          poetry install --only=main,test
+      - name: Test with pytest
+        run: |
+          poetry run pflake8
+          poetry run mypy --strict .
+          poetry run pytest --cov --cov-branch --cov-report=term-missing

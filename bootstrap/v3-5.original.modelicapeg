@@ -1,0 +1,334 @@
+// https://specification.modelica.org/maint/3.5/modelica-concrete-syntax.html
+
+// Appendix A
+// Modelica Concrete Syntax
+// A.1 Lexical conventions
+// The following syntactic meta symbols are used (extended BNF):
+
+// ⬇
+// [ ] optional
+// { } repeat zero or more times
+// | or
+// "text" The text is treated as a single token (no white-space between any characters)
+// The following lexical units are defined (the ones in boldface are the ones used in the grammar, the rest are just internal to the definition of other lexical units):
+
+// ⬇
+IDENT = NONDIGIT { DIGIT | NONDIGIT } | Q-IDENT
+Q-IDENT = "’" { Q-CHAR | S-ESCAPE } "’"
+NONDIGIT = "_" | letters "a" to "z" | letters "A" to "Z"
+STRING = """ { S-CHAR | S-ESCAPE } """
+S-CHAR = see below
+Q-CHAR = NONDIGIT | DIGIT | "!" | "#" | "$" | "%" | "&" | "(" | ")"
+   | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | "<" | ">" | "="
+   | "?" | "@" | "[" | "]" | "^" | "{" | "}" | "|" | "~" | " " | """
+S-ESCAPE = "\’" | "\"" | "\?" | "\"
+   | "\a" | "\b" | "\f" | "\n" | "\r" | "\t" | "\v"
+DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+UNSIGNED-INTEGER = DIGIT { DIGIT }
+UNSIGNED-REAL =
+   UNSIGNED-INTEGER  "." [ UNSIGNED-INTEGER ]
+   | UNSIGNED_INTEGER [ "." [ UNSIGNED_INTEGER ] ]
+     ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER
+   | "."  UNSIGNED-INTEGER [ ( "e" | "E" ) [ "+" | "-" ] UNSIGNED-INTEGER ]
+// S-CHAR is any member of the Unicode character set (http://www.unicode.org; see section 13.4 for storing as UTF-8 on files) except double-quote ‘”’, and backslash ‘\’.
+
+// For identifiers the redundant escapes (‘\?’ and ‘\""’) are the same as the corresponding non-escaped variants (‘?’ and ’""’). The single quotes are part of an identifier. E.g. ’x’ and x are different IDENTs.
+
+// Note:
+
+// • White-space and comments can be used between separate lexical units and/or symbols, and also separates them. Each lexical unit will consume the maximum number of characters from the input stream. White-space and comments cannot be used inside other lexical units, except for STRING and Q-IDENT where they are treated as part of the STRING or Q-IDENT lexical unit.
+// • String constant concatenation "a" "b" becoming "ab" (as in C) is replaced by the "+" operator in Modelica.
+// • Modelica uses the same comment syntax as C++ and Java (i.e., // signals the start of a line comment and /*
+//  */ is a multi-line comment); comments may contain any Unicode character. Modelica also has structured comments in the form of annotations and string comments.
+// • Each description-string or string in annotations (= STRING with production annotation-clause in the grammar) may contain any member of the Unicode character set. All other strings have to contain only the sub-set of Unicode characters identical with the 7-bit US-ASCII character set.
+// [As a consequence, operators like ‘>’ or ‘<’, and external functions only operate on ASCII strings and not on Unicode-strings. Within a description-string the tags <HTML> and </HTML> or <html> and </html> define optionally begin and end of content that is HTML encoded.]
+
+// • Boldface denotes keywords of the Modelica language. Keywords are reserved words and shall not be used as identifiers.
+// • Productions use hyphen as separator both in the grammar and in the text. Previously the grammar used underscore.
+// A.2 Grammar
+// A.2.1 Stored Definition – Within
+// ⬇
+stored-definition :
+   [ within [ name ] ";" ]
+   { [ final ] class-definition ";" }
+// A.2.2 Class Definition
+// ⬇
+class-definition :
+   [ encapsulated ] class-prefixes class-specifier
+class-prefixes :
+   [ partial ]
+   ( class
+     | model
+     | [ operator ] record
+     | block
+     | [ expandable ] connector
+     | type
+     | package
+     | [ pure | impure ] [ operator ] function
+     | operator
+   )
+class-specifier :
+   long-class-specifier | short-class-specifier | der-class-specifier
+long-class-specifier :
+   IDENT description-string composition end IDENT
+   | extends IDENT [ class-modification ] description-string composition
+     end IDENT
+short-class-specifier :
+   IDENT "=" base-prefix type-specifier [ array-subscripts ]
+   [ class-modification ] description
+   | IDENT "=" enumeration "(" ( [ enum-list ] | ":" ) ")" description
+der-class-specifier :
+   IDENT "=" der "(" type-specifier "," IDENT { "," IDENT } ")" description
+base-prefix :
+   [ input | output ]
+enum-list :
+   enumeration-literal { "," enumeration-literal }
+enumeration-literal :
+   IDENT description
+composition :
+   element-list
+   { public element-list
+     | protected element-list
+     | equation-section
+     | algorithm-section
+   }
+   [ external [ language-specification ]
+   [ external-function-call ] [ annotation-clause ] ";" ]
+   [ annotation-clause ";" ]
+language-specification :
+   STRING
+external-function-call :
+   [ component-reference "=" ]
+   IDENT "(" [ expression-list ] ")"
+element-list :
+   { element ";" }
+element :
+   import-clause
+   | extends-clause
+   | [ redeclare ]
+     [ final ]
+     [ inner ] [ outer ]
+     ( class-definition
+       | component-clause
+       | replaceable ( class-definition | component-clause )
+         [ constraining-clause description ]
+     )
+import-clause :
+   import
+   ( IDENT "=" name
+     | name [ ".*" | "." ( "*" | "{" import-list "}" ) ]
+   )
+   description
+import-list :
+   IDENT { "," IDENT }
+// A.2.3 Extends
+// ⬇
+extends-clause :
+   extends type-specifier [ class-modification ] [ annotation-clause ]
+constraining-clause :
+   constrainedby type-specifier [ class-modification ]
+// A.2.4 Component Clause
+// ⬇
+component-clause :
+   type-prefix type-specifier [ array-subscripts ] component-list
+type-prefix :
+   [ flow | stream ]
+   [ discrete | parameter | constant ]
+   [ input | output ]
+component-list :
+   component-declaration { "," component-declaration }
+component-declaration :
+   declaration [ condition-attribute ] description
+condition-attribute :
+   if expression
+declaration :
+   IDENT [ array-subscripts ] [ modification ]
+// A.2.5 Modification
+// ⬇
+modification :
+   class-modification [ "=" expression ]
+   | "=" expression
+   | ":=" expression
+class-modification :
+   "(" [ argument-list ] ")"
+argument-list :
+   argument { "," argument }
+argument :
+   element-modification-or-replaceable
+   | element-redeclaration
+element-modification-or-replaceable :
+   [ each ] [ final ] ( element-modification | element-replaceable )
+element-modification :
+   name [ modification ] description-string
+element-redeclaration :
+   redeclare [ each ] [ final ]
+   ( short-class-definition | component-clause1 | element-replaceable )
+element-replaceable :
+   replaceable ( short-class-definition | component-clause1 )
+   [ constraining-clause ]
+component-clause1 :
+   type-prefix type-specifier component-declaration1
+component-declaration1 :
+   declaration description
+short-class-definition :
+   class-prefixes short-class-specifier
+// A.2.6 Equations
+// ⬇
+equation-section :
+   [ initial ] equation { equation ";" }
+algorithm-section :
+   [ initial ] algorithm { statement ";" }
+equation :
+   ( simple-expression "=" expression
+     | if-equation
+     | for-equation
+     | connect-clause
+     | when-equation
+     | component-reference function-call-args
+   )
+   description
+statement :
+   ( component-reference ( ":=" expression | function-call-args )
+     | "(" output-expression-list ")" ":="
+       component-reference function-call-args
+     | break
+     | return
+     | if-statement
+     | for-statement
+     | while-statement
+     | when-statement
+   )
+   description
+if-equation :
+   if expression then
+     { equation ";" }
+   { elseif expression then
+     { equation ";" }
+   }
+   [ else
+     { equation ";" }
+   ]
+   end if
+if-statement :
+   if expression then
+     { statement ";" }
+   { elseif expression then
+     { statement ";" }
+   }
+   [ else
+     { statement ";" }
+   ]
+   end if
+for-equation :
+   for for-indices loop
+     { equation ";" }
+   end for
+for-statement :
+   for for-indices loop
+     { statement ";" }
+   end for
+for-indices :
+   for-index { "," for-index }
+for-index :
+   IDENT [ in expression ]
+while-statement :
+   while expression loop
+   { statement ";" }
+   end while
+when-equation :
+   when expression then
+     { equation ";" }
+   { elsewhen expression then
+     { equation ";" }
+   }
+   end when
+when-statement :
+   when expression then
+     { statement ";" }
+   { elsewhen expression then
+     { statement ";" }
+   }
+   end when
+connect-clause :
+   connect "(" component-reference "," component-reference ")"
+// A.2.7 Expressions
+// ⬇
+expression :
+   simple-expression
+   | if expression then expression
+     { elseif expression then expression }
+     else expression
+simple-expression :
+   logical-expression [ ":" logical-expression [ ":" logical-expression ] ]
+logical-expression :
+   logical-term { or logical-term }
+logical-term :
+   logical-factor { and logical-factor }
+logical-factor :
+   [ not ] relation
+relation :
+   arithmetic-expression [ relational-operator arithmetic-expression ]
+relational-operator :
+   "<" | "<=" | ">" | ">=" | "==" | "<>"
+arithmetic-expression :
+   [ add-operator ] term { add-operator term }
+add-operator :
+   "+" | "-" | ".+" | ".-"
+term :
+   factor { mul-operator factor }
+mul-operator :
+   "*" | "/" | ".*" | "./"
+factor :
+   primary [ ("^" | ".^") primary ]
+primary :
+   UNSIGNED-NUMBER
+   | STRING
+   | false
+   | true
+   | ( component-reference | der | initial | pure ) function-call-args
+   | component-reference
+   | "(" output-expression-list ")"
+   | "[" expression-list { ";" expression-list } "]"
+   | "{" array-arguments "}"
+   | end
+UNSIGNED-NUMBER :
+   UNSIGNED-INTEGER | UNSIGNED-REAL
+type-specifier :
+   ["."] name
+name :
+   IDENT { "." IDENT }
+component-reference :
+   [ "." ] IDENT [ array-subscripts ] { "." IDENT [ array-subscripts ] }
+function-call-args :
+   "(" [ function-arguments ] ")"
+function-arguments :
+   expression [ "," function-arguments-non-first | for for-indices ]
+   | function-partial-application [ "," function-arguments-non-first ]
+   | named-arguments
+function-arguments-non-first :
+   function-argument [ "," function-arguments-non-first ]
+   | named-arguments
+array-arguments :
+   expression [ "," array-arguments-non-first | for for-indices ]
+array-arguments-non-first :
+   expression [ "," array-arguments-non-first ]
+named-arguments: named-argument [ "," named-arguments ]
+named-argument: IDENT "=" function-argument
+function-argument :
+   function-partial-application | expression
+function-partial-application :
+   function type-specifier "(" [ named-arguments ] ")"
+output-expression-list :
+   [ expression ] { "," [ expression ] }
+expression-list :
+   expression { "," expression }
+array-subscripts :
+   "[" subscript { "," subscript } "]"
+subscript :
+   ":" | expression
+description :
+   description-string [ annotation-clause ]
+description-string :
+   [ STRING { "+" STRING } ]
+annotation-clause :
+   annotation class-modification

@@ -1,8 +1,9 @@
 [tool.poetry]
-name = "ModelicaLanguage"
-version = "0.0.0a10"
+name = "ModelicaLang"
+version = "0.1.0a0"
 description = "Modelica parser and class representation for Python"
 repository = "https://github.com/ijknabla/ModelicaLanguageForPython"
+documentation = "https://ijknabla.github.io/ModelicaLanguageForPython/"
 authors = ["ijknabla <ijknabla@gmail.com>"]
 readme = "README.md"
 license = "MIT"
@@ -11,21 +12,32 @@ classifiers = [
         "Programming Language :: Python :: 3 :: Only",
 ]
 packages = [
-    { include = "modelica_language"},
+    { include = "modelicalang"},
 ]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-Arpeggio = ">=1.6"
-typing-extensions = ">=3.7.4"
+Arpeggio = ">=0.8"
+typing-extensions = ">=3.10"
 
-[tool.poetry.dev-dependencies]
-pyproject-flake8 = "^0.0.1-alpha.2"
-mypy = "^0.910"
-pytest = "^6.2.5"
+[tool.poetry.group.dev.dependencies]
 black = {version = "^22", python = ">=3.6.2"}
-types-setuptools = "^57.4.11"
 isort = "^5.8"
+astunparse = {version = "^1.6.3", python = "<3.9"}
+
+[tool.poetry.group.document.dependencies]
+sphinx = "^5"
+sphinx-autobuild = "^2021.3.14"
+sphinx-rtd-theme = "^1.1.1"
+pygments-modelicapeg-plugin = {git = "https://github.com/ijknabla/pygments-modelicapeg-plugin.git", rev = "main"}
+
+[tool.poetry.group.test.dependencies]
+mypy = "^0.971"
+pyproject-flake8 = "^0.0.1-alpha.2"
+pytest = "^6.2.5"
+pytest-cov = "^4.0.0"
+types-setuptools = "^57.4.11"
+types-arpeggio = {git = "https://github.com/ijknabla/types-arpeggio.git", rev = "main"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -34,9 +46,27 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 79
 
+[tool.coverage.report]
+exclude_lines = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
+
 [tool.flake8]
 exclude = ".venv"
+per-file-ignores = [
+    "modelicalang/v?_?.py:E501,F403,F405"
+]
 
 [tool.isort]
 profile = "black"
 line_length = 79
+
+[[tool.mypy.overrides]]
+module = [
+    "astunparse",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-branch --cov-report=term-missing"

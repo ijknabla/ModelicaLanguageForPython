@@ -1,5 +1,5 @@
-# Modelica Language for Python
+# ModelicaLang
 
-## Features
+Modelica parser and class representation for Python
 
-- Parser generator by BNF used in Modelica standard specification.
+[See document](https://ijknabla.github.io/ModelicaLanguageForPython/)
