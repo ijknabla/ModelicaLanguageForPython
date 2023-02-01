@@ -1,39 +1,47 @@
 __all__ = (
-    "ParsingExpressionLike",
+    "ModelicaVersion",
     "enable_method_in_parser_python",
     "get_file_parser",
     "get_syntax_type",
-    "latest",
+    "ParsingExpressionLike",
     "returns_parsing_expression",
     "v3_4",
     "v3_5",
+    "latest",
 )
 
 import enum
-from typing import Dict, Optional, Type, Union, cast
+from functools import lru_cache
+from typing import TYPE_CHECKING, Dict, Optional, Type, Union
 
 from arpeggio import EOF, ParserPython
+from typing_extensions import TypeAlias
+
+if TYPE_CHECKING:
+    from arpeggio import _ParsingExpressionLike  # noqa: F401
 
 from . import v3_4, v3_5
 from ._backend import (
-    ParsingExpressionLike,
     enable_method_in_parser_python,
     returns_parsing_expression,
 )
 
 latest = v3_5
+"""
+:py:mod:`modelicalang.v3_5` (latest modelica standard)
+"""
+
+ParsingExpressionLike: TypeAlias = "_ParsingExpressionLike"
+"""
+Type-hint for objects valid as
+`Arrpegio grammars written in Python <https://textx.github.io/Arpeggio/latest/grammars/#grammars-written-in-python>`_
+"""  # noqa: E501
+_AnySyntaxType = Union[Type[v3_4.Syntax], Type[v3_5.Syntax]]
 
 
 class ModelicaVersion(enum.Enum):
-    v3_4 = enum.auto()
-    v3_5 = latest = enum.auto()
-
-
-_AnySyntaxType = Union[Type[v3_4.Syntax], Type[v3_5.Syntax]]
-_SYNTAXES: Dict[ModelicaVersion, _AnySyntaxType] = {
-    ModelicaVersion.v3_4: v3_4.Syntax,
-    ModelicaVersion.v3_5: v3_5.Syntax,
-}
+    v3_4 = (3, 4)
+    v3_5 = latest = (3, 5)
 
 
 def get_file_parser(version: Optional[ModelicaVersion] = None) -> ParserPython:
@@ -47,10 +55,16 @@ def get_file_parser(version: Optional[ModelicaVersion] = None) -> ParserPython:
         return ParserPython(file, syntax_type.COMMENT)
 
 
+@lru_cache(1)
+def _get_syntax_type_table() -> Dict[ModelicaVersion, _AnySyntaxType]:
+    return {
+        ModelicaVersion.v3_4: v3_4.Syntax,
+        ModelicaVersion.v3_5: v3_5.Syntax,
+    }
+
+
 def get_syntax_type(
     version: Optional[ModelicaVersion] = None,
 ) -> _AnySyntaxType:
-    return _SYNTAXES.get(
-        cast(ModelicaVersion, version),
-        latest.Syntax,
-    )
+    version = version if version is not None else ModelicaVersion.latest
+    return _get_syntax_type_table().get(version, latest.Syntax)
