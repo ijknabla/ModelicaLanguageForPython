@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `modelicalang.ModelicaLangInternalWarning` Warning class
+    - It will be raised if arpeggio extension not enabled
+
 ## [0.1.0a0] - 2023-02-01
 
 ### Added
