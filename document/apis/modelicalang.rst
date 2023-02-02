@@ -12,5 +12,6 @@ Submodules
 .. toctree::
    :maxdepth: 2
 
+   modelicalang.exceptions
    modelicalang.v3_4
    modelicalang.v3_5
