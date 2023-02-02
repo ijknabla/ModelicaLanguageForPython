@@ -17,9 +17,12 @@ from types import TracebackType
 from typing import TYPE_CHECKING, Any, Callable, ClassVar
 from typing import Optional as NoneOr
 from typing import Tuple, Type, TypeVar, cast
+from warnings import warn
 
 from arpeggio import Not, Optional, ParsingExpression, RegExMatch, ZeroOrMore
 from typing_extensions import ParamSpec, Protocol
+
+from .exceptions import ModelicaLangInternalWarning
 
 if TYPE_CHECKING:
     from . import ParsingExpressionLike
@@ -87,3 +90,26 @@ class SyntaxMeta(type):
     ) -> NoneOr[bool]:
         builtins.isinstance = _isinstance__builtins
         return None
+
+    def __getattribute__(cls, name: str) -> Any:
+        obj = super().__getattribute__(name)
+        if isinstance(obj, Callable):  # type: ignore
+
+            @wraps(obj)
+            def wrapped(*args: Any, **kwargs: Any) -> Any:
+                if not _isinstance__callable_as_function_is_enabled():
+                    warning_message = f"""\
+Extension for `arpeggio` was not activated \
+before using the grammar definition in {cls}.\
+Please enable the extension with the following code.
+
+```python3
+with {cls.__module__}.{cls.__name__}:
+    # Place original code here!
+```"""
+                    warn(ModelicaLangInternalWarning(warning_message))
+                return obj(*args, **kwargs)
+
+            return wrapped
+        else:
+            return obj
