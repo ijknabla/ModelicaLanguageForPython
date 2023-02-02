@@ -77,9 +77,12 @@ def _isinstance__callable_as_function_is_enabled() -> bool:
 
 
 class SyntaxMeta(type):
+    __enter_count: int = 0
+
     def __enter__(cls) -> "SyntaxMeta":
-        if not _isinstance__callable_as_function_is_enabled():
+        if cls.__enter_count < 1:
             builtins.isinstance = _isinstance__callable_as_function
+        cls.__enter_count += 1
         return cls
 
     def __exit__(
@@ -88,7 +91,9 @@ class SyntaxMeta(type):
         value: NoneOr[BaseException],
         traceback: NoneOr[TracebackType],
     ) -> NoneOr[bool]:
-        builtins.isinstance = _isinstance__builtins
+        cls.__enter_count -= 1
+        if cls.__enter_count < 1:
+            builtins.isinstance = _isinstance__builtins
         return None
 
     def __getattribute__(cls, name: str) -> Any:
