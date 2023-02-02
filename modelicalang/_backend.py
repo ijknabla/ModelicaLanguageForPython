@@ -76,9 +76,14 @@ def _isinstance__callable_as_function(obj: Any, class_or_tuple: Any) -> bool:
         return _isinstance__builtins(obj, class_or_tuple)
 
 
+def _isinstance__callable_as_function_is_enabled() -> bool:
+    return builtins.isinstance is _isinstance__callable_as_function
+
+
 class SyntaxMeta(type):
     def __enter__(cls) -> Type[ParserPython]:
-        builtins.isinstance = _isinstance__callable_as_function
+        if not _isinstance__callable_as_function_is_enabled():
+            builtins.isinstance = _isinstance__callable_as_function
         return ParserPython
 
     def __exit__(
