@@ -76,13 +76,15 @@ def _isinstance__callable_as_function_is_enabled() -> bool:
     return builtins.isinstance is _isinstance__callable_as_function
 
 
-class SyntaxMeta(type):
-    __enter_count: int = 0
+_syntax_meta_enter_count = 0
 
+
+class SyntaxMeta(type):
     def __enter__(cls) -> "SyntaxMeta":
-        if cls.__enter_count < 1:
+        global _syntax_meta_enter_count
+        if _syntax_meta_enter_count < 1:
             builtins.isinstance = _isinstance__callable_as_function
-        cls.__enter_count += 1
+        _syntax_meta_enter_count += 1
         return cls
 
     def __exit__(
@@ -91,8 +93,9 @@ class SyntaxMeta(type):
         value: NoneOr[BaseException],
         traceback: NoneOr[TracebackType],
     ) -> NoneOr[bool]:
-        cls.__enter_count -= 1
-        if cls.__enter_count < 1:
+        global _syntax_meta_enter_count
+        _syntax_meta_enter_count -= 1
+        if _syntax_meta_enter_count < 1:
             builtins.isinstance = _isinstance__builtins
         return None
 
