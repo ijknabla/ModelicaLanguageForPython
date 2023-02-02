@@ -18,14 +18,7 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar
 from typing import Optional as NoneOr
 from typing import Tuple, Type, TypeVar, cast
 
-from arpeggio import (
-    Not,
-    Optional,
-    ParserPython,
-    ParsingExpression,
-    RegExMatch,
-    ZeroOrMore,
-)
+from arpeggio import Not, Optional, ParsingExpression, RegExMatch, ZeroOrMore
 from typing_extensions import ParamSpec, Protocol
 
 if TYPE_CHECKING:
@@ -81,10 +74,10 @@ def _isinstance__callable_as_function_is_enabled() -> bool:
 
 
 class SyntaxMeta(type):
-    def __enter__(cls) -> Type[ParserPython]:
+    def __enter__(cls) -> "SyntaxMeta":
         if not _isinstance__callable_as_function_is_enabled():
             builtins.isinstance = _isinstance__callable_as_function
-        return ParserPython
+        return cls
 
     def __exit__(
         cls,
