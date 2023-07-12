@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ModelicaLang"
-version = "0.1.0a0"
+version = "0.1.0a1"
 description = "Modelica parser and class representation for Python"
 repository = "https://github.com/ijknabla/ModelicaLanguageForPython"
 documentation = "https://ijknabla.github.io/ModelicaLanguageForPython/"
@@ -18,7 +18,6 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.6"
 Arpeggio = ">=0.8"
-typing-extensions = ">=3.10"
 
 [tool.poetry.group.dev.dependencies]
 black = {version = "^22", python = ">=3.6.2"}
@@ -31,13 +30,15 @@ sphinx-autobuild = "^2021.3.14"
 sphinx-rtd-theme = "^1.1.1"
 pygments-modelicapeg-plugin = {git = "https://github.com/ijknabla/pygments-modelicapeg-plugin.git", rev = "main"}
 
-[tool.poetry.group.test.dependencies]
+[tool.poetry.group.lint.dependencies]
 mypy = "^0.971"
 pyproject-flake8 = "^0.0.1-alpha.2"
-pytest = "^6.2.5"
-pytest-cov = "^4.0.0"
 types-setuptools = "^57.4.11"
 types-arpeggio = {git = "https://github.com/ijknabla/types-arpeggio.git", rev = "main"}
+
+[tool.poetry.group.test.dependencies]
+pytest = "^6.2.5"
+pytest-cov = "^4.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
