@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = (
     "ClassVar",
     "Optional",
@@ -20,22 +22,28 @@ from typing import Tuple, Type, TypeVar, cast
 from warnings import warn
 
 from arpeggio import Not, Optional, ParsingExpression, RegExMatch, ZeroOrMore
-from typing_extensions import ParamSpec, Protocol
+
+if TYPE_CHECKING:
+    from typing_extensions import ParamSpec, Protocol
 
 from .exceptions import ModelicaLangInternalWarning
 
 if TYPE_CHECKING:
     from . import ParsingExpressionLike
-else:
-    ParsingExpressionLike = "ParsingExpressionLike"
 
-P = ParamSpec("P")
+    P = ParamSpec("P")
+else:
+    ParsingExpressionLike = ...
+    P = ...
+
 T = TypeVar("T")
 T_keywords = TypeVar("T_keywords", bound="SupportsKeywords")
 
 
-class SupportsKeywords(Protocol):
-    _keywords_: ClassVar[Tuple[str, ...]]
+if TYPE_CHECKING:
+
+    class SupportsKeywords(Protocol):
+        _keywords_: ClassVar[Tuple[str, ...]]
 
 
 def returns_parsing_expression(
