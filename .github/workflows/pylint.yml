@@ -1,5 +1,5 @@
 
-name: Pytest
+name: Lint python code
 
 on:
   # Runs on pushes targeting the master, develop branch
@@ -28,7 +28,10 @@ jobs:
       - name: Install dependencies
         run: |
           curl -sSL https://install.python-poetry.org | python -
-          poetry install --only=main,test
-      - name: Test with pytest
+          poetry install --only=main,lint,test
+      - name: Lint python code (flake8)
         run: |
-          poetry run pytest --cov --cov-branch --cov-report=term-missing
+          poetry run pflake8
+      - name: Lint python code (mypy)
+        run: |
+          poetry run mypy --strict .
