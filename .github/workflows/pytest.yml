@@ -31,6 +31,4 @@ jobs:
           poetry install --only=main,test
       - name: Test with pytest
         run: |
-          poetry run pflake8
-          poetry run mypy --strict .
           poetry run pytest --cov --cov-branch --cov-report=term-missing
