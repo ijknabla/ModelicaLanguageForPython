@@ -15,7 +15,8 @@ import enum
 from functools import lru_cache
 from typing import TYPE_CHECKING, Dict, Optional, Type, Union
 
-from typing_extensions import TypeAlias
+if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
 
 from .exceptions import ModelicaLangInternalWarning
 
