@@ -21,8 +21,8 @@ Arpeggio = ">=0.8"
 
 [tool.poetry.group.dev.dependencies]
 black = {version = "^22", python = ">=3.6.2"}
-isort = "^5.8"
 astunparse = {version = "^1.6.3", python = "<3.9"}
+isort = "^5.11"
 
 [tool.poetry.group.document.dependencies]
 sphinx = {version = "^7.2", python = ">=3.9"}
