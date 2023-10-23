@@ -657,17 +657,17 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pyproject-flake8"
-version = "0.0.1a5"
+version = "3.9.2"
 description = "pyproject-flake8 (`pflake8`), a monkey patching wrapper to connect flake8 with pyproject.toml configuration"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pyproject-flake8-0.0.1a5.tar.gz", hash = "sha256:22542080ba90d4bd80ee060852db15a24aeea61c9a29ed7c16f5b59b0e47a03a"},
-    {file = "pyproject_flake8-0.0.1a5-py2.py3-none-any.whl", hash = "sha256:c843d760c49d7b270e9abda58a57765c031918a9d10da25aa43572f5d77cac43"},
+    {file = "pyproject-flake8-3.9.2.tar.gz", hash = "sha256:ba090f638d81cf235bfda094637223244411d47ce25d4e96b08b48fde70823d0"},
+    {file = "pyproject_flake8-3.9.2-py2.py3-none-any.whl", hash = "sha256:896b8e2c4c0e33002a86c16d3d29ba4ed4c796b4dd68e41df0cc1f9c3554b144"},
 ]
 
 [package.dependencies]
-flake8 = "<5.0.0"
+flake8 = "3.9.2"
 tomli = {version = "*", markers = "python_version < \"3.11\""}
 
 [[package]]
@@ -1145,4 +1145,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=4.6)", "pytest-black (
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "1f26a237eed8a7e138f49d128d03bdf29e13acedec0269cc80e08c7dc72a0364"
+content-hash = "95d304debc7b7e04f0ebcc312bcfab4f0055584a62b415d241f3bb64365727ff"
