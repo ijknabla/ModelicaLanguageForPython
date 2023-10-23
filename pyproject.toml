@@ -33,7 +33,7 @@ pygments-modelicapeg-plugin = {git = "https://github.com/ijknabla/pygments-model
 [tool.poetry.group.lint.dependencies]
 mypy = "^1.4"
 pyproject-flake8 = "^3.9"
-types-setuptools = "^57.4.11"
+types-setuptools = "^68.2"
 types-arpeggio = {git = "https://github.com/ijknabla/types-arpeggio.git", rev = "main"}
 
 [tool.poetry.group.test.dependencies]
