@@ -1012,21 +1012,18 @@ files = [
 
 [[package]]
 name = "types-arpeggio"
-version = "0.0.0"
+version = "0.2.0.0a0.dev3"
 description = ""
 optional = false
-python-versions = "*"
+python-versions = "^3.7"
 files = []
 develop = false
-
-[package.dependencies]
-arpeggio = ">=0.8"
 
 [package.source]
 type = "git"
 url = "https://github.com/ijknabla/types-arpeggio.git"
-reference = "main"
-resolved_reference = "d04e2ec99b30903877aa93eee2c77f05af5b91fa"
+reference = "0.2.0.0a0.dev3"
+resolved_reference = "e18fdec81103f981379c1bd987b48e87cc952160"
 
 [[package]]
 name = "types-setuptools"
@@ -1098,4 +1095,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=4.6)", "pytest-black (
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "4f59a4d8c7331486d16f22bc85a7629623fbb0c48198c8a87f720425f75cc582"
+content-hash = "4aa00107233371da76693f46054e0f9a5d74b2d081adb89d64b1e10a9adbb622"
