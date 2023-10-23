@@ -16,7 +16,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 Arpeggio = ">=0.8"
 
 [tool.poetry.group.dev.dependencies]
