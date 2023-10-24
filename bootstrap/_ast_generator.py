@@ -44,10 +44,7 @@ from arpeggio import (
 )
 from typing_extensions import Protocol, runtime_checkable
 
-from modelicalang._backend import (
-    ParsingExpressionLike,
-    returns_parsing_expression,
-)
+from modelicalang._backend import ParsingExpressionLike
 
 from ._types import Regex, Text
 
@@ -297,7 +294,6 @@ def _character_codes_to_groups(
             yield Regex(f"{begin}-{end}")
 
 
-@returns_parsing_expression
 def _character_code_set() -> ParsingExpressionLike:
     return (
         "[",
@@ -307,12 +303,10 @@ def _character_code_set() -> ParsingExpressionLike:
     )
 
 
-@returns_parsing_expression
 def _character_code_range() -> ParsingExpressionLike:
     return _character_code, "-", _character_code
 
 
-@returns_parsing_expression
 def _character_code() -> ParsingExpressionLike:
     return RegExMatch(r"\\.|[^\^\[\]\\]")
 
