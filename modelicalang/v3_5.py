@@ -65,7 +65,6 @@ class Syntax(metaclass=SyntaxMeta):
     )
 
     @staticmethod
-    @returns_parsing_expression
     def ALGORITHM() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -75,7 +74,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("algorithm(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def AND() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -85,7 +83,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("and(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def ANNOTATION() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -95,7 +92,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("annotation(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def BLOCK() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -105,7 +101,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("block(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def BREAK() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -115,7 +110,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("break(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def CLASS() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -125,7 +119,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("class(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def CONNECT() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -135,7 +128,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("connect(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def CONNECTOR() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -145,7 +137,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("connector(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def CONSTANT() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -155,7 +146,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("constant(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def CONSTRAINEDBY() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -165,7 +155,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("constrainedby(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def DER() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -175,7 +164,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("der(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def DISCRETE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -185,7 +173,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("discrete(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def EACH() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -195,7 +182,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("each(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def ELSE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -205,7 +191,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("else(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def ELSEIF() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -215,7 +200,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("elseif(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def ELSEWHEN() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -225,7 +209,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("elsewhen(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def ENCAPSULATED() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -235,7 +218,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("encapsulated(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def END() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -245,7 +227,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("end(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def ENUMERATION() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -255,7 +236,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("enumeration(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def EQUATION() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -265,7 +245,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("equation(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def EXPANDABLE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -275,7 +254,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("expandable(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def EXTENDS() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -285,7 +263,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("extends(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def EXTERNAL() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -295,7 +272,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("external(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def FALSE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -305,7 +281,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("false(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def FINAL() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -315,7 +290,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("final(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def FLOW() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -325,7 +299,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("flow(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def FOR() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -335,7 +308,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("for(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def FUNCTION() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -345,7 +317,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("function(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def IF() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -355,7 +326,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("if(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def IMPORT() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -365,7 +335,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("import(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def IMPURE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -375,7 +344,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("impure(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def IN() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -385,7 +353,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("in(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def INITIAL() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -395,7 +362,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("initial(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def INNER() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -405,7 +371,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("inner(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def INPUT() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -415,7 +380,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("input(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def LOOP() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -425,7 +389,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("loop(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def MODEL() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -435,7 +398,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("model(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def NOT() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -445,7 +407,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("not(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def OPERATOR() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -455,7 +416,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("operator(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def OR() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -465,7 +425,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("or(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def OUTER() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -475,7 +434,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("outer(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def OUTPUT() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -485,7 +443,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("output(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def PACKAGE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -495,7 +452,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("package(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def PARAMETER() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -505,7 +461,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("parameter(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def PARTIAL() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -515,7 +470,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("partial(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def PROTECTED() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -525,7 +479,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("protected(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def PUBLIC() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -535,7 +488,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("public(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def PURE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -545,7 +497,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("pure(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def RECORD() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -555,7 +506,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("record(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def REDECLARE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -565,7 +515,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("redeclare(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def REPLACEABLE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -575,7 +524,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("replaceable(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def RETURN() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -585,7 +533,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("return(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def STREAM() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -595,7 +542,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("stream(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def THEN() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -605,7 +551,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("then(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def TRUE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -615,7 +560,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("true(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def TYPE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -625,7 +569,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("type(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def WHEN() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -635,7 +578,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("when(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def WHILE() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -645,7 +587,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("while(?![0-9A-Z_a-z])")
 
     @staticmethod
-    @returns_parsing_expression
     def WITHIN() -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -656,7 +597,6 @@ class Syntax(metaclass=SyntaxMeta):
 
     @classmethod
     @not_start_with_keyword
-    @returns_parsing_expression
     def IDENT(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -668,7 +608,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def Q_IDENT(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -680,7 +619,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def NONDIGIT(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -690,7 +628,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("[A-Z_a-z]")
 
     @classmethod
-    @returns_parsing_expression
     def STRING(cls) -> RegExMatch:
         '''
         .. code-block:: modelicapeg
@@ -702,7 +639,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def S_CHAR(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -716,7 +652,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch('[^"\\\\]')
 
     @classmethod
-    @returns_parsing_expression
     def Q_CHAR(cls) -> RegExMatch:
         '''
         .. code-block:: modelicapeg
@@ -728,7 +663,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("[\\ -\\&\\(-\\[\\]-_a-\\~]")
 
     @classmethod
-    @returns_parsing_expression
     def S_ESCAPE(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -741,7 +675,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def DIGIT(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -751,7 +684,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("[0-9]")
 
     @classmethod
-    @returns_parsing_expression
     def UNSIGNED_INTEGER(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -761,7 +693,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("[0-9][0-9]*")
 
     @classmethod
-    @returns_parsing_expression
     def UNSIGNED_REAL(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -777,7 +708,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def COMMENT(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -791,7 +721,6 @@ class Syntax(metaclass=SyntaxMeta):
         return RegExMatch("//.*|/\\*([^*]|\\*(?!/))*\\*/")
 
     @classmethod
-    @returns_parsing_expression
     def stored_definition(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -806,7 +735,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def class_definition(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -821,7 +749,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def class_prefixes(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -859,7 +786,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def class_specifier(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -874,7 +800,6 @@ class Syntax(metaclass=SyntaxMeta):
         ]
 
     @classmethod
-    @returns_parsing_expression
     def long_class_specifier(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -904,7 +829,6 @@ class Syntax(metaclass=SyntaxMeta):
         ]
 
     @classmethod
-    @returns_parsing_expression
     def short_class_specifier(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -936,7 +860,6 @@ class Syntax(metaclass=SyntaxMeta):
         ]
 
     @classmethod
-    @returns_parsing_expression
     def der_class_specifier(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -958,7 +881,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def base_prefix(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -969,7 +891,6 @@ class Syntax(metaclass=SyntaxMeta):
         return Optional([cls.INPUT, cls.OUTPUT])
 
     @classmethod
-    @returns_parsing_expression
     def enum_list(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -983,7 +904,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def enumeration_literal(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -994,7 +914,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.IDENT, cls.description)
 
     @classmethod
-    @returns_parsing_expression
     def composition(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1031,7 +950,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def language_specification(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1042,7 +960,6 @@ class Syntax(metaclass=SyntaxMeta):
         return cls.STRING
 
     @classmethod
-    @returns_parsing_expression
     def external_function_call(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1060,7 +977,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def element_list(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1071,7 +987,6 @@ class Syntax(metaclass=SyntaxMeta):
         return ZeroOrMore(cls.element, ";")
 
     @classmethod
-    @returns_parsing_expression
     def element(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1109,7 +1024,6 @@ class Syntax(metaclass=SyntaxMeta):
         ]
 
     @classmethod
-    @returns_parsing_expression
     def import_clause(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1136,7 +1050,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def import_list(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1147,7 +1060,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.IDENT, ZeroOrMore(",", cls.IDENT))
 
     @classmethod
-    @returns_parsing_expression
     def extends_clause(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1163,7 +1075,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def constraining_clause(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1178,7 +1089,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def component_clause(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1194,7 +1104,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def type_prefix(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1211,7 +1120,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def component_list(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1225,7 +1133,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def component_declaration(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1240,7 +1147,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def condition_attribute(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1251,7 +1157,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.IF, cls.expression)
 
     @classmethod
-    @returns_parsing_expression
     def declaration(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1266,7 +1171,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def modification(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1283,7 +1187,6 @@ class Syntax(metaclass=SyntaxMeta):
         ]
 
     @classmethod
-    @returns_parsing_expression
     def class_modification(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1294,7 +1197,6 @@ class Syntax(metaclass=SyntaxMeta):
         return ("(", Optional(cls.argument_list), ")")
 
     @classmethod
-    @returns_parsing_expression
     def argument_list(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1305,7 +1207,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.argument, ZeroOrMore(",", cls.argument))
 
     @classmethod
-    @returns_parsing_expression
     def argument(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1320,7 +1221,6 @@ class Syntax(metaclass=SyntaxMeta):
         ]
 
     @classmethod
-    @returns_parsing_expression
     def element_modification_or_replaceable(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1335,7 +1235,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def element_modification(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1346,7 +1245,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.name, Optional(cls.modification), cls.description_string)
 
     @classmethod
-    @returns_parsing_expression
     def element_redeclaration(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1367,7 +1265,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def element_replaceable(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1383,7 +1280,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def component_clause1(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1398,7 +1294,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def component_declaration1(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1409,7 +1304,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.declaration, cls.description)
 
     @classmethod
-    @returns_parsing_expression
     def short_class_definition(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1420,7 +1314,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.class_prefixes, cls.short_class_specifier)
 
     @classmethod
-    @returns_parsing_expression
     def equation_section(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1435,7 +1328,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def algorithm_section(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1450,7 +1342,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def equation(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1478,7 +1369,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def statement(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1521,7 +1411,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def if_equation(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1554,7 +1443,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def if_statement(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1587,7 +1475,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def for_equation(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1607,7 +1494,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def for_statement(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1627,7 +1513,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def for_indices(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1638,7 +1523,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.for_index, ZeroOrMore(",", cls.for_index))
 
     @classmethod
-    @returns_parsing_expression
     def for_index(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1649,7 +1533,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.IDENT, Optional(cls.IN, cls.expression))
 
     @classmethod
-    @returns_parsing_expression
     def while_statement(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1669,7 +1552,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def when_equation(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1698,7 +1580,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def when_statement(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1727,7 +1608,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def connect_clause(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1745,7 +1625,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def expression(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1772,7 +1651,6 @@ class Syntax(metaclass=SyntaxMeta):
         ]
 
     @classmethod
-    @returns_parsing_expression
     def simple_expression(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1790,7 +1668,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def logical_expression(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1801,7 +1678,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.logical_term, ZeroOrMore(cls.OR, cls.logical_term))
 
     @classmethod
-    @returns_parsing_expression
     def logical_term(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1812,7 +1688,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.logical_factor, ZeroOrMore(cls.AND, cls.logical_factor))
 
     @classmethod
-    @returns_parsing_expression
     def logical_factor(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1823,7 +1698,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (Optional(cls.NOT), cls.relation)
 
     @classmethod
-    @returns_parsing_expression
     def relation(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1837,7 +1711,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def relational_operator(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1849,7 +1722,6 @@ class Syntax(metaclass=SyntaxMeta):
         return ["==", "<>", "<=", ">=", "<", ">"]
 
     @classmethod
-    @returns_parsing_expression
     def arithmetic_expression(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1864,7 +1736,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def add_operator(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1875,7 +1746,6 @@ class Syntax(metaclass=SyntaxMeta):
         return ["+", "-", ".+", ".-"]
 
     @classmethod
-    @returns_parsing_expression
     def term(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1886,7 +1756,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.factor, ZeroOrMore(cls.mul_operator, cls.factor))
 
     @classmethod
-    @returns_parsing_expression
     def mul_operator(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1897,7 +1766,6 @@ class Syntax(metaclass=SyntaxMeta):
         return ["*", "/", ".*", "./"]
 
     @classmethod
-    @returns_parsing_expression
     def factor(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1908,7 +1776,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.primary, Optional(["^", ".^"], cls.primary))
 
     @classmethod
-    @returns_parsing_expression
     def primary(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1947,7 +1814,6 @@ class Syntax(metaclass=SyntaxMeta):
         ]
 
     @classmethod
-    @returns_parsing_expression
     def UNSIGNED_NUMBER(cls) -> RegExMatch:
         """
         .. code-block:: modelicapeg
@@ -1960,7 +1826,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def type_specifier(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1971,7 +1836,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (Optional("."), cls.name)
 
     @classmethod
-    @returns_parsing_expression
     def name(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1982,7 +1846,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.IDENT, ZeroOrMore(".", cls.IDENT))
 
     @classmethod
-    @returns_parsing_expression
     def component_reference(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -1998,7 +1861,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def function_call_args(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2009,7 +1871,6 @@ class Syntax(metaclass=SyntaxMeta):
         return ("(", Optional(cls.function_arguments), ")")
 
     @classmethod
-    @returns_parsing_expression
     def function_arguments(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2037,7 +1898,6 @@ class Syntax(metaclass=SyntaxMeta):
         ]
 
     @classmethod
-    @returns_parsing_expression
     def function_arguments_non_first(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2055,7 +1915,6 @@ class Syntax(metaclass=SyntaxMeta):
         ]
 
     @classmethod
-    @returns_parsing_expression
     def array_arguments(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2074,7 +1933,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def array_arguments_non_first(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2085,7 +1943,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.expression, Optional(",", cls.array_arguments_non_first))
 
     @classmethod
-    @returns_parsing_expression
     def named_arguments(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2095,7 +1952,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.named_argument, Optional(",", cls.named_arguments))
 
     @classmethod
-    @returns_parsing_expression
     def named_argument(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2105,7 +1961,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.IDENT, "=", cls.function_argument)
 
     @classmethod
-    @returns_parsing_expression
     def function_argument(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2116,7 +1971,6 @@ class Syntax(metaclass=SyntaxMeta):
         return [cls.function_partial_application, cls.expression]
 
     @classmethod
-    @returns_parsing_expression
     def function_partial_application(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2133,7 +1987,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def output_expression_list(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2147,7 +2000,6 @@ class Syntax(metaclass=SyntaxMeta):
         )
 
     @classmethod
-    @returns_parsing_expression
     def expression_list(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2158,7 +2010,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.expression, ZeroOrMore(",", cls.expression))
 
     @classmethod
-    @returns_parsing_expression
     def array_subscripts(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2169,7 +2020,6 @@ class Syntax(metaclass=SyntaxMeta):
         return ("[", cls.subscript, ZeroOrMore(",", cls.subscript), "]")
 
     @classmethod
-    @returns_parsing_expression
     def subscript(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2180,7 +2030,6 @@ class Syntax(metaclass=SyntaxMeta):
         return [":", cls.expression]
 
     @classmethod
-    @returns_parsing_expression
     def description(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2191,7 +2040,6 @@ class Syntax(metaclass=SyntaxMeta):
         return (cls.description_string, Optional(cls.annotation_clause))
 
     @classmethod
-    @returns_parsing_expression
     def description_string(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
@@ -2202,7 +2050,6 @@ class Syntax(metaclass=SyntaxMeta):
         return Optional(cls.STRING, ZeroOrMore("+", cls.STRING))
 
     @classmethod
-    @returns_parsing_expression
     def annotation_clause(cls) -> ParsingExpressionLike:
         """
         .. code-block:: modelicapeg
