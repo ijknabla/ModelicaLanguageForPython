@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+### Removed
 
-- Stop support for `python==3.6`
+- Support for `python==3.6`
+- `modelicalang.returns_parsing_expression` type-hint for arpeggio
 
 ## [0.1.0a1] - 2023-07-12
 
