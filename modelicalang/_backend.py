@@ -9,7 +9,6 @@ __all__ = (
     "Tuple",
     "ZeroOrMore",
     "not_start_with_keyword",
-    "returns_parsing_expression",
 )
 
 import builtins
@@ -18,10 +17,10 @@ from functools import wraps
 from types import TracebackType
 from typing import TYPE_CHECKING, Any, Callable, ClassVar
 from typing import Optional as NoneOr
-from typing import Tuple, Type, TypeVar, cast
+from typing import Tuple, Type, TypeVar
 from warnings import warn
 
-from arpeggio import Not, Optional, ParsingExpression, RegExMatch, ZeroOrMore
+from arpeggio import Not, Optional, RegExMatch, ZeroOrMore
 
 if TYPE_CHECKING:
     from typing_extensions import ParamSpec, Protocol
@@ -46,17 +45,10 @@ if TYPE_CHECKING:
         _keywords_: ClassVar[Tuple[str, ...]]
 
 
-def returns_parsing_expression(
-    f: Callable[P, ParsingExpressionLike]
-) -> Callable[P, ParsingExpression]:
-    return cast(Callable[P, ParsingExpression], f)
-
-
 def not_start_with_keyword(
-    f: Callable[[Type[T_keywords]], ParsingExpression]
-) -> Callable[[Type[T_keywords]], ParsingExpression]:
+    f: Callable[[Type[T_keywords]], ParsingExpressionLike]
+) -> Callable[[Type[T_keywords]], ParsingExpressionLike]:
     @wraps(f)
-    @returns_parsing_expression
     def wrapped(cls: Type[T_keywords]) -> ParsingExpressionLike:
         return (
             Not(

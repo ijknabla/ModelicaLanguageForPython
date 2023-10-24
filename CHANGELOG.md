@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0a2] - 2023-10-24
+
+### Removed
+
+- Support for `python==3.6`
+- `modelicalang.returns_parsing_expression` type-hint for arpeggio
+
 ## [0.1.0a1] - 2023-07-12
 
 ### Added
@@ -30,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `modelicalang.v3_5.Syntax` [Modelica Concrete Syntax v3.5](https://specification.modelica.org/maint/3.5/modelica-concrete-syntax.html)
 
 
-[Unreleased]: https://github.com/ijknabla/ModelicaLanguageForPython/compare/v0.1.0a1...HEAD
+[Unreleased]: https://github.com/ijknabla/ModelicaLanguageForPython/compare/v0.1.0a2...HEAD
+[0.1.0a2]: https://github.com/ijknabla/ModelicaLanguageForPython/tree/v0.1.0a2
 [0.1.0a1]: https://github.com/ijknabla/ModelicaLanguageForPython/tree/v0.1.0a1
 [0.1.0a0]: https://github.com/ijknabla/ModelicaLanguageForPython/tree/v0.1.0a0

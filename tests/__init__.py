@@ -8,7 +8,6 @@ from modelicalang import (
     ModelicaVersion,
     ParsingExpressionLike,
     get_syntax_type,
-    returns_parsing_expression,
     v3_5,
 )
 
@@ -18,7 +17,6 @@ def get_stored_definition_parser(
 ) -> ParserPython:
     syntax_type = get_syntax_type(version)
 
-    @returns_parsing_expression
     def file() -> ParsingExpressionLike:
         return syntax_type.stored_definition, EOF
 
@@ -50,7 +48,6 @@ class TargetLanguageDef(enum.Flag):
             class Syntax(_DialectMixin, Syntax):  # type: ignore
                 ...
 
-        @returns_parsing_expression
         def file() -> ParsingExpressionLike:
             if (
                 self is TargetLanguageDef.IDENT
@@ -88,7 +85,6 @@ class TargetLanguageDef(enum.Flag):
 
 class _DialectMixin:
     @classmethod
-    @returns_parsing_expression
     def IDENT(cls) -> ParsingExpressionLike:
         return [
             super().IDENT(),  # type: ignore

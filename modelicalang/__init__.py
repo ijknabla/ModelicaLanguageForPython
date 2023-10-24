@@ -4,7 +4,6 @@ __all__ = (
     "ModelicaVersion",
     "get_syntax_type",
     "ParsingExpressionLike",
-    "returns_parsing_expression",
     "ModelicaLangInternalWarning",
     "v3_4",
     "v3_5",
@@ -24,7 +23,6 @@ if TYPE_CHECKING:
     from arpeggio import _ParsingExpressionLike  # noqa: F401
 
 from . import v3_4, v3_5
-from ._backend import returns_parsing_expression
 
 latest = v3_5
 """

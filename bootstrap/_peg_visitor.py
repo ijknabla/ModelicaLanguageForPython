@@ -111,7 +111,9 @@ class ModuleVisitor(PTNodeVisitor):
             regex = Regex(rf"{keyword}(?![0-9A-Z_a-z])")
 
             yield create_function_def(
-                decorator_list=["staticmethod", "returns_parsing_expression"],
+                decorator_list=[
+                    "staticmethod",
+                ],
                 name=name,
                 args=[],
                 returns="RegExMatch",
@@ -132,12 +134,10 @@ class ModuleVisitor(PTNodeVisitor):
             decorator_list = [
                 "classmethod",
                 "not_start_with_keyword",
-                "returns_parsing_expression",
             ]
         else:
             decorator_list = [
                 "classmethod",
-                "returns_parsing_expression",
             ]
 
         docs = [
@@ -178,7 +178,7 @@ class ModuleVisitor(PTNodeVisitor):
 
         def rule_definition() -> FunctionDef:
             return create_function_def(
-                decorator_list=["classmethod", "returns_parsing_expression"],
+                decorator_list=["classmethod"],
                 name=name,
                 args=["cls"],
                 returns="ParsingExpressionLike",
