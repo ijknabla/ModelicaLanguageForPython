@@ -20,7 +20,7 @@ from typing import Optional as NoneOr
 from typing import Tuple, Type, TypeVar
 from warnings import warn
 
-from arpeggio import Not, Optional, ParsingExpression, RegExMatch, ZeroOrMore
+from arpeggio import Not, Optional, RegExMatch, ZeroOrMore
 
 if TYPE_CHECKING:
     from typing_extensions import ParamSpec, Protocol
@@ -46,8 +46,8 @@ if TYPE_CHECKING:
 
 
 def not_start_with_keyword(
-    f: Callable[[Type[T_keywords]], ParsingExpression]
-) -> Callable[[Type[T_keywords]], ParsingExpression]:
+    f: Callable[[Type[T_keywords]], ParsingExpressionLike]
+) -> Callable[[Type[T_keywords]], ParsingExpressionLike]:
     @wraps(f)
     def wrapped(cls: Type[T_keywords]) -> ParsingExpressionLike:
         return (
